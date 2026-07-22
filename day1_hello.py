@@ -51,21 +51,21 @@ def hello_llm():
     提示：用 OpenAI(api_key=..., base_url=...)
     从环境变量读取，不要硬编码
     """
-    client = None  # ← 你的代码
+    client = OpenAI(api_key=os.getenv("DEEPSEEK_API_KEY"), base_url=os.getenv("DEEPSEEK_BASE_URL"))  # ← 你的代码
 
     """
     TODO 2：构造 messages 数组
     提示：至少要有一条 role=user 的消息
     试试加一条 role=system 的"系统提示"，看看输出有什么变化
-    """
-    messages = []  # ← 你的代码
+    """ 
+    messages = [{"role":"user","content":"who are you?"}]  # ← 你的代码
 
     """
     TODO 3：调用 client.chat.completions.create()
     必填参数：model、messages
     DeepSeek 的 model 用 "deepseek-chat"
     """
-    response = None  # ← 你的代码
+    response = client.chat.completions.create(model="deepseek-chat", messages=messages)  # ← 你的代码   
 
     """
     TODO 4：从 response 里取出文本内容
@@ -73,7 +73,7 @@ def hello_llm():
     打印出来
     """
     # ← 你的代码
-
+    print(response.choices[0].message.content)
 
 if __name__ == "__main__":
     hello_llm()

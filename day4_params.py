@@ -65,8 +65,13 @@ def run_experiment(client, temperature: float, prompt: str, runs: int = 3) -> li
     """
     TODO 1：跑 runs 次同样的 prompt，返回 runs 个回复
     每次调用都传同样的 temperature
-    """
+    """ 
     results = []
+    for _ in range(runs):
+        response = client.chat.completions.create(model="deepseek-chat", messages=[{"role":"user","content":prompt}],temperature=temperature)
+        result = response.choices[0].message.content.strip()
+       
+        results.append(result)
     # ← 你的代码
     return results
 
@@ -75,7 +80,7 @@ def main():
     """
     TODO 2：初始化 client
     """
-    client = None  # ← 你的代码
+    client = OpenAI(api_key= os.getenv("DEEPSEEK_API_KEY"),base_url=os.getenv("DEEPSEEK_BASE_URL"))  # ← 你的代码
 
     prompt = "用 50 字写一段关于秋天的散文。"
     temperatures = [0.0, 0.5, 1.0, 1.5, 2.0]
@@ -85,6 +90,8 @@ def main():
     格式：{"temp_0.0": [out1, out2, out3], "temp_0.5": [...], ...}
     """
     all_results = {}
+    for temp in temperatures:
+        all_results[f"temp_{temp}"] = run_experiment(client, temp, prompt)  # ← 你的代码
     # ← 你的代码
 
     """
@@ -92,12 +99,16 @@ def main():
     json.dump 时记得 ensure_ascii=False，indent=2
     """
     # ← 你的代码
-
+    with open("results.json","w",encoding="utf-8") as f: #with 语句自动帮你 close / open 文件 w/r 读或写  encoding="utf-8"——你存的是中文散文，文件对象f
+        json.dump(all_results,f,ensure_ascii=False,indent=2)   #json.dump：怎么把字典写成 JSON 
+                                                               #ensure_ascii=False：不加的话中文会被转成 \u79cb\u5929 这种逃逸码，加了才是人能读的                 
+                                                               #indent=2：缩进2个空格，便于阅读
     """
     TODO 5：打印对比表格（每组只打第一条，便于肉眼对比）
     """
     # ← 你的代码
-
+    for temp, outs in all_results.items():
+        print(f"{temp}: {outs[0]}\n")  # 打印每组的第一条结果，便于对比
 
 if __name__ == "__main__":
     main()

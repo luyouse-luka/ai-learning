@@ -65,25 +65,32 @@ def stream_chat():
     """
     TODO 1：初始化（同 day2）
     """
-    client = None  # ← 你的代码
-    history = []  # ← 你的代码
+    client = OpenAI(api_key=os.getenv("DEEPSEEK_API_KEY"),base_url=os.getenv("DEEPSEEK_BASE_URL"))  # ← 你的代码
+    history = [{"role": "system","content": "you are a claudeCode chatbot"}]  # ← 你的代码
 
     while True:
         user_input = input("你: ").strip()
         if user_input == "exit":
             break
+        elif user_input == "clear":
+            history = [{"role": "system","content": "you are a claudeCode chatbot"}]  # ← 你的代码
+            continue
+        elif user_input == "":
+            continue
         # ← 处理空输入 / clear
-
         """
         TODO 2：追加 user 消息
         """
+        history.append({"role": "user", "content": user_input})  # ← 你的代码
         # ← 你的代码
 
         """
         TODO 3：调用 API with stream=True
         """
-        stream = None  # ← 你的代码
-
+        stream = client.chat.completions.create(model="deepseek-chat", messages=history, stream=True)  # ← 你的代码
+    
+       
+        
         """
         TODO 4：边收边打印 + 收集
         关键：end="" 和 flush=True
@@ -92,14 +99,27 @@ def stream_chat():
         print("AI: ", end="", flush=True)
         collected = ""
         # ← 你的代码（for chunk in stream）
-
+        try:
+            for chunk in stream: # 遍历实时数据流 
+                delta = chunk.choices[0].delta.content #  delta 流式输出专属取值语法
+                if delta is not None: #AI 输出结束时，会返回一个空值，加这个判断 =不打印空内容、避免报错 
+                                    #  不判空的后果:collected += None 会直接 TypeError(字符串不能和 None 相加),程序当场崩。
+                                    
+                    print(delta, end="", flush=True)  # ← 你的代码
+                    collected += delta  # ← 你的代码
+        except KeyboardInterrupt:
+            print("\n【已中断当前回复】")
+            continue  # 直接返回到主循环，等待下一轮输入
         print()  # 换行
 
         """
         TODO 5：把完整回复追加到 history
         """
         # ← 你的代码
-
+        print("【本轮发出去的历史条数】", len(history))  # 检查历史条数是否增加
+        
+        history.append({"role":"assistant","content":collected})  # ← 你的代码
+        
 
 if __name__ == "__main__":
     stream_chat()

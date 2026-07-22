@@ -67,6 +67,11 @@ load_dotenv()
 SYSTEM_PROMPT = """
 # TODO 1：写一个非常严格的 system prompt
 # 重点：禁止修改逻辑、必须输出可执行代码、不要 markdown 包裹
+你是一个非常严格的代码注释助手，需要给我提供的 Python 代码加上注释以便我能更好的阅读。请严格按照以下要求执行：
+1.只加注释和docstring，绝对不能修改任何代码逻辑。
+2.输出必须是完整可运行的 .py 内容，并且保持原代码的格式、变量名、import 顺序完全不变，不能有任何缺失。
+3.别给我用''''或```包裹输出，别跟我废话直接给我代码。
+
 """.strip()
 
 
@@ -75,15 +80,19 @@ def read_file(path: str) -> str:
     TODO 2：读文件
     """
     # ← 你的代码
-
-
+    with open(path,"r", encoding="utf-8") as f:
+        content = f.read()
+    return content
 def add_comments(client: OpenAI, code: str) -> str:
     """
     TODO 3：调 LLM 加注释
     注意 max_tokens 至少要和 code 长度一样长
     """
     # ← 你的代码
-
+    messages = [{"role": "system", "content": SYSTEM_PROMPT}, {"role": "user", "content": code}]
+    response = client.chat.completions.create(model="deepseek-chat", messages=messages, max_tokens=min(len(code) * 2, 8000) ) # 有点的时候不能过于大，会超过模型api的限制，避免输出不全。你可以根据实际情况调整这个 max_tokens 的计算方式。
+    result = response.choices[0].message.content
+    return result
 
 def validate(code: str) -> bool:
     """
@@ -105,7 +114,12 @@ def save_file(orig_path: str, new_code: str) -> str:
     返回新文件路径
     """
     # ← 你的代码
-
+    orig_path_obj = Path(orig_path)
+    orig_name = orig_path_obj.stem + "_documented.py"
+    new_path = orig_path_obj.with_name(orig_name)
+    with open(new_path,"w", encoding="utf-8") as f:
+        f.write(new_code)
+    return str(new_path)
 
 def main():
     if len(sys.argv) < 2:
@@ -123,7 +137,15 @@ def main():
     5) 打印结果
     """
     # ← 你的代码
-
+    client = OpenAI(api_key=os.getenv("DEEPSEEK_API_KEY"), base_url = os.getenv("DEEPSEEK_BASE_URL"))
+    original_code = read_file(path) # 1) 读文件
+    new_code = add_comments(client, original_code)
+    if validate(new_code):
+        new_path = save_file(path, new_code)
+        print(f"✅ 注释添加成功！新文件保存在: {new_path}")
+    else:
+        print("❌ 注释添加失败，代码不合法，未保存。")
+        sys.exit(1)
 
 if __name__ == "__main__":
     main()
