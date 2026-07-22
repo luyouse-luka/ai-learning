@@ -75,15 +75,21 @@ Claude 的点评：
 
 ---
 
-### 综合分数
+### 综合分数（2026-07-21 完成 Part 2 考核）
 
-得分：__/10
+得分：**8/10**（过考核线 ≥7）
+
+10 题结果：Q2/Q3/Q4/Q6/Q8/Q10 全对；Q1（content 说成「定位描述」）、Q5（system 措辞错）、Q7（200 看成 500 算错）、Q9（盲写漏 `.message` + `from/import` 写反）各扣分。
+
+对比本会话开头默写只有 1.5——概念题基本全通，messages 结构（老大难）已焊死，得益于中间插的 Week 0.5 Python 急救。
 
 最大 3 个盲点：
 
-1. 
-2. 
-3. 
+1. **`content` 装什么**没定死——它就是「这条消息实际说的话」，别想复杂。
+2. **`response.choices[0].message.content` 盲写会掉 `.message` 层**；`from X import Y` 会写反。链条与 import 语法要练到闭眼能写。
+3. **拼写 + 看题精度**：except→expect、assistant→assitant、completions→compeletions、200→500。真代码里全是 SyntaxError/NameError/API 拒绝，是效率隐形杀手。
+
+**遗留门槛**：Part 3「大盲写」（流式对话 + 多轮记忆 + clear/tokens/exit）尚未做——那是解锁 Week 2 的真门槛，下次先做这个。
 
 ---
 

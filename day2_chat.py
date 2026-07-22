@@ -54,14 +54,14 @@ def chat_loop():
     """
     TODO 1：初始化 client（同 day1）
     """
-    client = None  # ← 你的代码
 
+    client = OpenAI(api_key=os.getenv("DEEPSEEK_API_KEY"),base_url=os.getenv("DEEPSEEK_BASE_URL"))  # ← 你的代码
     """
     TODO 2：初始化 history 列表
     放一条 system 消息，定义 AI 的角色
     建议：'你是一个简洁的中文助手，回答控制在 50 字以内'
     """
-    history = []  # ← 你的代码
+    history = [{"role":"system","content":"你是一个简洁的中文助手，回答控制在 50 字以内"}]  # ← 你的代码
 
     print("输入 exit 退出，clear 清空历史\n")
 
@@ -75,25 +75,38 @@ def chat_loop():
         user_input = input("你: ").strip()
         # ← 你的代码（处理 exit / clear / 空输入）
 
+        if user_input == "":
+            continue
+        elif user_input == "exit":
+            break
+        elif user_input == "clear":
+            history = [{"role":"system","content":"你是一个简洁的中文助手，回答控制在 50 字以内"}]  # ← 你的代码
+            continue
+        
         """
         TODO 4：把用户输入追加到 history
         格式：{"role": "user", "content": user_input}
         """
         # ← 你的代码
-
+        history.append({"role":"user","content":user_input})  # ← 你的代码
         """
         TODO 5：调用 API，model 用 "deepseek-chat"
         把整个 history 当 messages 传过去
         """
-        response = None  # ← 你的代码
-
+        print("【本轮发出去的历史条数】", len(history))
+        response = client.chat.completions.create(model="deepseek-chat",messages=history)  # ← 你的代码
         """
         TODO 6：取出 assistant 回复
         打印出来
         【关键】把它也追加到 history（这就是"记忆"的本质）
         """
         # ← 你的代码
-
+        assistant_reply = response.choices[0].message.content  # ← 你的代码
+        history.append({"role":"assistant","content":assistant_reply})  # ← 你的代码
+        print("AI: ", assistant_reply)  # ← 你的代码
+        print(response)
+        print("-" * 40)
+        print(response.usage)
 
 if __name__ == "__main__":
     chat_loop()

@@ -60,12 +60,31 @@ load_dotenv()
 # 这是今天最核心的产出。多迭代几次。
 # 建议结构：角色 + 任务 + 输出格式 + few-shot 示例 + 约束
 SYSTEM_PROMPT = """
-你是一个 ...
-
-# 你的代码（多写、多改）
+你是一个专业的中英翻译专家，并且在美英生活多年，对中英语言差异和文化差异有深入理解。
+你的任务是将中文翻译成英文或者将英文翻译为中文，并解释翻译中的难点。
+并且需要输出JSON 格式：
+{
+    "translation": "...",
+    "difficult_phrases": [
+        {"source": "落地", "target": "implement", "why": "字面意 vs 商业用法"}
+    ],
+    "alternative_translations": ["...", "..."]
+}
+Few-shot 示例：
+输入： 落地这个方案
+输出：{
+    "translation": "Implement this solution", 
+    "difficult_phrases": 
+    [{"source": "落地", "target": "implement", "why": "字面意是'land on the ground'，但在商业语境中常用来表示'把方案变成现实'"}], 
+    "alternative_translations": ["Execute this solution", "Put this solution into practice"]
+    }
+约束规则： 
+1.检测到输入的是中文那么则翻译为英文，检测到英文则翻译为中文
+2.数字时也必须返回 translation 字段（比如原样放那串数字），提示文字塞进某个已有字段。让输出结构永远一致。
+3.只输出JSON格式，不要任何额外的文本说明
 """.strip()
 
-
+ # ← 你的代码
 def translate(client: OpenAI, text: str) -> dict:
     """
     TODO 2：调用 API，返回解析后的 dict
@@ -74,9 +93,18 @@ def translate(client: OpenAI, text: str) -> dict:
     2) try/except 处理 JSON 解析失败
     3) 失败时打印原始返回，便于调试
     """
-    # ← 你的代码
-
-
+    # ← your code
+    text = text.encode('utf-8', 'ignore').decode('utf-8')
+    messages = [{"role": "system", "content": SYSTEM_PROMPT}, {"role": "user", "content": text}]
+    response = client.chat.completions.create(model="deepseek-chat", messages=messages, response_format={"type": "json_object"})
+    content = response.choices[0].message.content
+    try:
+        return json.loads(content)
+    except json.JSONDecodeError:
+        print("Failed to parse JSON. Raw response:")
+        print(content)
+        return None
+  
 def pretty_print(result: dict):
     """
     TODO 3：把 dict 漂亮打印（不是 json.dumps，是人看的）
@@ -88,14 +116,20 @@ def pretty_print(result: dict):
         难点 2：...
     """
     # ← 你的代码
-
+    print('译文：' + result.get('translation',''))
+    for phrase in result.get('difficult_phrases', []):
+        print('resource:' + phrase['source'] + ' → ' + phrase['target'])
+        print('  原因：  ' + phrase['why'])    
+    
+    for alternative in result.get('alternative_translations', []):
+        print('替代译文:' + alternative)
 
 def main():
     """
     TODO 4：初始化 + 命令行循环
     支持用户连续输入，输入 exit 退出
     """
-    client = None  # ← 你的代码
+    client = OpenAI(api_key=os.getenv('DEEPSEEK_API_KEY'), base_url=os.getenv('DEEPSEEK_BASE_URL'))  # ← 你的代码
 
     while True:
         text = input("中文输入: ").strip()
@@ -123,3 +157,4 @@ if __name__ == "__main__":
 # 2. 让 Claude Code 扮演 PM 挑刺：
 #    "你扮演产品经理，找出我这个翻译工具的 5 个 bug 或体验问题"
 # ============================================
+
