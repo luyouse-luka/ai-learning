@@ -30,7 +30,7 @@ load_dotenv(BASE_DIR.parent / ".env")     # .env 在仓库根
 MODEL = "deepseek-v4-flash"               # ← 常量，别再散在 8 个地方
 PRICE_IN = 0.14                           # $ / 1M token（缓存未命中）
 PRICE_OUT = 0.28                          # $ / 1M token
-MAX_OUTPUT_TOKENS = 500                   # 目标 400 中文字 ≈ 240 token，×2 留余量给标点/换行/缩进
+MAX_OUTPUT_TOKENS = 500                   # 目标 400 中文字 ≈ 240 token，×2 留余量给标点/换行/缩进 以及推导 
 EST_RATIO = 0.3                           # 字符 → token 的估算系数（今天校准的就是它）
 
 client = OpenAI(
