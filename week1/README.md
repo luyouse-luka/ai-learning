@@ -184,7 +184,7 @@ response 是模型的回复结果，response.choices[0].message.content 就是�
 
 **最难的点 / 卡了多久**：
 1.循环取出response的内容插入results中
-2.关于使用with open()的用法，用来处理文件的读写操作，比如with open('file.txt', 'r') as f: f.read() ,读取文件内容以及json.dump的用法是怎么把字典写成 JSON
+2.关于使用with open()的用法，用来处理文件的读写操作，比如with open('file.txt', 'r') as f: f.read() ,读取文件内容以及json.dump的用法是怎么把字典写成 JSON 字符串，
 3.当打印结果时  print(f"{temp}: {outs[0]}\n")  f 是 f-string，用于格式化字符串，在字符串里直接嵌入变量、表达式，让字符串拼接更简单直观，比如f"{temp}: {outs[0]}\n" 就是将temp和outs[0]的内容插入到字符串中，并且换行
 
 **踩的坑**：
@@ -306,6 +306,17 @@ streaming 意思流式输出
     是提示模型成为什么/遵守什么
 ---
 
+### useage 三个字段 
+usage.prompt_tokens        输入 token 数（你发出去的：system + 历史 + 本轮 user）
+usage.completion_tokens    输出 token 数（模型吐回来的）
+usage.total_tokens         两者之和
+
+### 重要补充 json dump/dumps 和 load/lods的用法
+json.dump()	Python 对象 → 写入文件	                本地 json 文件（你现在用的）
+json.dumps()	Python 对象 → 转为json 字符串	        内存字符串，需要自己 write 写入
+json.load()	读取 json 文件 → 还原 Python 对象	读文件
+json.loads()	json 字符串 → 还原 Python 对象	        读字符串
+
 ## 收藏的好 prompt（积累自己的 prompt 库）
 
 | 场景 | Prompt | 效果 |
@@ -315,11 +326,11 @@ streaming 意思流式输出
 ---
 ## Week 1 结束自检（Day 7 填）
 
-- [ ] 能解释 messages / role / token / temperature 的作用
-- [ ] 能不查文档写出一个流式对话脚本
-- [ ] 理解为什么模型"没有记忆"（无状态）
-- [ ] 能估算一次调用的 token 数与成本
-- [ ] 至少做出 2 个自己真的会用的小工具
+- [√] 能解释 messages / role / token / temperature 的作用
+- [√] 能不查文档写出一个流式对话脚本
+- [√] 理解为什么模型"没有记忆"（无状态）
+- [√] 能估算一次调用的 token 数与成本
+- [√] 至少做出 2 个自己真的会用的小工具
 
 ---
 
