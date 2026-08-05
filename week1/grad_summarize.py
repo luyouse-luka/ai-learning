@@ -10,7 +10,7 @@
 #   - 卡在哪一步，告诉我卡在第几步、报什么错、你试了什么
 #
 # 跑法：
-#   cd /home/ly/ai-learning/week1
+#   cd /home/ly/AI_Workstation/week1
 #   source venv/bin/activate      # 激活虚拟环境（有 openai、dotenv）
 #   python3 grad_summarize.py
 #

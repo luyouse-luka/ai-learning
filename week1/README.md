@@ -189,7 +189,7 @@ response 是模型的回复结果，response.choices[0].message.content 就是�
 
 **踩的坑**：
 1.关于本地venv环境配置问题 
-  cd ~/ai-learning/week1
+  cd ~/AI_Workstation/week1        # 目录 2026-08-05 由 ai-learning 更名
   rm -rf venv                          # 删掉坏的
   python3 -m venv venv                 # 本地重新建
   source venv/bin/activate             # 激活（成功后提示符会出现 (venv) 前缀）
