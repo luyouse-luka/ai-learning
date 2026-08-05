@@ -18,6 +18,7 @@ import io
 
 from dotenv import load_dotenv
 from fastapi import FastAPI, UploadFile, File, HTTPException
+from fastapi.staticfiles import StaticFiles
 from openai import OpenAI
 from pydantic import BaseModel, Field
 from pypdf import PdfReader
@@ -193,4 +194,17 @@ async def summarize(file: UploadFile = File(...)):
         cost=cost,
         model=MODEL
     )
+
+
+# ---------------------------------------------------------------
+# 【5】把前端挂进来（Day 4 · 外围，教练直接给）
+# ---------------------------------------------------------------
+# html=True → 访问 / 时自动返回 static/index.html
+#
+# ⚠️ 这三行必须写在文件最末尾，在所有 @app.get / @app.post 之后。
+#    路由是**从上往下**匹配的，mount("/") 是一张通吃所有路径的网。
+#    如果把它写在 /health 上面，请求 /health 会先被这张网捞走，
+#    然后去 static/ 里找一个叫 health 的文件，找不到 → 404。
+#    你的接口会「凭空消失」，而代码看起来一点毛病没有。
+app.mount("/", StaticFiles(directory=BASE_DIR / "static", html=True), name="static")
     
