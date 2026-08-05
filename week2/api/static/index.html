@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PDF 总结服务 · Day 4</title>
+<style>
+  /* ======================================================
+     样式部分：教练写满，不是今天的考点（前端是你本行）
+     今天的考点全在下面 <script> 里的 5 个 TODO
+     ====================================================== */
+  :root{
+    --bg:#fafafa; --card:#fff; --fg:#1a1a1a; --dim:#6b7280;
+    --line:#e5e7eb; --accent:#2563eb; --warn-bg:#fffbeb;
+    --warn-line:#f59e0b; --warn-fg:#92400e;
+    --err-bg:#fef2f2; --err-line:#dc2626; --err-fg:#991b1b;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --bg:#0f1115; --card:#181b22; --fg:#e8eaed; --dim:#9aa0a6;
+      --line:#2a2f3a; --accent:#60a5fa; --warn-bg:#2b2410;
+      --warn-line:#d97706; --warn-fg:#fcd34d;
+      --err-bg:#2a1416; --err-line:#ef4444; --err-fg:#fca5a5;
+    }
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; padding:32px 16px; background:var(--bg); color:var(--fg);
+    font:15px/1.7 system-ui,-apple-system,"Segoe UI","Microsoft YaHei",sans-serif;
+  }
+  main{max-width:720px; margin:0 auto}
+  h1{font-size:22px; margin:0 0 4px}
+  .sub{color:var(--dim); font-size:13px; margin:0 0 24px}
+  .card{
+    background:var(--card); border:1px solid var(--line);
+    border-radius:10px; padding:20px; margin-bottom:16px;
+  }
+  .row{display:flex; gap:12px; align-items:center; flex-wrap:wrap}
+  input[type=file]{
+    flex:1 1 240px; min-width:0; padding:8px;
+    border:1px dashed var(--line); border-radius:6px; background:transparent;
+    color:var(--fg); font-size:13px;
+  }
+  button{
+    padding:9px 20px; border:0; border-radius:6px; font-size:14px;
+    background:var(--accent); color:#fff; cursor:pointer;
+  }
+  button:disabled{opacity:.45; cursor:not-allowed}
+  .hint{font-size:12px; color:var(--dim); margin:10px 0 0; min-height:1.2em}
+  .hint.bad{color:var(--err-line)}
+
+  #status{font-size:14px}
+  #status.loading{color:var(--dim)}
+  #status.loading::before{
+    content:""; display:inline-block; width:11px; height:11px;
+    margin-right:8px; vertical-align:-1px; border-radius:50%;
+    border:2px solid var(--line); border-top-color:var(--accent);
+    animation:spin .7s linear infinite;
+  }
+  @keyframes spin{to{transform:rotate(360deg)}}
+  #status.error{
+    background:var(--err-bg); border:1px solid var(--err-line);
+    color:var(--err-fg); border-radius:8px; padding:14px 16px;
+  }
+
+  #warn{
+    background:var(--warn-bg); border:1px solid var(--warn-line);
+    color:var(--warn-fg); border-radius:8px; padding:12px 14px;
+    font-size:13px; margin-bottom:16px;
+  }
+  #summary{white-space:pre-wrap; margin-bottom:20px}
+  table{width:100%; border-collapse:collapse; font-size:13px}
+  th,td{text-align:left; padding:7px 0; border-bottom:1px solid var(--line)}
+  th{color:var(--dim); font-weight:400; width:40%}
+  td{font-variant-numeric:tabular-nums}
+  [hidden]{display:none !important}
+</style>
+</head>
+<body>
+<main>
+  <h1>PDF 总结服务</h1>
+  <p class="sub">Day 4 · 选一个 PDF → 总结 + 真实 token + 成本</p>
+
+  <!-- ① 输入区 -->
+  <section class="card">
+    <div class="row">
+      <input type="file" id="file" accept="application/pdf">
+      <button id="btn" disabled>生成总结</button>
+    </div>
+    <p class="hint" id="hint"></p>
+  </section>
+
+  <!-- ② 状态区：loading 和 error 都落在这里 -->
+  <section class="card" id="status" hidden></section>
+
+  <!-- ③ 结果区 -->
+  <section class="card" id="result" hidden>
+    <div id="warn" hidden></div>
+    <div id="summary"></div>
+    <table>
+      <tbody>
+        <tr><th>输入 token</th><td id="f-in">—</td></tr>
+        <tr><th>输出 token（计费口径，含推理）</th><td id="f-out">—</td></tr>
+        <tr><th>本次成本</th><td id="f-cost">—</td></tr>
+        <tr><th>模型</th><td id="f-model">—</td></tr>
+      </tbody>
+    </table>
+  </section>
+</main>
+
+<script>
+/* ==========================================================
+   以下是教练给的壳：DOM 引用、常量、工具函数
+   ========================================================== */
+const $ = (id) => document.getElementById(id);
+const els = {
+  file: $('file'), btn: $('btn'), hint: $('hint'),
+  status: $('status'), result: $('result'), warn: $('warn'),
+  summary: $('summary'),
+  fIn: $('f-in'), fOut: $('f-out'), fCost: $('f-cost'), fModel: $('f-model'),
+};
+
+// ⚠️ 和后端 main.py 的 MAX_FILE_BYTES 保持一致。
+//    同一个数字写在两个地方 —— 这本身是个隐患，Day 5 我们再谈怎么办。
+const MAX_FILE_BYTES = 10 * 1024 * 1024;
+
+const fmtMB = (bytes) => (bytes / 1024 / 1024).toFixed(2) + ' MB';
+
+
+/* ==========================================================
+   【A】选中文件之后 —— 前端预检
+   ----------------------------------------------------------
+   目标：在「上传」发生之前就把明显不合格的挡掉。
+   为什么：后端是 `await file.read()` 读完整个文件之后才查大小，
+          1 GB 的文件已经整个进了服务器内存才被弹回去。
+
+   TODO:
+     - 拿到选中的文件（没选/取消选择也要能处理）
+     - 太大 → 在 els.hint 里说清楚（多大、上限多少），按钮保持 disabled
+     - 合格 → hint 里显示文件名 + 大小，按钮 enable
+     - ⚠️ 每次重新选文件，上一次的结果和错误要清掉，
+          否则用户会对着「上一个 PDF 的总结」以为是这一个的
+   ========================================================== */
+els.file.addEventListener('change', () => {
+  // 你写
+});
+
+
+/* ==========================================================
+   【B】三态切换
+   ----------------------------------------------------------
+   idle / loading / done|error —— 三个，不是两个。
+   你的接口要跑 5.78 秒，这 5.78 秒里界面不变 = 用户会再点一次 = 你付两次钱。
+
+   TODO: 想清楚每个状态下这 4 样东西各是什么样：
+           els.btn.disabled / els.status / els.result / 按钮文字
+         然后决定这个函数怎么写（参数怎么设计是你的自由）
+   ========================================================== */
+function setState(state, message) {
+  // 你写
+}
+
+
+/* ==========================================================
+   【C】点击 → 发请求
+   ----------------------------------------------------------
+   外围提示（后端契约，不是考点，直接给）：
+     - 用 FormData 发 multipart
+     - 表单字段名必须是 "file" —— 来自后端 `async def summarize(file: UploadFile...)`
+       的参数名，两边对不上后端会拒收
+     - 不要自己设 Content-Type，浏览器会带 boundary 自动填
+
+   TODO:
+     - 进 loading
+     - fetch('/summarize', ...) 拿到 response
+     - 分流到 【D】失败 或 【E】成功
+     - ⚠️ fetch 有个坑：服务器返回 400 / 500 时它**不会** reject，
+          照样进 then。所以「有没有出错」得你自己判断。
+   ========================================================== */
+els.btn.addEventListener('click', async () => {
+  // 你写
+});
+
+
+/* ==========================================================
+   【D】失败分支 —— 今天的核心
+   ----------------------------------------------------------
+   昨天你在后端把错误分了类，今天是它的另一半：
+   同样一个失败，**用户该看到哪句话**。
+
+   后端会返回这些（配合 HTTPException 的 detail）：
+     400  不是 PDF / 提取出来是空的（扫描件）
+     413  文件超 10 MB / 正文超 20 万字符
+     422  FastAPI 自己发的（你今天可能会撞上，撞上再说）
+     500  你的代码崩了
+     502/504  还没实现（Day 5）
+
+   TODO:
+     - 从响应里把后端写的 detail 取出来（它长什么样，你去 /docs 试一个 400 就知道）
+     - 决定每类错误给用户看什么。判据是一句话：
+         「用户看完这句，知道下一步该干什么吗？」
+       —— "Error 413" 不合格；"文件 14.2 MB，超过 10 MB 上限，请换一个" 合格
+     - 500 是特例：后端的 detail 是给你看的，不该原样丢给用户。想想为什么。
+     - ⚠️ 网络直接断了（服务器没起 / 隧道断了）连响应都没有，
+          fetch 这时候才 reject。这条路径也要有落点。
+   ========================================================== */
+
+
+/* ==========================================================
+   【E】成功分支 —— 渲染 6 个字段
+   ----------------------------------------------------------
+   TODO:
+     - summary / input_tokens / output_tokens / cost / model → 填进对应的格子
+     - cost 是 0.00152796 这种数，直接 toFixed(2) 会变成 0.00。想清楚显示成什么样
+     - truncated → 这个字段不是「显示一个值」：
+         true  → els.warn 冒出来，写一句用户看得懂的话（他现在拿到的是半截的，该怎么办）
+         false → els.warn 整块不存在
+     - ⚠️ 把后端的 max_tokens 临时调到 50 跑一次，你会看到一个「成功了」的空白页面。
+          先看见它，再决定要不要回去修后端 —— 这是本周重点「静默 bug」的正脸。
+   ========================================================== */
+</script>
+</body>
+</html>
