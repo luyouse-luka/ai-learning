@@ -142,7 +142,27 @@ const fmtMB = (bytes) => (bytes / 1024 / 1024).toFixed(2) + ' MB';
           否则用户会对着「上一个 PDF 的总结」以为是这一个的
    ========================================================== */
 els.file.addEventListener('change', () => {
-  // 你写
+  // 
+  setState("idle")
+  const file = els.file.files[0]; // 拿到选中的文件
+
+  if (!file){
+    els.hint.textContent = "";
+    els.hint.className = "hint";
+    return;
+  }
+  const file_size = file.size; // 选中文件 → 拿到大小
+  if (file_size > MAX_FILE_BYTES) { 
+    els.hint.textContent = `文件 ${file.name} ${fmtMB(file_size)}，超过 ${fmtMB(MAX_FILE_BYTES)} 上限，请换一个`; // 显示错误信息
+    els.hint.className = "hint bad";
+    els.btn.disabled = true; // 禁用按钮
+  }
+  else {
+    els.hint.textContent = `文件 ${file.name} ${fmtMB(file_size)}`; // 显示文件名和大小
+    els.hint.className = "hint";
+    els.btn.disabled = false;
+  }
+
 });
 
 
@@ -157,7 +177,37 @@ els.file.addEventListener('change', () => {
          然后决定这个函数怎么写（参数怎么设计是你的自由）
    ========================================================== */
 function setState(state, message) {
-  // 你写
+  // 刚进场，没有任何状态，先把上一次的结果和错误清掉
+  els.status.hidden = true;
+  els.status.className ="card";
+  els.status.textContent = "";
+  els.result.hidden = true;  
+
+  // 进行分支P
+  if(state === "idle") { // 空闲状态
+    els.btn.disabled = true;
+    els.btn.textContent = "生成总结";
+  } else if(state === "loading") { // 加载状态
+    els.btn.disabled = true; 
+    els.btn.textContent = "生成中...";
+    els.status.className = "card loading";
+    els.status.textContent = message || "正在生成总结，请稍候...";
+    els.status.hidden = false;
+
+  } else if (state ==="error") { // 错误状态
+    els.btn.disabled = false;
+    els.btn.textContent ="重试"
+    els.status.className = "card error";
+    els.status.textContent = message || "请求失败，请稍后再试";
+    els.status.hidden = false;
+  }
+  else if (state === "done") { // 成功状态
+    els.btn.disabled = false;
+    els.btn.textContent = "生成总结";
+    els.status.hidden = true;
+    els.result.hidden = false;
+    
+  }
 }
 
 
@@ -178,7 +228,35 @@ function setState(state, message) {
           照样进 then。所以「有没有出错」得你自己判断。
    ========================================================== */
 els.btn.addEventListener('click', async () => {
-  // 你写
+  const file = els.file.files[0]; // 拿到选中的文件
+  if (!file) return; // 没选文件 → 不发请求
+
+  setState("loading"); // 进 loading 状态
+  const fd = new FormData(); //  把文件放进 FormData
+  fd.append("file", file); // 字段名必须是 "file"
+
+  try {
+    const res = await fetch('/summarize', { // 发请求
+      method: "POST", // POST 方法
+      body: fd, // body 是 FormData
+      // 这里没有headers 是故意设置的
+    })
+    const data = await res.json(); // 成功和失败的响应都是 JSON
+    if(!res.ok) { // 
+      // 走D -- data 里有 detail
+      handleErrorResponse(res.status, data); // 处理错误响应
+      return;
+
+    }  
+    // 走E -- data 里有 summary / input_tokens / output_tokens / cost / model / truncated
+    render(data); // 渲染数据
+    setState("done"); // 进 done 状态
+  } catch (err) {
+      // TODO: 这里接住的是「压根没连上」，不是 400/500
+    //       给用户看什么？err.message 是 "Failed to fetch"，用户看不懂
+    setState("error", "网络连接失败，请检查网络或稍后再试");
+  }
+  
 });
 
 
@@ -204,7 +282,27 @@ els.btn.addEventListener('click', async () => {
      - ⚠️ 网络直接断了（服务器没起 / 隧道断了）连响应都没有，
           fetch 这时候才 reject。这条路径也要有落点。
    ========================================================== */
-
+  function handleErrorResponse(status, data) {
+    let msg;
+    switch (status) {
+      case 400: // 后面不写 break 直接接 case 413:，是 switch 的「贯穿」——两个码走同一段逻辑。这是有意的写法，不是漏了 break。
+      case 413:
+      msg = data.detail;
+        break;
+      case 422:
+        msg = "请求格式有误，请刷新页面重试";
+        console.log("422 错误，后端返回的 detail：", data.detail);
+        break;
+      case 500:
+        msg = "服务器内部错误，请稍后重试"
+        console.error("500 错误，后端返回的 detail：", data.detail);
+        break;
+      default:
+        console.error(`未处理的状态码 ${status}:`, data);
+        msg = `请求失败 （${status}）, 请稍后重试`;
+    }
+    setState("error", msg);
+  }
 
 /* ==========================================================
    【E】成功分支 —— 渲染 6 个字段
@@ -218,6 +316,21 @@ els.btn.addEventListener('click', async () => {
      - ⚠️ 把后端的 max_tokens 临时调到 50 跑一次，你会看到一个「成功了」的空白页面。
           先看见它，再决定要不要回去修后端 —— 这是本周重点「静默 bug」的正脸。
    ========================================================== */
+   function render(data) {
+  // 1. summary / input_tokens / output_tokens / cost / model → 填进对应的格子
+    els.summary.textContent = data.summary;
+    els.fIn.textContent = data.input_tokens;
+    els.fOut.textContent = data.output_tokens;
+    els.fCost.textContent = "$" + data.cost.toFixed(4); // 显示成本，保留四位小数
+    els.fModel.textContent = data.model;
+
+    if(data.truncated){
+      els.warn.textContent = "⚠️ 文档过长，已截断。请尝试上传更短的 PDF 或分段上传。";
+      els.warn.hidden = false;
+    } else {
+      els.warn.hidden = true; // 隐藏警告
+    }
+   }
 </script>
 </body>
 </html>
