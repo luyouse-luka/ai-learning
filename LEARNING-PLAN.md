@@ -41,24 +41,32 @@ Claude Code 在本目录工作时读 `week1/CLAUDE.md`（教学合约）→ 再�
 
 | 轨道 | 位置 | 说明 |
 |---|---|---|
-| **主线**（总纲 9 个月） | 阶段一 · 起点（未开工） | Week 3 起正式补。阶段二只碰了 FastAPI 皮毛，阶段三反而超前 |
-| **AI 线**（可并行） | 阶段 1 · **收尾** | 14 天清单 Day 1-13 ☑（Day 14 部署暂缓）。Day 5 补「附·AI 工程化生产实践」的护栏，之后进阶段 2 |
+| **主线**（总纲 9 个月） | 阶段一 · **已开工**（08-07 Day 6） | 工具链就位：nvm + Node **v24.19.0** + pnpm 11.20 + `week3/frontend/`（Vue 3.5 / Vite 8.2 / TS 6.0）。阶段二只碰了 FastAPI 皮毛，阶段三反而超前 |
+| **AI 线**（可并行） | 阶段 1 · **收尾** | 14 天清单 Day 1-13 ☑（Day 14 部署暂缓）。「附·AI 工程化生产实践」的护栏 **08-07 已补齐**（超时 / 502·504 / 日调用上限 / 空 summary），之后进阶段 2 |
 
 **已确认的路线偏差**：week1 + week2 直接做了阶段三，**跳过阶段一整个、阶段二大部分**。
 内容一行没白学，**错的是顺序**。修正方案 C（08-05 拍板）：用 Vue 3 + TS 重写 week2 PDF 总结服务的前端，当阶段一的练手项目。
 
 **本周（Week 2）剩余**：
 
-- [x] Day 4 原生 HTML 前端（对照组）—— `week2/api/static/index.html` 5 块 TODO 全填完，端到端跑通（含 400/413/422 + truncated 截断实测）。**未 commit（+117 行）**
-- [ ] Day 5 AI 线阶段 1 护栏 + 还 Day 3 的债（空 summary / 502 / 504）
-- [ ] Day 6 Week 2 收尾 + 阶段一开工准备（nvm / Node / pnpm / 跑通 `npm create vue@latest`）
+- [x] Day 4 原生 HTML 前端（对照组）—— `week2/api/static/index.html` 5 块 TODO 全填完，端到端跑通（含 400/413/422 + truncated 截断实测）。**已 commit**（`904c04d` + `e43c7f2`）
+- [x] Day 5 AI 线阶段 1 护栏 + 还 Day 3 的债 —— `main.py` 四块全落地（超时 60s / 502·504 映射 / 日调用上限 / 空 summary 返 502），教练四条验证实测全绿（08-07）。**已 commit**（08-08）
+- [x] Day 6 Week 2 收尾 + 阶段一开工准备 —— 环境（教练装，属外围）：nvm / Node v24.19.0 / pnpm 11.20 / `week3/frontend/` 跑通，dev server 685ms 起在 **5174**（5173 被本机别人的服务占了）。
+      **ly 两件动手均完成**：① 启动链路（答案断两环、位置答反，已订正；判据 = `grep HomeView src/App.vue` 搜不到 → `<RouterView/>` 是占位符不是引用）
+      ② HMR 三条判据全中，中途撞上一次 **HMR 失败**，暴露出教练的判据表只有两列、漏了第三种状态。**已 commit**（08-08）
 - [ ] Day 7 巩固日：不看答案重写本周核心 + Week 2 总复盘 + Week 3 计划 + 目录重构
 
 **当前瓶颈（教练盯的三条）**：
 
 1. **知道了没调用**（已第五次）—— 答案就在自己写过的文件里，不翻。判据：做决定时那个文件有没有被打开过
-2. **静默 bug 意识**（本周重点）
-3. **累加变量作用域** —— 只内化了「循环」那一半，换 `if` 分支就漏（`truncated` 在成功路径 `UnboundLocalError`）
+2. **静默 bug 意识**（本周重点）—— Day 5 有实测进展（空 summary 的 502 亲手堵上、亲眼见到它触发），
+   但 Day 5 复盘 Q1 仍漏答「日志里会不会报错」那一问。**认得出形状 ≠ 想得起来查**
+   → Day 6 换了个壳又出现一次：HMR「滚动没变 + 日志还在」两条全绿，实际热更新失败了。
+   **统一表述：「没有 A」不等于「有 B」——负向判据证明不了正向结论，判据必须直接测你要证的那件事。**
+   （这次是教练的判据表漏了第三列，不是 ly 观测错；但形状与瓶颈 2 完全一致，合并记在这）
+3. **变量作用域**（已第四次）—— 同一条规则的四张脸：循环 → `if` 分支 → 函数边界（`+1` 写进 `check_` 里）
+   → **`global` 声明的覆盖范围**（删了名字但 `if` 分支里还有 `= 0` → 全新进程首次调用 500 `UnboundLocalError`）。
+   **判据：函数里对某个名字有任何赋值（`=` / `+=` / `for x in`）就必须 `global` 声明，不管那行会不会执行到**
 
 **已过的关**：messages 结构、拼写、成本计算（连续两轮全对）。
 
@@ -83,9 +91,11 @@ Claude Code 在本目录工作时读 `week1/CLAUDE.md`（教学合约）→ 再�
   - [ ] 个人开发必会 12 命令 `[FS §六]`：`status`/`log --oneline`、`diff`/`diff --staged`、`add -p`（分块提交）、`commit --amend`、`stash`/`stash pop`、`reset HEAD~1`、`rebase -i HEAD~5`、`cherry-pick`、`reflog`（后悔药）、`tag v1.0.0`、`remote -v`/`fetch`、`branch -d`/`-D`
   - [ ] 分支策略选一个：Trunk-Based / Git Flow / **GitHub Flow（团队 10 内最简洁，事实标准）** / GitLab Flow
   - [ ] Commit 规范 Conventional Commits：`<type>(<scope>): <subject>`，type = feat/fix/docs/refactor/test/chore
-- [ ] **Node.js 环境** —— 安装 nvm、理解 npm/pnpm 包管理。不深学 Node，能跑起开发环境即可
-- [ ] **Vite** —— 比 webpack 快 10-100 倍（原生 ESM + 按需编译），Vue3/React 标配
-  - [ ] 必须会的 5 件事 `[FS §二]`：① `npm create vue@latest` 建项目 ② 配代理（`vite.config.ts` 的 `server.proxy` 解决跨域）③ 环境变量（`.env.development` / `.env.production`）④ 别名（`@` → `src`）⑤ 生产打包 `npm run build` → `dist`
+- [x] **Node.js 环境** —— nvm v0.40.3 + Node **v24.19.0**（`nvm alias default`）+ pnpm **11.20.0**（corepack）· 08-07 Day 6
+  - ⚠️ 装的时候踩到：`~/.npmrc` 里 `prefix=` 与 nvm **互斥**，`nvm use` 会直接拒绝生效（已注释，备份 `~/.npmrc.bak-20260807`）
+  - **npm vs pnpm 的两个差别**：① 硬链接共享全局 store（12.7s 装完 40+ 包）② **幽灵依赖** —— npm 扁平化让你能 `import` 没在 `package.json` 声明的包，换机器就炸；pnpm 声明了才 import 得到
+- [~] **Vite** —— 比 webpack 快 10-100 倍（原生 ESM + 按需编译），Vue3/React 标配。**dev 不打包 / 生产用 Rollup 打包，是两套机制**
+  - [~] 必须会的 5 件事 `[FS §二]`：① **`npm create vue@latest` 建项目 ✅ 08-07**（`week3/frontend/`，Vite 8.2.0 冷启动 685ms）② 配代理（`vite.config.ts` 的 `server.proxy` 解决跨域）← **Week 3 第一件会撞的事**，前端 5174 调后端 8000 ③ 环境变量（`.env.development` / `.env.production`）④ 别名（`@` → `src`）⑤ 生产打包 `npm run build` → `dist`
 - [ ] **TypeScript 基础** —— 目标：能把现有 JS 代码加上类型，消除 `any`。配 TS Playground 在线练
   - [ ] TS 8 大核心 `[FS §二]`：① 基本类型注解（能省则省，TS 会推断）② `interface` vs `type`（描述对象形状用 interface）③ 联合类型 `|`（`type Status = "loading"|"ok"|"error"`，替代 enum）④ 可选 `?` 与默认值 ⑤ 泛型（Array、Promise 最常见）⑥ `as` 类型断言（避免滥用，杀手锏但杀的是自己）⑦ 内置工具类型 `Partial`/`Required`/`Pick`/`Omit`/`Record` ⑧ 严格模式 `strict: true`（一开始报错多，但避免 90% 运行时 bug）
 
