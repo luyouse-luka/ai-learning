@@ -43,13 +43,43 @@
 
 | Day | 轨道 | 主题 | 文件 | 状态 | 复盘得分 |
 |---|---|---|---|---|---|
-| 1 | AI 线 | **①⑤ 星号验收** + **JSON 解析**（`json.loads` 三种失败）→ 引出 `response_format` | `day1_json.py` | ☐ | — |
-| 2 | AI 线 | **Function Calling 跑通一次**：定义 schema → 模型建议 → **你执行** → 结果塞回 | `day2_tool_call.py` | ☐ | — |
+| 1 | AI 线 | **①⑤ 星号验收** + **JSON 解析**（`json.loads` 三种失败）→ 引出 `response_format` | `day1_json.py` | ☑ | **0.5/3** |
+| 2 | AI 线 | **Function Calling 跑通一次**：定义 schema → 模型建议 → **你执行** → 结果塞回 | `day2_tool_call.py` | ◑ | — |
 | 3 | 主线 | **Vite 配代理**（5174 → 8000）+ 环境变量 + 别名 `@` | `frontend/vite.config.ts` | ☐ | — |
 | 4 | 主线 | **TypeScript**：给 6 字段契约建 `interface`，4 类错误码建联合类型 | `frontend/src/types/` | ☐ | — |
 | 5 | 主线 | **Vue 3 响应式**：`ref` vs `reactive` + 第一个组件（选文件 + 上传） | `frontend/src/components/` | ☐ | — |
 | 6 | 主线 | **接通真接口**：Axios + UI 三态机（响应式版重写 Day 4 那套） | `frontend/src/views/` | ☐ | — |
 | 7 | — | 巩固：**两版并排对照** + Week 3 总复盘 + **目录重构** | — | ☐ | — |
+
+### 📚 本周学源挂载（2026-08-12 建，配合合约规则 12）
+
+> **为什么要有这张表**：学源本来散在 `LEARNING-PLAN.md` 的 §2 / §5 / §10 三处，
+> 一条都没绑到具体哪天 —— 结果 Day 2 的学源明写在 `§5:400`，教练讲了一整轮 FC 一次没提。
+> **清单不绑日子 = 没有清单。**
+
+| Day | 学源 | **只看这一节**（别扩散） | 预算 | 出处 |
+|---|---|---|---|---|
+| 2 | Anthropic `tool_use` 文档 + OpenAI function calling cookbook | 四步流程 + schema 字段说明。**跳过 streaming / parallel tool calls** | 30 min | `§5:400` |
+| 3 | cn.vitejs.dev | `server.proxy` 一节 —— 计划原话「**Week 3 第一件会撞的事**」 | 25 min | `§2:137` |
+| 4 | typescriptlang.org/docs/handbook | interface / 联合类型 / 可选 `?`。**跳过泛型、工具类型** | 40 min | `§2:139` |
+| 5 | cn.vuejs.org | 「响应式基础」`ref` vs `reactive` —— 原话「**混用是新手最大错误源**」 | 30 min | `§2:145` |
+| 6 | cn.vuejs.org + axios 文档 | 组合式 API `setup` / `computed` vs `watch`（**能用 computed 就别用 watch**） | 30 min | `§2:147` |
+| 7 | — | 无（巩固日不引入新资源） | — | — |
+
+**本月 B 级（不绑日子，找整块时间）**：
+
+- [ ] **Learn Git Branching**（learngitbranching.js.org，交互式，**1 小时**）`§2:129`
+      理由：每天在 commit，但 `§2:130` 的 12 个必会命令里 `add -p` / `rebase -i` / `reflog` / `stash` 一次没用过
+- [ ] **Attention 论文图 1**（**5 分钟**，`week2/attention.pdf` 就在仓库里）`§10:635`
+      原话「即使不读全文，也要看图 1 那张架构图」。这文件从 Day 1 当测试素材跑了几十遍，**没打开看过内容**
+
+**C 级 · 本周明确不看**：Karpathy 两个视频（1h / 4h）· fast.ai · RAG 论文 · ReAct 论文 · MCP 官方文档
+—— 分属阶段三和阶段 4（9 个月后）。现在看的下场是 `§7:552`「收藏夹一堆文章从没看过」。
+
+> ⚠️ **看完必须立刻用**（`§7:551` 的信号 1：「我看懂了这个视频」但合上就写不出代码）。
+> 判据不是「看完了」，是**当天代码里有没有一处是因为读了它才那样写的**，复盘时写出来。
+
+---
 
 ### Day 1 已经定死的三件事（Week 2 裁决过的，不是这次排的）
 
@@ -191,7 +221,25 @@ Week 2 Day 7 的实测：盲写脚本**过了**，但「我自己找出并修掉
 
 **我自己独立发现的 bug**：（← 本周新增，不能填 0。今天如果确实是 0，就如实写 0 并写一句为什么）
 
+> ⚠️ **这栏教练不代填，只能你自己填。** 代填就把「自查能力」这件事的观测量本身污染了——
+> 本周新增这栏的唯一目的就是量它（瓶颈 4「能写 ≠ 能自查」）。
+> 今天如果确实是 0，就写 0 + 一句为什么，不扣分。
+
 **我交付前验的判据**：（← 格式：跑了 X 条路径 / 判据 Y / 结果 Z。教练已核：实际走过 **7 条**）
+
+> 从 `day1_json.py` 文件头誊过来（ly 自己写的，08-12）：
+>
+> **跑了 7 条路径**　／　**判据是「输出了不同的结果」**　／　**结果**：
+> `demo_offline` 5 条 —— ① 解析成功 → validate 全通过 → `[]`　② 解析失败（except）→ 跳过 validate
+> ③ 解析成功 → validate 报类型错　④ 解析失败（except）→ 跳过 validate
+> ⑤ 解析成功但空 → validate 报两条 missing
+> `demo_api` 2 条 —— ⑥ content 为空 → 解析失败 → `["Parsing failed"]` 分支　⑦ 解析成功 → validate 返回 `[]`
+>
+> ⚠️ **教练批注**：路径数（7）是实的，判据（「输出了不同的结果」）**不合格**。
+> 「不同」不是判据——两条路径输出不同，可能是对的不同，也可能是两个都错的不同。
+> 判据必须**直接说出你期望看到的那个具体值**：比如 ③ 应写成
+> 「期望 `issues == ["wrong type for field 'count' (expected int, got str)"]`」。
+> 这正是 Day 1 出题 ② 那两问答反的同一个根：**把「跑出来了」当成了「验过了」**。
 demo_offline里的五条路径
     1. 解析成功 → validate 全通过 → []
     2. 解析失败（except）→ 跳过 validate
