@@ -198,27 +198,28 @@ def run(user_question: str, max_tokens: int = 400):
     print(f'[1] content       = {message.content !r}') 
 
     #2 模型需不需要用工具
-    if not message.tool_calls:
+    if not message.tool_calls: #情况1：没有 tool_calls 字段 / 情况2 有 tool_calls 字段 但是如果这里写为is None进行判断只能拦住情况1的这种，message.tool_calls = []会进入下面的代码
+        # None，[]，{}，''，False 都会走下方判断
         print(f"[2] 模型没开条子，直接回答了：{message.content}")
         return message.content
     
-    print(f"[2] 模型开了条子 {len(message.tool_calls)} 张条子（用了多少工具）")
+    print(f"[2] 模型开了条子 {len(message.tool_calls)} 张条子（用了多少工具）") # 情况3：真正调用了工具 
     messages.append(message) # 原样回填，一字不改
     
     #3 
     for tc in message.tool_calls:
         name = tc.function.name
         raw_args = tc.function.arguments
-        print(f"[3] name={name!r} arguments={raw_args!r} type={type(raw_args).__name__}")
+        print(f"[3] name={name!r} arguments={raw_args!r} type={type(raw_args).__name__}") #type() 用来获取对象的类型。每个类型对象都有一个属性：.__name__
         args = safe_parse(raw_args)
-        if not isinstance(args,dict):
+        if not isinstance(args,dict): # 用于判断对象是不是某种类型。
             result = {"error": f"arguments 不是合法的参数对象: {raw_args !r}"}
         else: 
             fn =TOOL_REGISTRY.get(name)
             if fn is None:
                 result ={"error": f"未注册的工具： {name}"}
             else:
-                result =fn(**args)
+                result =fn(**args) #
         messages.append({
             "role":"tool",
             "tool_call_id":tc.id,
@@ -272,8 +273,10 @@ def experiments():
 
     print("=" * 60, "\n实验 3 · arguments 被截断")
     # 我期望看到： JSONDecodeError: {e} | raw[:80] : 
-    run("悉尼现在天气怎么样？", max_tokens=30)
+    run("悉尼现在天气怎么样？", max_tokens=131)
 
+    print("=" * 30,"\n实验 4 · 调用汇率工具")
+    run("人民币和美元汇率是多少？")
 if __name__ == "__main__":
     # TODO 先跑 experiments()，一条一条来，不要一次全放开
     ...
