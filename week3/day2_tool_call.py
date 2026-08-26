@@ -90,6 +90,7 @@ EXCHANGE_TOOL = {
         "name": "get_exchange_rate",
         "description": "查询从一个国家到另一个国家的汇率",
         "parameters": {
+            "type": "object",
             "from_currency": {
                 "type": "string",
                 "description": "国家名，比如 中国、China"
