@@ -82,11 +82,28 @@ WEATHER_TOOL = {
 # ⚠️ 写完先别急着跑，回答一个问题：
 #    required 里如果漏写了 to_currency，会发生什么？
 #    （提示：schema 是「要求」还是「保证」？这跟昨天 response_format 挡不住哪两层是同一件事）
+#   能正确运行但是不能返回想要的解结果， schema 只是要求，和response_format 挡不住空的字符串一样
 EXCHANGE_TOOL = {
     # TODO
+    "type": "function",
+    "function": {
+        "name": "get_exchange_rate",
+        "description": "查询从一个国家到另一个国家的汇率",
+        "parameters": {
+            "type": "object",
+            "from_currency": {
+                "type": "string",
+                "description": "国家名，比如 中国、China"
+            },
+            "to_currency": {
+                "type": "string",
+                "description": "国家名，比如美国、USA"
+            }
+        }
+    }
 }
 
-TOOLS = [WEATHER_TOOL]  # TODO 第二个工具写完后加进来
+TOOLS = [WEATHER_TOOL, EXCHANGE_TOOL]  # TODO 第二个工具写完后加进来
 
 
 # ============================================================
@@ -96,18 +113,20 @@ TOOLS = [WEATHER_TOOL]  # TODO 第二个工具写完后加进来
 def get_weather(city: str) -> dict:
     """TODO 你来写：返回一个 dict，含 city / temp_c / condition 三个键，值写死"""
     # TODO
-
-
+    weather_dict = {'city': "china","temp_c": 30,"condition": "阴天"}
+    return weather_dict
+    
 def get_exchange_rate(from_currency: str, to_currency: str) -> dict:
     """TODO 你来写：返回一个 dict，含 from / to / rate 三个键，值写死"""
     # TODO
-
+    exchange_rate_dict = {"from": "China","to": "USA","rate":"0.3"}
 
 # 名字 → 函数对象的映射表。模型给你的是【字符串】"get_weather"，
 # 你得把字符串变成能调用的东西 —— 这张表就是干这个的。
 TOOL_REGISTRY = {
     "get_weather": get_weather,
     # TODO 第二个函数写完后加进来
+    "get_exchange_rate": get_exchange_rate
 }
 
 
@@ -121,7 +140,11 @@ TOOL_REGISTRY = {
 #      昨天那四层模型，今天原样再走一遍。
 def safe_parse(raw: str) -> dict | None:
     # TODO
-    ...
+    try:
+            return json.loads(raw)
+    except json.JSONDecodeError as e:
+            print(f"JSONDecodeError: {e} | raw[:80] : {raw[:80]!r}")
+            return None 
 
 
 # ============================================================
@@ -136,7 +159,7 @@ def run(user_question: str, max_tokens: int = 400):
                                        tools=TOOLS, max_tokens=max_tokens)
       - 打印 finish_reason —— 你会看到第三种值（以前只见过 stop / length）
       - 打印 repr(message.content) —— 猜猜是 None 还是 ''？先猜再跑
-
+    
     ┌─ 第 2 步：检查模型到底想不想用工具 ──────────────────────────
     TODO
       - ⚠️ 必须先判断 if not message.tool_calls: —— 直接写 tool_calls[0] 会崩
@@ -167,6 +190,55 @@ def run(user_question: str, max_tokens: int = 400):
     """
     messages = [{"role": "user", "content": user_question}]
     # TODO
+    #1 带着问题去问模型
+    resp1 = client.chat.completions.create(model=MODEL,messages= messages,max_tokens=max_tokens,tools=TOOLS)
+    # tools 把菜单传过去
+    message = resp1.choices[0].message
+    print(f"[1] finish_reason = {resp1.choices[0].finish_reason !r}")
+    print(f'[1] content       = {message.content !r}') 
+
+    #2 模型需不需要用工具
+    if not message.tool_calls: #情况1：没有 tool_calls 字段 / 情况2 有 tool_calls 字段 但是如果这里写为is None进行判断只能拦住情况1的这种，message.tool_calls = []会进入下面的代码
+        # None，[]，{}，''，False 都会走下方判断
+        print(f"[2] 模型没开条子，直接回答了：{message.content}")
+        return message.content
+    
+    print(f"[2] 模型开了条子 {len(message.tool_calls)} 张条子（用了多少工具）") # 情况3：真正调用了工具 
+    messages.append(message) # 原样回填，一字不改
+    
+    #3 
+    for tc in message.tool_calls:
+        name = tc.function.name
+        raw_args = tc.function.arguments
+        print(f"[3] name={name!r} arguments={raw_args!r} type={type(raw_args).__name__}") #type() 用来获取对象的类型。每个类型对象都有一个属性：.__name__
+        args = safe_parse(raw_args)
+        if not isinstance(args,dict): # 用于判断对象是不是某种类型。
+            result = {"error": f"arguments 不是合法的参数对象: {raw_args !r}"}
+        else: 
+            fn =TOOL_REGISTRY.get(name)
+            if fn is None:
+                result ={"error": f"未注册的工具： {name}"}
+            else:
+                result =fn(**args) #
+        messages.append({
+            "role":"tool",
+            "tool_call_id":tc.id,
+            "content": json.dumps(result,ensure_ascii=False)
+        })
+        
+    #4 返回结果 让模型给出答复
+    resp2 = client.chat.completions.create(
+        model=MODEL,
+        messages=messages,
+        tools=TOOLS,
+        max_tokens=max_tokens
+
+    )
+    final =resp2.choices[0].message.content
+    print(f"[4] finish_reason ={resp2.choices[0].finish_reason !r}")
+    print(f"[4] content       ={final}")
+    return final
+# 如果模型想要知道调没调用 tool ,需要再返回 tool_call_id
 
 
 # ============================================================
@@ -191,8 +263,21 @@ def experiments():
     实验 4（选做）：一句话里问两件事，看 tool_calls 是不是返回两条
     """
     # TODO
+    print("=" * 60, "\n实验 1 · 正常路径")
+    # 我期望看到：finish_reason stop，content 不为空  type dict
+    run("悉尼现在天气怎么样？")
 
+    print("=" * 60, "\n实验 2 · 模型不用工具")
+    # 我期望看到：[2] 模型没开条子，直接回答了 2 
+    run("1+1 等于几？")
 
+    print("=" * 60, "\n实验 3 · arguments 被截断")
+    # 我期望看到： JSONDecodeError: {e} | raw[:80] : 
+    run("悉尼现在天气怎么样？", max_tokens=131)
+
+    print("=" * 30,"\n实验 4 · 调用汇率工具")
+    run("人民币和美元汇率是多少？")
 if __name__ == "__main__":
     # TODO 先跑 experiments()，一条一条来，不要一次全放开
     ...
+    experiments()
