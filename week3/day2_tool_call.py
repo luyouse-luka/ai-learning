@@ -209,13 +209,14 @@ def run(user_question: str, max_tokens: int = 400):
     #3 
     for tc in message.tool_calls:
         name = tc.function.name
+
         raw_args = tc.function.arguments
         print(f"[3] name={name!r} arguments={raw_args!r} type={type(raw_args).__name__}") #type() 用来获取对象的类型。每个类型对象都有一个属性：.__name__
         args = safe_parse(raw_args)
         if not isinstance(args,dict): # 用于判断对象是不是某种类型。
             result = {"error": f"arguments 不是合法的参数对象: {raw_args !r}"}
         else: 
-            fn =TOOL_REGISTRY.get(name)
+            fn =TOOL_REGISTRY.get(name) #
             if fn is None:
                 result ={"error": f"未注册的工具： {name}"}
             else:
@@ -237,7 +238,7 @@ def run(user_question: str, max_tokens: int = 400):
     final =resp2.choices[0].message.content
     print(f"[4] finish_reason ={resp2.choices[0].finish_reason !r}")
     print(f"[4] content       ={final}")
-    return final
+    return final                      
 # 如果模型想要知道调没调用 tool ,需要再返回 tool_call_id
 
 
