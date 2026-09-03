@@ -91,14 +91,17 @@ EXCHANGE_TOOL = {
         "description": "查询从一个国家到另一个国家的汇率",
         "parameters": { # 自己写的时候实际缺少了properties 和 required两层东西
             "type": "object",
-            "from_currency": {
-                "type": "string",
-                "description": "国家名，比如 中国、China"
+            "properties": {
+                "from_currency": {
+                                "type": "string",
+                                "description": "国家名，比如 中国、China"
+                },
+                "to_currency": {
+                                "type": "string",
+                                "description": "国家名，比如美国、USA"
+                }
             },
-            "to_currency": {
-                "type": "string",
-                "description": "国家名，比如美国、USA"
-            }
+            "required": ["from_currency", "to_currency"]
         }
     }
 }
