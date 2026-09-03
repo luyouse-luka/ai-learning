@@ -302,5 +302,7 @@ async def summarize(file: UploadFile = File(...)):
 #    如果把它写在 /health 上面，请求 /health 会先被这张网捞走，
 #    然后去 static/ 里找一个叫 health 的文件，找不到 → 404。
 #    你的接口会「凭空消失」，而代码看起来一点毛病没有。
-app.mount("/", StaticFiles(directory=BASE_DIR / "static", html=True), name="static")
+app.mount("/", StaticFiles(directory=BASE_DIR / "static", html=True), name="static") 
+# FastAPI 把 static/ 文件夹(里面就是 index.html)挂在 8000 端口上。你在浏览器访问 http://127.0.0.1:8000 时,拿到的那张 HTML 页面,是 FastAPI 亲手递出来的。
     
+#完整的流程 浏览器访问http://127.0.0.1:8000 → FastAPI 发出 index.html(页面住在 8000) → 页面里 fetch('/summarize')  → 浏览器补全成 http://127.0.0.1:8000/summarize → 请求又回到 8000 —— 页面和接口同源,浏览器不拦

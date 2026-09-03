@@ -236,7 +236,7 @@ els.btn.addEventListener('click', async () => {
   fd.append("file", file); // 字段名必须是 "file"
 
   try {
-    const res = await fetch('/summarize', { // 发请求
+    const res = await fetch('/summarize', { // 发请求 注意这里只写了summarize，没写端口，这叫相对路径
       method: "POST", // POST 方法
       body: fd, // body 是 FormData
       // 这里没有headers 是故意设置的

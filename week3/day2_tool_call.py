@@ -89,7 +89,7 @@ EXCHANGE_TOOL = {
     "function": {
         "name": "get_exchange_rate",
         "description": "查询从一个国家到另一个国家的汇率",
-        "parameters": {
+        "parameters": { # 自己写的时候实际缺少了properties 和 required两层东西
             "type": "object",
             "from_currency": {
                 "type": "string",
@@ -120,6 +120,7 @@ def get_exchange_rate(from_currency: str, to_currency: str) -> dict:
     """TODO 你来写：返回一个 dict，含 from / to / rate 三个键，值写死"""
     # TODO
     exchange_rate_dict = {"from": "China","to": "USA","rate":"0.3"}
+    return exchange_rate_dict
 
 # 名字 → 函数对象的映射表。模型给你的是【字符串】"get_weather"，
 # 你得把字符串变成能调用的东西 —— 这张表就是干这个的。
@@ -210,9 +211,9 @@ def run(user_question: str, max_tokens: int = 400):
     for tc in message.tool_calls:
         name = tc.function.name
 
-        raw_args = tc.function.arguments
+        raw_args = tc.function.arguments #获取参数
         print(f"[3] name={name!r} arguments={raw_args!r} type={type(raw_args).__name__}") #type() 用来获取对象的类型。每个类型对象都有一个属性：.__name__
-        args = safe_parse(raw_args)
+        args = safe_parse(raw_args) #dict合法性检测
         if not isinstance(args,dict): # 用于判断对象是不是某种类型。
             result = {"error": f"arguments 不是合法的参数对象: {raw_args !r}"}
         else: 
@@ -220,7 +221,7 @@ def run(user_question: str, max_tokens: int = 400):
             if fn is None:
                 result ={"error": f"未注册的工具： {name}"}
             else:
-                result =fn(**args) #
+                result =fn(**args) # 比如 等价于 get_weather(city="南京")
         messages.append({
             "role":"tool",
             "tool_call_id":tc.id,
