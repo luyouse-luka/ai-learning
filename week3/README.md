@@ -45,7 +45,7 @@
 |---|---|---|---|---|---|
 | 1 | AI 线 | **①⑤ 星号验收** + **JSON 解析**（`json.loads` 三种失败）→ 引出 `response_format` | `day1_json.py` | ☑ | **0.5/3** |
 | 2 | AI 线 | **Function Calling 跑通一次**：定义 schema → 模型建议 → **你执行** → 结果塞回 | `day2_tool_call.py` | ◑ | — |
-| 3 | 主线 | **Vite 配代理**（5174 → 8000）+ 环境变量 + 别名 `@` | `frontend/vite.config.ts` | ☐ | — |
+| 3 | 主线 | **Vite 配代理**（5174 → 8000）+ 环境变量 + 别名 `@` | `frontend/vite.config.ts` | ◑ | — |
 | 4 | 主线 | **TypeScript**：给 6 字段契约建 `interface`，4 类错误码建联合类型 | `frontend/src/types/` | ☐ | — |
 | 5 | 主线 | **Vue 3 响应式**：`ref` vs `reactive` + 第一个组件（选文件 + 上传） | `frontend/src/components/` | ☐ | — |
 | 6 | 主线 | **接通真接口**：Axios + UI 三态机（响应式版重写 Day 4 那套） | `frontend/src/views/` | ☐ | — |
@@ -286,12 +286,33 @@ demo_api 2 条
 → 没有 try/except 接住 → 程序崩
 **明天开始前要复习的 1 个概念**：
 
+> 教练补填（2026-09-03）：**`{}` 空对象怎么一路闯过防线、最后崩在哪。**
+> `{}` 是合法 JSON（第 0 层过）→ 是 dict（`isinstance` 第 1 层过）→ Day 2 代码里没接 `validate`（第 2 层空着）→ `fn(**args)` 崩 `TypeError: get_weather() missing 1 required positional argument: 'city'`（第 3 层）。
+> 判据：四层模型每一层**谁在管**。下次写 FC 记得把 `validate` 接上，或者至少检查必填键。
+
 **我自己独立发现的 bug**：（← 本周新增，不能填 0）
 自己写的EXCHANGE_TOOL 忘记了type 参数
 **我交付前验的判据**：（← 本周新增，格式：跑了 X 条路径 / 判据 Y / 结果 Z）
 跑了四条路径 
 判据和结果丢失
-**今天的 Claude Code 出题得分**：__/3
+**今天的 Claude Code 出题得分**：0/3
+
+> ⚠️ 教练备注（2026-09-03）：0/3 的题目与逐题点评没有留档，下会话核对——是考过没记，还是记错。
+
+---
+
+### Day 3 · 2026-09-03 · Vite 代理 + 环境变量（进行中，未收尾）
+
+**今天做了什么**：
+- 正课：同源策略（浏览器门卫）/ Vite 代理（跑腿的中转）/ 环境变量（`VITE_` 前缀 + mode）。别名 `@` 确认已就位（vite.config.ts + tsconfig 两处都齐，脚手架自带）
+- `vite.config.ts` 代理修复：target 5174 → **8000**（初版写成了前端自己的端口），补 `changeOrigin: true`，保留 `/api` 前缀 + rewrite 剥前缀设计
+- `.env.development`：`VITE_API_BASE=/api`（填相对路径走代理；填完整地址会绕过代理直撞 CORS——正课重点）
+- `.env.example`：教练补填（环境配置属外围）
+- 口径修正：**Vite 官方惯例 `.env.development` 可进 git**——`VITE_` 前缀的变量本来就会暴露给浏览器，前端 `.env` 不该放秘密；真正含密钥的 `.env` 是仓库根那份（后端用），早已进 `.gitignore`。教练上一轮「`.env.development` 进 .gitignore」的说法作废。
+
+**欠账（下会话从这里开始）**：
+- **任务 3 验证未做**：代理通没通要用一次真实请求来证（后端 8000 起着，从 5174 发 `/api/...`），判据写期望看到的具体值
+- Day 2 复盘题佐证：得分已填 0/3，题目与点评缺留档（见 Day 2 条目末尾的教练备注）
 
 ---
 
