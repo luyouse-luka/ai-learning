@@ -51,6 +51,10 @@
 | 6 | 主线 | **接通真接口**：Axios + UI 三态机（响应式版重写 Day 4 那套） | `frontend/src/views/` | ☐ | — |
 | 7 | — | 巩固：**两版并排对照** + Week 3 总复盘 + **目录重构** | — | ☐ | — |
 
+> **Day 4 调整（2026-09-08）**：4.3 的 `ValidationIssue` 砍掉，`ApiError` 简化为 `detail?: string`。
+> 原因：该类型现阶段无真实使用处，ly 连续多轮不懂——概念要跟着使用处走，
+> 422 的 detail 数组形状移到 Day 6 写错误 UI 时再讲。教训：骨架任务不能超过原计划的「interface + 联合类型」。
+
 ### 📚 本周学源挂载（2026-08-12 建，配合合约规则 12）
 
 > **为什么要有这张表**：学源本来散在 `LEARNING-PLAN.md` 的 §2 / §5 / §10 三处，
@@ -157,9 +161,13 @@ Week 2 Day 7 的实测：盲写脚本**过了**，但「我自己找出并修掉
 
 ## 环境约定
 
-- **Python 脚本在服务器跑**，venv：`../week1/venv`（Python 3.10）
-- **前端**：`week3/frontend/`，Node **v24.19.0**（nvm）+ pnpm **11.20.0**，`pnpm dev` 起在 **5174**
-  （5173 被本机别人的服务占了）
+- **后端改在本地跑**（2026-09-08 Day 4 由 ly 拍板，不再依赖 SSH 隧道）：
+  venv `C:\Users\dell\.venvs\pdf-summarize`（Python 3.13，放项目外避开 unison 同步），
+  仓库根下 `& .venvs\pdf-summarize\Scripts\python.exe -m uvicorn week2.api.main:app --port 8000`
+  （服务器 venv `week1/venv` 仍在，可作备选；SSH 隧道方案保留但不默认）
+- **前端**：`week3/frontend/`，pnpm **11.20.0**（npm i -g 装的，corepack 缓存有 .cjs/.mjs 入口错配已弃用），
+  `pnpm dev` 起在 **5174**——已写死进 `vite.config.ts` 的 `server.port`
+  （nvm 实测 Node v24.0.2，与早期记录 24.19.0 不符；engine 有 WARN 不影响运行）
 - **后端**：`week2/api/main.py`，只监听 `127.0.0.1:8000`
 - ⚠️ **前端用 pnpm，别混 npm** —— lock 文件不兼容
 
@@ -314,8 +322,32 @@ demo_api 2 条
 - **任务 3 验证未做**：代理通没通要用一次真实请求来证（后端 8000 起着，从 5174 发 `/api/...`），判据写期望看到的具体值
 - Day 2 复盘题佐证：得分已填 0/3，题目与点评缺留档（见 Day 2 条目末尾的教练备注）
 
+**今天踩坑**
+- 同源策略比的是协议（scheme）、域名（host）、端口（port），三个只要有一个不同就是跨域
 ---
 
+### Day 4 · 2026-09-10
+
+**今天学到的最关键 1 件事**：
+学习TS的三个概念 interface，联合类型，可选字段 ？
+
+**最难的点 / 卡了多久**：
+interface： 约定类型
+联合类型： 即 A|B，值是A类型或者B类型 都会通过检查
+可选字段 ？： 如果用？进行标记，类型自动变成 T | undefined。interface User { name: string; nickname?: string }。{ name: "ly" } ✅；{ name: "ly", nickname: "luka" } 也 ✅
+
+
+
+
+**踩的坑**：
+
+**明天开始前要复习的 1 个概念**：
+
+**我自己独立发现的 bug**：（← 本周新增，不能填 0）
+
+**我交付前验的判据**：（← 本周新增，格式：跑了 X 条路径 / 判据 Y / 结果 Z）
+
+**今天的 Claude Code 出题得分**：__/3
 ## Week 3 结束自检（Day 7 填）
 
 - [ ] 能让模型稳定吐出合法 JSON，并在**解析失败时不崩**（← Week 2 ④ 的欠账，本周必须实掉）
