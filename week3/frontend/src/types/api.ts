@@ -9,7 +9,7 @@
 //   ⚠️ 6 个字段后端全必填 —— 这里一个 ? 都不许出现
 // ---------------------------------------------------------------
 export interface SummarizeResponse {
-  // 在这里填 6 行字段（字段名必须与后端逐字一致）
+  // 在这里填 6 行字段（字段名与后端逐字一致；只是类型写法不同：str→string、int/float→number）
   summary: string;
   truncated: boolean;
   input_tokens: number;

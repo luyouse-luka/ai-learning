@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { RouterLink, RouterView } from 'vue-router'
 import HelloWorld from './components/HelloWorld.vue'
+import FileUploader from './components/FileUploader.vue'
 </script>
 
 <template>
@@ -16,7 +17,7 @@ import HelloWorld from './components/HelloWorld.vue'
       </nav>
     </div>
   </header>
-
+  <FileUploader />
   <RouterView />
 </template>
 
