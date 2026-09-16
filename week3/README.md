@@ -47,7 +47,7 @@
 | 2 | AI 线 | **Function Calling 跑通一次**：定义 schema → 模型建议 → **你执行** → 结果塞回 | `day2_tool_call.py` | ☑ | **0/3** |
 | 3 | 主线 | **Vite 配代理**（5174 → 8000）+ 环境变量 + 别名 `@` | `frontend/vite.config.ts` | ☑ | —（当天未出题） |
 | 4 | 主线 | **TypeScript**：给 6 字段契约建 `interface`，4 类错误码建联合类型 | `frontend/src/types/` | ☑ | **0.5/3** |
-| 5 | 主线 | **Vue 3 响应式**：`ref` vs `reactive` + 第一个组件（选文件 + 上传） | `frontend/src/components/FileUploader.vue` | ◑ | — |
+| 5 | 主线 | **Vue 3 响应式**：`ref` vs `reactive` + 第一个组件（选文件 + 上传） | `frontend/src/components/FileUploader.vue` | ☑ | **2/3** |
 | 6 | 主线 | **接通真接口**：Axios + UI 三态机（响应式版重写 Day 4 那套） | `frontend/src/views/` | ☐ | — |
 | 7 | — | 巩固：**两版并排对照** + Week 3 总复盘 + **目录重构** | — | ☐ | — |
 
@@ -487,12 +487,43 @@ OpenAPI 是一套描述 HTTP 接口的规范（一个 JSON/YAML 格式，规定�
 
 **明天开始前要复习的 1 个概念**：
 
+> 教练指定（09-16）：**「解包 unwrap」≠「解构 destructure」。**
+> 第 1 题答成了「模板里自动解构」。这两个词在 Vue 里指相反的两件事：
+> - **解包**：Vue 编译模板时替你补 `.value`（顶层 ref 才有，嵌套在普通对象里的不解包）——Vue 送的好事
+> - **解构**：`const { a } = obj` 这个 JS 语法——**会丢响应性的坑**，正课 reactive 坑 3、5.7 Q2 讲的都是它
+>
+> 用同一个词指代两者，将来写出 `const { selectedFile } = props` 出问题时，
+> 回头查笔记查不到——笔记里「解构」是好的那个意思。
+
 **我自己独立发现的 bug**：（← 本周新增，不能填 0）
 
 **我交付前验的判据**：（← 本周新增，格式：跑了 X 条路径 / 判据 Y / 结果 Z）
 
-**今天的 Claude Code 出题得分**：　/3
-> 考完**当场**把三道题原文粘进本栏，不隔会话（Day 2 与 Day 4 连续两次没留档）。
+**今天的 Claude Code 出题得分**：**2/3**（本周最高，前三次为 0.5 / 0 / 0.5）
+
+> 题目原文与逐题点评（09-16 当场落盘，不隔会话）：
+>
+> **Q1**（0.5）模板写 `:disabled="!selectedFile || isUploading"` 不带 `.value`，
+> `handleSubmit` 里写 `selectedFile.value` 带 `.value`，为什么？
+> 答：「模板里自动**解构**」——机制对、**术语错**。正确是**解包 unwrap**，见上方「明天复习的概念」。
+>
+> **Q2**（1）`handleSubmit` 的 else 分支设 `errorMsg='No file selected'`，
+> 而按钮有 `:disabled="!selectedFile || isUploading"`。这行文案用户看得到吗？
+> 答：「不能，disabled 兜住了」——**对**。未说出的后果：**那个 else 是死代码，永不可达**
+> （本周主线「函数写了 ≠ 被调用」的又一实例）。注意 `errorMsg` 本身不死，Day 6 接真接口后
+> 413/502 都要写它；死的只是 `'No file selected'` 这一支。
+> **待 ly 拍板**：A 删掉 else ｜ B 去掉 `!selectedFile` 那半个 disabled，改由函数内校验并显示原因
+> （disabled 的按钮不会告诉任何人为什么不能点，无障碍上 B 更好）。教练未代改。
+>
+> **Q3**（0.5）删掉 `?? null` 后 type-check 会不会报错？哪两个类型对不上？
+> 答：「会报错，`selectedFile.value` 是 `File | null`」——只答了**左边**，漏了右边。
+> 实跑（删掉 `?? null` 后 `pnpm type-check`，跑完已还原）：
+> `error TS2322: Type 'File | undefined' is not assignable to type 'File | {...}'.`
+> `  Type 'undefined' is not assignable to ...`
+> 右边 `input.files?.[0]` 是 **`File | undefined`**。核心：**`undefined` 与 `null` 是两个类型，
+> 不能互相赋值**。`?? null` 不是"保险起见"，是把 undefined 翻译成 null 的**类型转换**。
+>
+> **丢分形状**：两处都不是不会，是**不够精确**——Q1 机制对词错，Q3 方向对只说一边。
 
 ---
 
