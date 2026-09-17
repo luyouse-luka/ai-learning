@@ -1,30 +1,56 @@
 <script setup lang="ts">
-// Day 5 · 第一个组件：选文件 + 上传按钮
-// 今天只做「选」和「点」，真正发请求是 Day 6（Axios + UI 三态机）
-// Day 4 的契约类型在 @/types/api.ts，今天用不上，Day 6 接上
+// Day 5 · 第一个组件：选文件 + 上传按钮          ← 已完成
+// Day 6 · 接通真接口：Axios + UI 三态机          ← 今天
+//
+// 今天不搬家：文件仍留在 components/，Day 7 目录重构时再一起挪。
+// 现在搬会把 Day 5 复盘里的所有文件引用打断，换来的只是"位置好看"。
 
 // ---------------------------------------------------------------
-// TODO【5.1】从 vue 引入 ref
-//   一行 import。只引 ref，不要引 reactive —— 今天三个状态没有一个适合 reactive
+// TODO【6.1】import（外围，直接给，不是考点）
+//   axios 已装好（1.20.0，教练装的）。你要引三样：
+//     ① ref、computed        ← 从 'vue'
+//     ② axios                ← 默认导出
+//     ③ SummarizeResponse    ← 从 '@/types/api'（Day 4 你自己写的那份，今天开始用它）
+//   ⚠️ 类型只在编译期存在，引它用 `import type { ... }`
 // ---------------------------------------------------------------
 import { ref } from 'vue'
 
 // ---------------------------------------------------------------
-// TODO【5.2】三个响应式状态，各一行
-//   selectedFile : 选中的文件，没选时是 null  → 类型标注 ref<File | null>(null)
-//   isUploading  : 是否正在上传（今天不会真变 true，先建出来给 Day 6 用）
-//   errorMsg     : 给用户看的错误文案，没错时是空串
-//   ⚠️ script 里读写这三个必须带 .value；模板里不带（自动解包）
+// Day 5 的三个状态（保留）
 // ---------------------------------------------------------------
 const selectedFile = ref<File | null>(null)
-const isUploading = ref(false)
 const errorMsg = ref('')
 
 // ---------------------------------------------------------------
-// TODO【5.3】handleFileChange(e: Event)
-//   file input 用不了 v-model（它的 value 是只读的），只能在 change 事件里读
-//   步骤：① e.target 断言成 HTMLInputElement ② 取 .files?.[0] ③ 写进 5.2 的状态
-//   ⚠️ 用户点了「取消」时 files 是空的，这时该存 null，不是 undefined
+// TODO【6.2】把 isUploading 升级成三态（Day 5 的 isUploading 已删，这里重建）
+//   原生版 index.html 用的是 setState('idle'|'loading'|'done'|'error')
+//   Vue 版不需要那个函数，只需要一个 ref 装住当前状态。
+//   ⚠️ 类型写成字面量联合类型（Day 4 学的联合类型，这次是字符串字面量）：
+//      ref<'idle' | 'loading' | 'done' | 'error'>('idle')
+//   这样拼错 'lodaing' 时 TS 当场报错，而不是运行时界面卡住
+// ---------------------------------------------------------------
+
+
+// ---------------------------------------------------------------
+// TODO【6.3】结果状态
+//   成功时后端返回 6 个字段 —— 你 Day 4 已经给它写过 interface 了。
+//   没结果时是 null，所以类型是 `SummarizeResponse | null`
+//   ⚠️ 这里不许写 any。写了 any，Day 4 那个文件整天白写
+// ---------------------------------------------------------------
+
+
+// ---------------------------------------------------------------
+// TODO【6.4】canSubmit —— 今天 computed 的落点
+//   Day 5 你把判断写在模板里：:disabled="!selectedFile || isUploading"
+//   今天状态变多了，模板里那行会长到读不懂。抽出来：
+//     const canSubmit = computed(() => ???)
+//   条件：选了文件 且 不在 loading
+//   ⚠️ computed 返回的是 ref，script 里读它要 .value；模板里不要
+// ---------------------------------------------------------------
+
+
+// ---------------------------------------------------------------
+// Day 5 的 handleFileChange（保留，但有一处要补 —— 见 6.5 的 ⚠️）
 // ---------------------------------------------------------------
 function handleFileChange(e: Event) {
   const input = e.target as HTMLInputElement
@@ -32,28 +58,22 @@ function handleFileChange(e: Event) {
 }
 
 // ---------------------------------------------------------------
-// TODO【5.7】读了学源才答得出的一题（09-10 新增，正课**故意没讲**）
-//   把答案直接写在下面这两行注释后面，写完再往下做 5.4。
+// TODO【6.5】handleSubmit —— 今天的主干
+//   顺序（原生版 index.html【C】区是同一套，可以对着看）：
+//     ① 进 loading，清掉上一次的 errorMsg 和 result
+//     ② 造 FormData，append 的字段名必须是 "file"
+//        （出处：后端 main.py `async def summarize(file: UploadFile...)` 的参数名）
+//     ③ await axios.post(接口地址, fd)
+//     ④ 成功 → 结果写进 6.3，状态进 'done'
+//     ⑤ 失败 → 交给 6.6，状态进 'error'
 //
-//   const state = reactive({ n: ref(0) })
-//   Q1: 在 script 里读这个 n，写 state.n 还是 state.n.value ？  答：
-//   应写 state.n
-//   const arr = reactive([ ref(0) ])
-//   Q2: 在 script 里读第一个元素，写 arr[0] 还是 arr[0].value ？答：
-//  应写 arr[0].value
-//   Q3: 两个答案如果不一样，为什么？一句话。                    答：
-//  因为 reactive 对象的属性会解包 ref，而数组元素不会解包 ref
-
-//   出处：cn.vuejs.org「响应式基础」这一页**末尾**那段讲 ref 解包细节的小节
-//        （ref 作为 reactive 对象属性时会怎样 + 数组/Map 的例外）。
-//   ⚠️ 这三问在今天正课里一个字没提 —— 答不出就是没读，别猜。
-// ---------------------------------------------------------------
-
-
-// ---------------------------------------------------------------
-// TODO【5.4】handleSubmit()
-//   今天不发请求。只 console.log 出选中的文件名
-//   目的：证明「点按钮 → 读到了 5.2 的状态」这条链路是通的
+//   接口地址不要写死 'http://127.0.0.1:8000/summarize'：
+//     Day 3 你配了代理、Day 3 你写了 .env.development 的 VITE_API_BASE=/api
+//     读法 → import.meta.env.VITE_API_BASE
+//   ⚠️ 不要自己设 Content-Type。浏览器会带 boundary 自动填，手写就 422
+//      （Week 2 Day 4 速查表里的原话，这次同样成立）
+//   ⚠️ 上一次的结果必须在 ① 就清掉 —— 不清的话，用户会对着上一个 PDF 的
+//      总结以为是这一个的。原生版【A】区那 4 行"先清"就是干这个的
 // ---------------------------------------------------------------
 const handleSubmit = () => {
   errorMsg.value = '' // 每次点击先清掉上一次的错误，避免文案一直挂着
@@ -61,24 +81,80 @@ const handleSubmit = () => {
     console.log(selectedFile.value.name)
   } else {
     errorMsg.value = 'No file selected'
+    // ⚠️⚠️ 昨天 Q2 的账，今天必须结：这个 else 是死代码（按钮被 disabled 兜住了）
+    //   A = 删掉 else   ｜   B = 去掉 disabled 里 `!selectedFile` 那半个，
+    //                        改由函数内校验并把原因显示出来
+    //   拍板后按你选的那个改，并在 README 复盘里记一行理由
   }
 }
+
+// ---------------------------------------------------------------
+// TODO【6.6】toUserMessage(err) —— 错误分类，今天的第二个核心
+//   axios 和 fetch 在这里行为相反（正课讲过）：4xx/5xx 也会进 catch。
+//   所以 catch 里第一件事不是看 status，是先问：
+//
+//       err.response 在不在？
+//         在   → 服务器回话了，按 err.response.status 分类（Day 4 那 7 个码）
+//         不在 → 网络层：后端没起 / 隧道断了 / 超时
+//
+//   每一类给用户看什么，判据是一句话（原生版【D】区的原话）：
+//       「用户看完这句，知道下一步该干什么吗？」
+//       "Error 413" ❌   "文件 14.2 MB，超过 10 MB 上限，请换一个" ✅
+//   ⚠️ 500 是特例：后端的 detail 是给你看的，不该原样丢给用户（想想为什么）
+//   ⚠️ 422 的 detail 是**数组**不是字符串。真实形状（09-10 实跑，不是 /docs 的示例值）：
+//       {"detail":[{"type":"missing","loc":["body","file"],"msg":"Field required","input":null}]}
+//      取文案要从数组里挑，直接 textContent 会显示 [object Object]
+// ---------------------------------------------------------------
+
+
+// ---------------------------------------------------------------
+// TODO【6.8】读了学源才答得出的一题（正课**故意没讲**，答不出就是没读）
+//   把答案写在每问后面，写完再往下做 6.7。
+//
+//   Q1: computed 和 methods（普通函数）都能算出同一个值。
+//       官方文档明说了 computed 有一个 methods 没有的特性，是什么？一个词。
+//       答：
+//
+//   Q2: 下面这个 computed 有什么问题？一句话。
+//         const list = computed(() => { fetchData(); return items.value })
+//       答：
+//
+//   Q3: 「能用 computed 就别用 watch」—— 那什么时候**必须**用 watch？
+//       用你自己的话说一句，不要抄标题。
+//       答：
+//
+//   出处：cn.vuejs.org「计算属性」整节 + 「侦听器」开头两节
+// ---------------------------------------------------------------
+
 </script>
 
 <template>
-  <!-- TODO【5.5】三个元素，都在这里：
-       ① <input type="file" accept="application/pdf">  用 @change 绑 5.3
-       ② <button>上传</button>                          用 @click 绑 5.4
-                                                        用 :disabled 绑「没选文件 或 正在上传」
-       ③ <p> 显示 errorMsg                              用 v-if 让没错时根本不渲染
-       ⚠️ 模板里写状态名不加 .value -->
-       <input type="file" accept="application/pdf" @change="handleFileChange" />
-       <button @click="handleSubmit" :disabled="!selectedFile || isUploading">上传</button>
-       <p v-if="errorMsg">{{ errorMsg }}</p>
+  <!-- Day 5 的三个元素（保留） -->
+  <input type="file" accept="application/pdf" @change="handleFileChange" />
+  <button @click="handleSubmit" :disabled="!selectedFile">上传</button>
+  <p v-if="errorMsg">{{ errorMsg }}</p>
+
+  <!-- ---------------------------------------------------------------
+       TODO【6.7】模板三态 + 结果
+       原生版是 6 个 DOM 属性手动开关（setState 那 20 行）；
+       这里只写"什么状态显示什么"，剩下的 Vue 自己做。
+
+       要有四处：
+         ① 按钮：disabled 绑 6.4 的 canSubmit（取反）；文字随状态变
+            （idle「上传」／ loading「生成中…」／ error「重试」）
+         ② loading 提示：v-if 绑 status === 'loading'
+         ③ 错误块：v-if 绑 status === 'error'，显示 6.6 算出来的文案
+         ④ 结果块：v-if 绑 status === 'done'，里面：
+              - summary（注意换行要保住：white-space: pre-wrap）
+              - input_tokens / output_tokens / cost / model 四个数
+              - truncated 为 true 时**多一块警告**，false 时那块根本不存在
+                ⚠️ 这不是"显示一个值"，是"条件显示"——Week 2 你在这栽过
+         ⚠️ v-if 和 v-show 今天选 v-if。理由自己想，Day 7 我会问
+       --------------------------------------------------------------- -->
 </template>
 
 <style scoped>
-
-/* TODO【5.6】能看清就行，样式不是今天的考点 */
-
+/* TODO【6.9】能看清就行，样式不是考点。
+   只有一条是功能性的：summary 那块要 white-space: pre-wrap，
+   不然后端返回的换行会全被压成一行 */
 </style>
