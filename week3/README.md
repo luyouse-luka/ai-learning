@@ -48,7 +48,7 @@
 | 3 | 主线 | **Vite 配代理**（5174 → 8000）+ 环境变量 + 别名 `@` | `frontend/vite.config.ts` | ☑ | —（当天未出题） |
 | 4 | 主线 | **TypeScript**：给 6 字段契约建 `interface`，4 类错误码建联合类型 | `frontend/src/types/` | ☑ | **0.5/3** |
 | 5 | 主线 | **Vue 3 响应式**：`ref` vs `reactive` + 第一个组件（选文件 + 上传） | `frontend/src/components/FileUploader.vue` | ☑ | **2/3** |
-| 6 | 主线 | **接通真接口**：Axios + UI 三态机（响应式版重写 Day 4 那套） | `frontend/src/views/` | ☐ | — |
+| 6 | 主线 | **接通真接口**：Axios + UI 三态机（响应式版重写 Day 4 那套） | `components/FileUploader.vue`（⚠ 不是 `views/`，偏离见下） | ☑ | 推到 Day 7 |
 | 7 | — | 巩固：**两版并排对照** + Week 3 总复盘 + **目录重构** | — | ☐ | — |
 
 > **Day 4 调整（2026-09-08）**：4.3 的 `ValidationIssue` 砍掉，`ApiError` 简化为 `detail?: string`。
@@ -66,9 +66,17 @@
 | 2 | Anthropic `tool_use` 文档 + OpenAI function calling cookbook | 四步流程 + schema 字段说明。**跳过 streaming / parallel tool calls** | 30 min | `§5:400` | ❌ |
 | 3 | cn.vitejs.dev | `server.proxy` 一节 —— 计划原话「**Week 3 第一件会撞的事**」 | 25 min | `§2:137` | ❌ |
 | 4 | typescriptlang.org/docs/handbook | interface / 联合类型 / 可选 `?`。**跳过泛型、工具类型** | 40 min | `§2:139` | ❌ |
-| 5 | cn.vuejs.org | 「响应式基础」`ref` vs `reactive` —— 原话「**混用是新手最大错误源**」 | 30 min | `§2:145` | ☐ |
-| 6 | cn.vuejs.org + axios 文档 | 组合式 API `setup` / `computed` vs `watch`（**能用 computed 就别用 watch**） | 30 min | `§2:147` | ☐ |
+| 5 | cn.vuejs.org | 「响应式基础」`ref` vs `reactive` —— 原话「**混用是新手最大错误源**」 | 30 min | `§2:145` | **◑** |
+| 6 | cn.vuejs.org + axios 文档 | 组合式 API `setup` / `computed` vs `watch`（**能用 computed 就别用 watch**） | 30 min | `§2:147` | **◑** |
 | 7 | — | 无（巩固日不引入新资源） | — | — | — |
+
+> **◑ = 读了、闸门题过了，但落地只兑现一半**（09-17 新增这一档）：
+> **Day 5** 【5.7】三问全对（含「reactive 对象属性解包 ref、数组元素不解包」这条细节，**建表以来第一次**），
+> 但复盘的「哪一行代码因为读了它才那样写」当天空着。
+> **Day 6** 【6.8】三问全对，computed 那节真落地了（`canSubmit` / `buttonText`）；
+> **但 axios「Handling Errors」那节落地是负的** —— 那节讲的正是 `error.response` 在不在的区分，
+> 读完却把 `case 502` 和 `else` 写成同一句「网络异常」，分叉在代码里建了、在文案上又合并了。
+> **读了 ≠ 落地；落地的判据是代码，不是回忆。**
 
 > **❌ = 无任何落地记录**（ly 09-10 自报：建表以来一次没读过，只做 TODO）。
 > Day 3 的代价是具体的：`server.proxy` 那一节第一个示例就是 `target: 'http://localhost:4567'`
@@ -580,6 +588,14 @@ try {
 
 **明天开始前要复习的 1 个概念**：
 
+> 教练指定（09-17）：**错误处理有两个受众，一句话喂不饱两个人。**
+> - **用户**要的是「我下一步该干什么」→ `errorMsg`：不出现状态码、不出现后端内部原话
+> - **你**要的是「哪一行出的、上游原话是什么」→ `console.error`：必须完整，
+>   且必须放在**所有分支都会流经**的位置（放进 `default` 就漏掉了所有已有 `case` 的码）
+>
+> **判据：两个不同的故障如果显示同一句话，那区分它们的那个 `if` 就是死的。**
+> 现在 `case 502` 与 `else` 都返回「网络异常，请检查后重试」，`if (err.response)` 对 502 不产生任何可观测差别。
+
 **我自己独立发现的 bug**：（← 本周新增，不能填 0）
 1. (selectedFile.value) else if 没有return，
 2. button 中的button text 抽取赋值，写死了在模板里
@@ -588,8 +604,72 @@ try {
 跑了2条路径 
 1. 报502错误，后端max-token限制导致被截断内容为空 
 2. 跑通路径能显示结果
-**今天的 Claude Code 出题得分**：　/3
+**今天的 Claude Code 出题得分**：**推到 Day 7 一起出**（09-17 ly 拍板）
 > 考完**当场**把三道题原文粘进本栏，不隔会话（Day 2 与 Day 4 连续两次没留档）。
+
+---
+
+#### 教练备注（Day 6 · 09-17）
+
+**① 「我自己独立发现的 bug」逐条核实 —— 记 1 条，本周开张**
+
+- 第 1 条 **成立**。`return` 出现在 `a8e75a8`，**教练 review 之前**的版本；骨架的 TODO 只给了 Q2 的 A/B 两个选项，
+  正课讲【6.5】时也一个字没提 `return`。commit 里自带理由「否则会带着 null 继续往下发请求」。
+- 第 2 条 **不成立**。「按钮文字永远是上传」是教练在 `a8e75a8` 那轮 review 里指出的，不能记在本栏。
+
+**② 「交付前验的判据」判不合格**
+
+本周硬要求原文是「**判据必须写出期望看到的那个具体值**」。写的「跑通路径能显示结果」= 「输出了不同的结果」的同义改写，
+**没有任何一个具体值**，三天后回头看不知道当时看到了什么。合格形态：
+
+```
+路径 1：传 attention.pdf
+  判据 = HTTP 200 且页面出现 summary、cost 显示 $0.0016、truncated 警告不出现
+  结果 = ?
+```
+
+另外只跑了 2 条。至少还有 2 条没跑：不选文件直接点（422）、**把后端停掉再点**（`err.response === undefined` 走 else）。
+最后这条尤其该跑 —— 它和 502 现在显示的是同一句话，两条路径连着跑一遍就会看见问题。
+
+**③ Day 6 的排期偏离：文件没进 `frontend/src/views/`**
+
+7 天表原写的是 `views/`，实际做在 `components/FileUploader.vue`。**刻意不搬**：搬家属 Day 7 的目录重构，
+今天搬会打断 Day 5 复盘里的全部文件引用，换来的只是「位置好看」。Day 7 重构时一并处理。
+
+**④ 502 实战：`MAX_OUTPUT_TOKENS` 被推理 token 吃光（教练实测，六周后还会用到）**
+
+前端点上传直接 502，两小时没定位到。根因**不在前端** —— 服务器上用 curl 打同一个接口同样 502，
+`detail` 写着「上游返回了空内容」，是三个 502 触发点里的第三个。再往上游探，拿到硬数据（`attention.pdf`，正文 39612 字符）：
+
+| max_tokens | finish_reason | completion | reasoning | 正式回答 | 结果 |
+|---|---|---|---|---|---|
+| 500 | **length** | 499 | **499** | **0 tok / 0 字符** | 后端 502 |
+| 1500 | stop | 855 | 697 | 158 tok / 292 字符 | 200 |
+| 3000 | stop | 829 | 631 | 198 tok / 353 字符 | 200 |
+
+**`max_tokens` 卡的是 `reasoning_tokens + 正式回答` 之和，推理先跑。** 推理写满 500，正式回答一个 token 都没剩下。
+
+⚠️ **真正的坑是它会漂移**：同一个文件 08-05（Day 3）实测 349 out **成功**，`MAX_OUTPUT_TOKENS = 500` 自建服务起一行没改过
+（`git log -L` 查过）。变的是上游 —— 推理占比从 Day 2 的 48% 涨到短输入 84% / 长输入 100%。
+**写死的上限不会变，模型的行为会变；而且它不报错。**
+
+改成 1500 后教练实测：HTTP 200 / `output_tokens=696` / `truncated=False` / `cost=$0.00162` —— 696 早越过 500，离 1500 仍有余量。
+
+**正面记一条**：Day 5 亲手补的「空 summary → 502」那个护栏，今天救了自己。没有它，今天的表现会是
+**HTTP 200 + 一个空白结果页**，会去查 Vue 查一整晚。这是「**没报错 ≠ 有结果**」的原型，而它被提前防住了。
+
+⚠️ 服务器 8000 端口那个 8 月 7 日起的 uvicorn 进程还活着，**它加载的是 `MAX_OUTPUT_TOKENS=500` 的旧代码**——
+改文件改不了已跑起来的进程。要杀按端口取 PID，别用 `pgrep -f uvicorn`（会匹配到工具自身，实测自杀过）。
+
+**⑤ 结转 Day 7 的两条代码遗留**（教练指出、尚未改）
+
+1. `case 502` 与 `else` 返回同一句「网络异常」——502 是「后端活着、上游挂了」，让用户去查 WiFi 是甩错锅；
+   建议「服务暂时不可用，请稍后重试」（对空内容 / 限流 / 连不上模型三种都成立）
+2. `console.error` 在 `default` 里 —— 502 在 `case 502` 就 return 了，**这行日志对今天唯一栽过的码不生效**。
+   位置该在 `switch` 之前。原生版 `index.html`【D】区这两点都是对的，Day 7 两版对照正好拿它当参照
+
+判据留档：`pnpm type-check` 通过；`pnpm exec eslint` 从 3 个 error 降到 1 个（只剩 `toUserMessage(err: any)`）。
+**`type-check` 和 `lint` 是两条不同的检查**，Day 6 只跑了前者。
 
 ---
 
