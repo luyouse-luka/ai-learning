@@ -13,7 +13,7 @@
 //     ③ SummarizeResponse    ← 从 '@/types/api'（Day 4 你自己写的那份，今天开始用它）
 //   ⚠️ 类型只在编译期存在，引它用 `import type { ... }`
 // ---------------------------------------------------------------
-import { ref , computed } from 'vue'
+import { ref, computed } from 'vue'
 import axios from 'axios'
 import type { SummarizeResponse } from '@/types/api'
 
@@ -22,7 +22,6 @@ import type { SummarizeResponse } from '@/types/api'
 // ---------------------------------------------------------------
 const selectedFile = ref<File | null>(null) // ts 泛型 只准装 File 或 null，别装别的 默认值（null）
 const errorMsg = ref('')
-const isUploading = ref(false) // Day 5 的 isUploading，今天要升级成三态机
 // ---------------------------------------------------------------
 // TODO【6.2】把 isUploading 升级成三态（Day 5 的 isUploading 已删，这里重建）
 //   原生版 index.html 用的是 setState('idle'|'loading'|'done'|'error')
@@ -50,7 +49,8 @@ const result = ref<SummarizeResponse | null>(null)
 //   条件：选了文件 且 不在 loading
 //   ⚠️ computed 返回的是 ref，script 里读它要 .value；模板里不要
 // ---------------------------------------------------------------
-const canSubmit = computed(()=> selectedFile.value !== null && status.value !== 'loading')
+// 拍板 B（09-17）：不再因「没选文件」禁用按钮，改由 handleSubmit 校验并显示原因
+const canSubmit = computed(() => status.value !== 'loading')
 
 // ---------------------------------------------------------------
 // Day 5 的 handleFileChange（保留，但有一处要补 —— 见 6.5 的 ⚠️）
@@ -83,12 +83,10 @@ const handleSubmit = () => {
   if (selectedFile.value) {
     console.log(selectedFile.value.name)
   } else {
+    // 拍板 B（09-17）：按钮不再因「没选文件」而禁用，校验挪进这里。
+    // 所以这个分支不再是死代码，也必须要 return —— 否则会带着 null 继续往下发请求。
     errorMsg.value = 'No file selected'
-    // ⚠️⚠️ 昨天 Q2 的账，今天必须结：这个 else 是死代码（按钮被 disabled 兜住了）
-    //   A = 删掉 else   ｜   B = 去掉 disabled 里 `!selectedFile` 那半个，
-    //                        改由函数内校验并把原因显示出来
-    //   拍板后按你选的那个改，并在 README 复盘里记一行理由
-    //  已删除 模板中的 `!selectedFile`，改由函数内校验并把原因显示出来 
+    status.value = 'error' // 状态得进 error，模板的错误块才显示得出来
     return
   }
   status.value = 'loading' // ① 进 loading
@@ -96,11 +94,11 @@ const handleSubmit = () => {
   const formData = new FormData() // ② 造 FormData
   formData.append('file', selectedFile.value as File) // ② append 的字段
   axios.post(`${import.meta.env.VITE_API_BASE}/summarize`, formData) // ③  axios.post
-    .then((response)=> {
+    .then((response) => {
       result.value = response.data // 成功 写进result 
       status.value = 'done' // 状态进 'done'
     })
-    .catch((err)=> {
+    .catch((err) => {
       errorMsg.value = toUserMessage(err) // 失败 交给6.6
       status.value = 'error' // 状态进 'error'
     })
@@ -124,16 +122,16 @@ const handleSubmit = () => {
 //      取文案要从数组里挑，直接 textContent 会显示 [object Object]
 // ---------------------------------------------------------------
 function toUserMessage(err: any): string {
-  if(err.response) {
-    switch(err.response.status){
+  if (err.response) {
+    switch (err.response.status) {
       case 400:
         return `文件 ${selectedFile.value?.name} 不是 PDF，请换一个`
       case 413:
-        return `文件 ${selectedFile.value?.size} 字节，超过 10 MB 上限，请换一个`
+        return `文件 ${((selectedFile.value?.size || 0) / (1024 * 1024)).toFixed(1)} MB，超过 10 MB 上限，请换一个`
       case 422:
         return `文件 ${err.response.data.detail[0].msg}，请换一个`
       case 500:
-        return `文件 ${err.response.data.detail},请截图发给教练`
+        return ` 服务器内部错误，请截图发给教练 `
       default:
         return `未知错误 ${err.response.status}，请截图发给教练`
     }
@@ -141,7 +139,18 @@ function toUserMessage(err: any): string {
     return `网络异常，请检查后重试`
   }
 }
-
+const buttonText = computed(() => {
+  switch (status.value) {
+    case 'idle':
+      return '上传'
+    case 'loading':
+      return '生成中…'
+    case 'error':
+      return '重试'
+    case 'done':
+      return '上传'
+  }
+})
 // ---------------------------------------------------------------
 // TODO【6.8】读了学源才答得出的一题（正课**故意没讲**，答不出就是没读）
 //   把答案写在每问后面，写完再往下做 6.7。
@@ -166,9 +175,7 @@ function toUserMessage(err: any): string {
 <template>
   <!-- Day 5 的三个元素（保留） -->
   <input type="file" accept="application/pdf" @change="handleFileChange" />
-  <button @click="handleSubmit" >上传</button>
-  <p v-if="errorMsg">{{ errorMsg }}</p>
-
+  <button @click="handleSubmit"  :disabled="!canSubmit">{{ buttonText }}</button>
   <!-- ---------------------------------------------------------------
        TODO【6.7】模板三态 + 结果
        原生版是 6 个 DOM 属性手动开关（setState 那 20 行）；
@@ -186,22 +193,22 @@ function toUserMessage(err: any): string {
                 ⚠️ 这不是"显示一个值"，是"条件显示"——Week 2 你在这栽过
          ⚠️ v-if 和 v-show 今天选 v-if。理由自己想，Day 7 我会问
        --------------------------------------------------------------- -->
-  <section v-if="status === 'loading'">生成中…</section>
-  <section v-if="status === 'error'">{{ errorMsg }}</section>
-  <section v-if="status === 'done'">
+  <p v-if="status === 'loading'">生成中…</p>
+  <p v-else-if="status === 'error'">{{ errorMsg }}</p>
+  <section v-else-if="status === 'done'">
     <h2>结果</h2>
-    <p style="white-space: pre-wrap">{{ result?.summary }}</p>
+    <p class="summary">{{ result?.summary }}</p>
     <p>input_tokens: {{ result?.input_tokens }}</p>
     <p>output_tokens: {{ result?.output_tokens }}</p>
     <p>cost: {{ result?.cost }}</p>
     <p>model: {{ result?.model }}</p>
     <p v-if="result?.truncated">⚠️ 警告：内容被截断，请换一个 PDF</p>
   </section>
-
 </template>
 
 <style scoped>
-/* TODO【6.9】能看清就行，样式不是考点。
-   只有一条是功能性的：summary 那块要 white-space: pre-wrap，
-   不然后端返回的换行会全被压成一行 */
+/* 唯一的功能性样式：不写这行，后端 summary 里的换行会被全压成一行 */
+.summary {
+  white-space: pre-wrap;
+}
 </style>
