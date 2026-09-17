@@ -133,8 +133,9 @@ function toUserMessage(err: any): string {
       case 500:
         return ` 服务器内部错误，请截图发给教练 `
       case 502:
-        return `后端服务未启动，请先运行后端（Week 2 Day 3）`
+        return ` 网络异常，请检查后重试 `
       default:
+        console.error(`未处理的状态码 ${err.response.status}:`, err.response.data)
         return `未知错误，请稍后重试`
     }
   } else {
