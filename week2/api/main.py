@@ -34,7 +34,7 @@ load_dotenv(BASE_DIR.parent.parent / ".env")          # .env 在仓库根
 MODEL = "deepseek-v4-flash"
 PRICE_IN = 0.14                                       # $ / 1M token
 PRICE_OUT = 0.28                                      # $ / 1M token
-MAX_OUTPUT_TOKENS = 500
+MAX_OUTPUT_TOKENS = 1500
 EST_RATIO = 0.3
 
 MAX_FILE_BYTES = 10 * 1024 * 1024  # 10 MB

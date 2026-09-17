@@ -16,6 +16,7 @@ export default defineConfig({
     },
   },
   server: {
+    port: 5174, // 固定端口：README 环境约定 5174（5173 被占时 Vite 会自动 +1，端口会漂，口径全乱）
     proxy: {
       '/api': {
         target: 'http://127.0.0.1:8000/',rewrite:(p)=>p.replace(/^\/api/, ''), // Vite dev server 内置 http-proxy 能力。在 vite.config.ts 的 server.proxy 里声明规则后，dev server 把匹配前缀的请求转发到 target 指定的地址，再把响应原路带回。浏览器只和 5174 通信。

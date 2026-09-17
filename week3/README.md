@@ -44,12 +44,16 @@
 | Day | 轨道 | 主题 | 文件 | 状态 | 复盘得分 |
 |---|---|---|---|---|---|
 | 1 | AI 线 | **①⑤ 星号验收** + **JSON 解析**（`json.loads` 三种失败）→ 引出 `response_format` | `day1_json.py` | ☑ | **0.5/3** |
-| 2 | AI 线 | **Function Calling 跑通一次**：定义 schema → 模型建议 → **你执行** → 结果塞回 | `day2_tool_call.py` | ◑ | — |
-| 3 | 主线 | **Vite 配代理**（5174 → 8000）+ 环境变量 + 别名 `@` | `frontend/vite.config.ts` | ◑ | — |
-| 4 | 主线 | **TypeScript**：给 6 字段契约建 `interface`，4 类错误码建联合类型 | `frontend/src/types/` | ☐ | — |
-| 5 | 主线 | **Vue 3 响应式**：`ref` vs `reactive` + 第一个组件（选文件 + 上传） | `frontend/src/components/` | ☐ | — |
+| 2 | AI 线 | **Function Calling 跑通一次**：定义 schema → 模型建议 → **你执行** → 结果塞回 | `day2_tool_call.py` | ☑ | **0/3** |
+| 3 | 主线 | **Vite 配代理**（5174 → 8000）+ 环境变量 + 别名 `@` | `frontend/vite.config.ts` | ☑ | —（当天未出题） |
+| 4 | 主线 | **TypeScript**：给 6 字段契约建 `interface`，4 类错误码建联合类型 | `frontend/src/types/` | ☑ | **0.5/3** |
+| 5 | 主线 | **Vue 3 响应式**：`ref` vs `reactive` + 第一个组件（选文件 + 上传） | `frontend/src/components/FileUploader.vue` | ☑ | **2/3** |
 | 6 | 主线 | **接通真接口**：Axios + UI 三态机（响应式版重写 Day 4 那套） | `frontend/src/views/` | ☐ | — |
 | 7 | — | 巩固：**两版并排对照** + Week 3 总复盘 + **目录重构** | — | ☐ | — |
+
+> **Day 4 调整（2026-09-08）**：4.3 的 `ValidationIssue` 砍掉，`ApiError` 简化为 `detail?: string`。
+> 原因：该类型现阶段无真实使用处，ly 连续多轮不懂——概念要跟着使用处走，
+> 422 的 detail 数组形状移到 Day 6 写错误 UI 时再讲。教训：骨架任务不能超过原计划的「interface + 联合类型」。
 
 ### 📚 本周学源挂载（2026-08-12 建，配合合约规则 12）
 
@@ -57,14 +61,20 @@
 > 一条都没绑到具体哪天 —— 结果 Day 2 的学源明写在 `§5:400`，教练讲了一整轮 FC 一次没提。
 > **清单不绑日子 = 没有清单。**
 
-| Day | 学源 | **只看这一节**（别扩散） | 预算 | 出处 |
-|---|---|---|---|---|
-| 2 | Anthropic `tool_use` 文档 + OpenAI function calling cookbook | 四步流程 + schema 字段说明。**跳过 streaming / parallel tool calls** | 30 min | `§5:400` |
-| 3 | cn.vitejs.dev | `server.proxy` 一节 —— 计划原话「**Week 3 第一件会撞的事**」 | 25 min | `§2:137` |
-| 4 | typescriptlang.org/docs/handbook | interface / 联合类型 / 可选 `?`。**跳过泛型、工具类型** | 40 min | `§2:139` |
-| 5 | cn.vuejs.org | 「响应式基础」`ref` vs `reactive` —— 原话「**混用是新手最大错误源**」 | 30 min | `§2:145` |
-| 6 | cn.vuejs.org + axios 文档 | 组合式 API `setup` / `computed` vs `watch`（**能用 computed 就别用 watch**） | 30 min | `§2:147` |
-| 7 | — | 无（巩固日不引入新资源） | — | — |
+| Day | 学源 | **只看这一节**（别扩散） | 预算 | 出处 | 落地？ |
+|---|---|---|---|---|---|
+| 2 | Anthropic `tool_use` 文档 + OpenAI function calling cookbook | 四步流程 + schema 字段说明。**跳过 streaming / parallel tool calls** | 30 min | `§5:400` | ❌ |
+| 3 | cn.vitejs.dev | `server.proxy` 一节 —— 计划原话「**Week 3 第一件会撞的事**」 | 25 min | `§2:137` | ❌ |
+| 4 | typescriptlang.org/docs/handbook | interface / 联合类型 / 可选 `?`。**跳过泛型、工具类型** | 40 min | `§2:139` | ❌ |
+| 5 | cn.vuejs.org | 「响应式基础」`ref` vs `reactive` —— 原话「**混用是新手最大错误源**」 | 30 min | `§2:145` | ☐ |
+| 6 | cn.vuejs.org + axios 文档 | 组合式 API `setup` / `computed` vs `watch`（**能用 computed 就别用 watch**） | 30 min | `§2:147` | ☐ |
+| 7 | — | 无（巩固日不引入新资源） | — | — | — |
+
+> **❌ = 无任何落地记录**（ly 09-10 自报：建表以来一次没读过，只做 TODO）。
+> Day 3 的代价是具体的：`server.proxy` 那一节第一个示例就是 `target: 'http://localhost:4567'`
+> ——指向**另一个端口**，`changeOrigin` 就在同一个代码块里。而 Day 3 初版写成了
+> `target: 'http://127.0.0.1:5174/'`（前端自己的端口 = 代理空转），`changeOrigin` 也是后补的。
+> **读五分钟就撞见的错。**
 
 **本月 B 级（不绑日子，找整块时间）**：
 
@@ -157,15 +167,26 @@ Week 2 Day 7 的实测：盲写脚本**过了**，但「我自己找出并修掉
 
 ## 环境约定
 
-- **Python 脚本在服务器跑**，venv：`../week1/venv`（Python 3.10）
-- **前端**：`week3/frontend/`，Node **v24.19.0**（nvm）+ pnpm **11.20.0**，`pnpm dev` 起在 **5174**
-  （5173 被本机别人的服务占了）
+- **后端改在本地跑**（2026-09-08 Day 4 由 ly 拍板，不再依赖 SSH 隧道）：
+  venv `C:\Users\dell\.venvs\pdf-summarize`（Python 3.13，放项目外避开 unison 同步），
+  仓库根下 `& .venvs\pdf-summarize\Scripts\python.exe -m uvicorn week2.api.main:app --port 8000`
+  （服务器 venv `week1/venv` 仍在，可作备选；SSH 隧道方案保留但不默认）
+- **前端**：`week3/frontend/`，pnpm **11.20.0**（npm i -g 装的，corepack 缓存有 .cjs/.mjs 入口错配已弃用），
+  `pnpm dev` 起在 **5174**——已写死进 `vite.config.ts` 的 `server.port`
+  （nvm 实测 Node v24.0.2，与早期记录 24.19.0 不符；engine 有 WARN 不影响运行）
 - **后端**：`week2/api/main.py`，只监听 `127.0.0.1:8000`
 - ⚠️ **前端用 pnpm，别混 npm** —— lock 文件不兼容
 
 ---
 
 ## 每日复盘模板
+
+> ⚠️ **2026-09-10 两处修补**：
+> ① 本区块曾被 Day 4 的复盘内容污染（教练做字符串替换时匹配到了模板），已复原为空白模板。
+> ② 新增「**今天的学源落地**」一栏 —— 合约规则 12 的判据一直写在合约里，
+>    但**从没进过这张模板**，于是每天报完学源就没有任何地方会问起它。
+>    ly 09-10 自报：**建表以来一次没读过，只做 TODO。**
+>    **判据不进模板 = 没有判据**，与规则 12 开头那句「清单不绑日子 = 没有清单」是同一个形状。
 
 ### Day N · 2026-MM-DD
 
@@ -175,13 +196,19 @@ Week 2 Day 7 的实测：盲写脚本**过了**，但「我自己找出并修掉
 
 **踩的坑**：
 
+**今天的学源落地**：（← 09-10 新增，规则 12 的判据。**不许填「看了」**）
+- 读的是哪一节：
+- **哪一行代码是因为读了它才那样写的**：
+- 没落地就如实填「没落地」——**空着 ≠ 填「没落地」**，前者是漏答，后者是数据
+
 **明天开始前要复习的 1 个概念**：
 
 **我自己独立发现的 bug**：（← 本周新增，不能填 0）
 
 **我交付前验的判据**：（← 本周新增，格式：跑了 X 条路径 / 判据 Y / 结果 Z）
 
-**今天的 Claude Code 出题得分**：__/3
+**今天的 Claude Code 出题得分**：　/3
+> 考完**当场**把三道题原文粘进本栏，不隔会话（Day 2 与 Day 4 连续两次没留档）。
 
 ---
 
@@ -297,13 +324,14 @@ demo_api 2 条
 判据和结果丢失
 **今天的 Claude Code 出题得分**：0/3
 
-> ⚠️ 教练备注（2026-09-03）：0/3 的题目与逐题点评没有留档，下会话核对——是考过没记，还是记错。
->
-> ✅ 核对结论（2026-09-06）：**考过没记**。git 历史里 Day 2 的 commit 全是代码改动 + 复盘补记，无一条记录题目/点评；对比 Day 1（0.5/3）有完整 ① ② ③ 留档。题目已无法从仓库恢复（需翻当时对话，不在 git 里）。教训：出题当场的题目与点评必须当天写进 README，过时不补。
+> ✅ 核对结果（2026-09-10，ly 确认）：**确实考过，确实 0/3**，不是记错。
+> 题目原文与逐题点评已丢失，**不再追补**——重出一遍会变成新的一次考试，混淆当天的真实得分。
+> 处理：0/3 这个数保留在案，FC 四步流程改由**间隔回顾**反复回（规则 9），
+> 最终以 Week 3 结束自检那一条「能说清 Function Calling 四步流程」验收。
 
 ---
 
-### Day 3 · 2026-09-03 · Vite 代理 + 环境变量（收尾，2026-09-06 补验证）
+### Day 3 · 2026-09-03 · Vite 代理 + 环境变量（进行中，未收尾）
 
 **今天做了什么**：
 - 正课：同源策略（浏览器门卫）/ Vite 代理（跑腿的中转）/ 环境变量（`VITE_` 前缀 + mode）。别名 `@` 确认已就位（vite.config.ts + tsconfig 两处都齐，脚手架自带）
@@ -312,20 +340,236 @@ demo_api 2 条
 - `.env.example`：教练补填（环境配置属外围）
 - 口径修正：**Vite 官方惯例 `.env.development` 可进 git**——`VITE_` 前缀的变量本来就会暴露给浏览器，前端 `.env` 不该放秘密；真正含密钥的 `.env` 是仓库根那份（后端用），早已进 `.gitignore`。教练上一轮「`.env.development` 进 .gitignore」的说法作废。
 
-**任务 3 验证（2026-09-06 补，欠账清偿）**：
-- 环境拉通：后端 8000（ssh 隧道 + 服务器 uvicorn）+ 前端 dev server（`pnpm dev`）都起来
-- **验证结果（2 条路径）**：
-  - ① `curl localhost:5173/api/health` → `{"status":"ok","model":"deepseek-v4-flash","api_key_configured":true,"version":"0.1.0"}` [200]
-  - ② `curl localhost:5173/api/does-not-exist` → `{"detail":"Not Found"}` [404]
-- **判据 = 请求是否穿过代理到达后端**：② 的 `{"detail":"Not Found"}` 是 FastAPI 专属 404 格式，前端 Vue 不可能产出 → 证明请求到了 8000；① 返回的 `model`/`version` 字段前端也没有。两条都证明代理生效。
-  （教练代填：ly 当场答「不知道」，教练讲透后落档。**下次起判据由 ly 自己写**。）
-- **三个环境观察**（记入，Day 7 处理）：
-  1. 前端起在 **5173** 不是 5174——5173 空了，vite 用默认端口；README 写死的 5174 已过时
-  2. vite 监听 **IPv6 `::1`**——`curl 127.0.0.1:5173` 连不上（status 000），要用 `localhost` / `[::1]`
-  3. node 是 **v24.9.0**，低于 `engines` 要求的 ≥24.12.0（有 WARN 但能跑）；README 记的 v24.19.0 版本号不存在（`nvm install` 报 not available）
+**欠账（下会话从这里开始）**：
+- ~~任务 3 验证未做~~ **已结（09-10）**：判据先写后跑，三条路径全中，详见下方「任务 3 验证结果」
+- ~~Day 2 复盘题佐证~~ **已结（09-10）**：0/3 属实，题目与点评不追补，理由见 Day 2 条目末尾
 
-**还欠**：
-- （无——Day 3 已收尾：任务 3 验证 + Day 2 佐证都清了）
+**今天踩坑**
+- 同源策略比的是协议（scheme）、域名（host）、端口（port），三个只要有一个不同就是跨域
+
+**任务 3 验证结果（09-10 补做）**
+
+判据**先写后跑**（先跑再看着结果说「对了」= 肉眼确认，不算验证）：
+
+| 路径 | 命令 | 期望 content-type | 期望 body | 结果 |
+|---|---|---|---|---|
+| **A** 锚点·直连后端 | `curl -i http://127.0.0.1:8000/health` | `application/json` | `{"status":"ok","model":...}` | ✅ |
+| **B** 主判据·经代理 | `curl -i http://localhost:5174/api/health` | `application/json` | 与 A **逐字节相同** | ✅ |
+| **C** 反面·无前缀 | `curl -i -H "Accept: text/html" http://localhost:5174/health` | `text/html` | `<!DOCTYPE html>` | ✅ |
+
+强判据（不靠肉眼）：`diff <(curl -s :8000/health) <(curl -s :5174/api/health)` → **退出码 0**
+
+**为什么必须三条**：
+- **A 是锚点** —— 万一 B 失败，A 才能分清是「代理坏了」还是「后端没起」。不验锚点，失败时没有病因
+- **C 是反面** —— 证明代理确实由 `/api` 前缀触发。若 C 也返回 JSON，说明起作用的是别的东西，B 的绿灯不算数
+- **只看状态码分不出真假**：代理没配 / target 指向自己 / 代理配对，**三种情况全是 200**。
+  Vite 的 SPA history fallback 对未命中的请求返回 `index.html` + 200，所以判据必须看 `content-type` 或 body 具体值
+
+**踩到两个环境坑**：
+1. dev server 只监听 `[::1]:5174`（IPv6 环回），`curl http://127.0.0.1:5174`（IPv4）返回 `000` 连不上 ——
+   这本身就是个假信号：会被误读成「代理没配好」，实际是根本没建立连接。用 `localhost` 或 `[::1]`
+2. 原预判「`Accept: */*` 与 `text/html` 下 fallback 行为可能不同」**未兑现** —— Vite 8.2 实测两者都 fallback
+
+**补验：浏览器侧（09-10，ly 追问「curl 直连 8000 为什么不撞同源」引出）**
+
+上面三条 curl 只证明了「Vite 转发逻辑配对了」，**没有证明「不用代理会撞 CORS」** ——
+curl 不实施同源策略，拿它验 CORS 永远是绿的，**那个绿是假的**。这是铁律 6 的形状：
+负向断言必须用真正观测得到它的工具。补了一次真 chromium：
+
+| 场景 | 浏览器端结果 |
+|---|---|
+| `fetch('http://127.0.0.1:8913/...')` 跨源打探针服务器 | `THREW TypeError: Failed to fetch` |
+| `fetch('http://127.0.0.1:8000/health')` 跨源打后端 | `THREW TypeError: Failed to fetch` |
+| `fetch('/api/health')` 同源走代理 | `RESOLVED status=200` + 正确 JSON |
+
+**关键证据**（探针服务器自己的收件日志，同一次浏览器请求）：
+
+```
+浏览器发的：HIT path=/from-browser Origin=http://localhost:5174 UA=Mozilla/5.0 (X11; Ubuntu...)
+curl  发的：HIT path=/selftest     Origin=None                  UA=curl/7.81.0
+```
+
+**结论一：跨域「失败」的请求，在服务器那一侧是成功的。**
+请求真的发出、服务器真的收到并返回 200，是浏览器拿到响应后发现没有
+`Access-Control-Allow-Origin`，**把已经到手的响应扔掉**，才给 JS 抛 `TypeError`。
+数据被扣在浏览器里，不是被挡在服务器外。推论：**跨域不是安全防护**，
+curl / Postman / 别的服务器照拿；它拦的只是「别人网站用你的登录态偷读你的数据」。
+
+**结论二：`Origin=None` 说明 curl 连这个请求头都不发** —— 它没有「源」这个概念，
+所以同源策略对它完全不作用。这就是「curl 直连 8000 不报错」的真正原因，
+**不是因为同源，是因为没人管它。**
+
+**环境坑（第 3 个）**：探针服务器初选 8899 端口 → `OSError: Address already in use`，
+被本机别的 `http.server` 占着（共享 VPS 常态）。自测时返回的是**别人服务的 404 页**，
+差点被读成「我的服务起来了但路由不对」。改用 8913。判据：`ss -ltn | grep :<port>` 先探空闲。
+
+**探针已清理**：`public/cors-probe.html` 已删、探针服务器已停、`git status` 只剩 README。
+---
+
+### Day 4 · 2026-09-10
+
+**今天学到的最关键 1 件事**：
+学习TS的三个概念 interface，联合类型，可选字段 ？
+
+**最难的点 / 卡了多久**：
+interface： 约定类型
+联合类型： 即 A|B，值是A类型或者B类型 都会通过检查
+可选字段 ？： 如果用？进行标记，类型自动变成 T | undefined。interface User { name: string; nickname?: string }。{ name: "ly" } ✅；{ name: "ly", nickname: "luka" } 也 ✅
+
+
+
+
+**踩的坑**：
+ly 自填「无」。教练核判据时发现一个（09-10）：422 那份判据抄自 `/docs` 的 Schema 示例，不是实跑结果，详见下方「判据」栏。
+
+**明天开始前要复习的 1 个概念**：
+
+> 教练指定（09-10）：**`/docs` 的 Schema 示例值 ≠ 真实响应值。**
+> Schema 描述的是「有哪些字段、各是什么类型」；示例值是按类型自动填的占位——
+> string 填字面量 `"string"`，integer 填 `0`。`loc` 声明为 `Array<string | integer>`，
+> 所以 Swagger 生成 `["string", 0]`：那是把两种可能各摆一个，不是数据。
+> 实跑（`POST /summarize` 不带 file）：
+> `{"detail":[{"type":"missing","loc":["body","file"],"msg":"Field required","input":null}]}`
+> 注意真实的 `missing` 错误**没有 `ctx` 字段**（`ctx` 只在数值超范围等校验里才带）。
+> **推论：判据只能取自实跑，不能取自文档。**
+
+**我自己独立发现的 bug**：（← 本周新增，不能填 0）
+仍是 0。教练备注：422 那条没实跑，没跑就撞不见东西——bug 是撞出来的，不是读出来的。
+
+**我交付前验的判据**：（← 本周新增，格式：跑了 X 条路径 / 判据 Y / 结果 Z）
+- 400：判据 = 响应体与 `main.py:196` 的 `detail` 文案逐字一致 → **结果一致** ✅
+- 422：判据 = `detail` 为数组且成员含 `loc/msg/type` → **结构对，值全错**（取自 Schema 示例，非实跑）❌
+- ⚠️ 未验：`SummarizeResponse` 六个字段名与 `main.py:113` 是否逐字一致；`pnpm type-check` 是否通过
+  ——Day 4 主产出是类型文件，这两条才是它的判据，都没跑
+
+**今天的 Claude Code 出题得分**：0.5/3
+
+> ⚠️ 教练备注（09-10）：得分由 ly 口述（Day 4 在本地会话考的），**题目原文与逐题点评同样没留档**——
+> 与 Day 2 的 0/3 是同一个坑，连续两次。
+> 处理：以后考完当场把三道题原文粘进本栏，不隔会话。
+
+---
+### Day 5 · 2026-09-16
+
+**今天学到的最关键 1 件事**：
+了解vue响应式的ref以及reactive
+| 特性     | ref      | reactive |
+| ------ | -------- | -------- |
+| 基本类型   | ✅        | ❌        |
+| 对象     | ✅        | ✅        |
+| 数组     | ✅        | ✅        |
+| 访问方式   | `.value` | 直接访问     |
+| 整体替换   | ✅        | ❌        |
+| 返回值    | RefImpl  | Proxy    |
+| 官方推荐程度 | 更推荐      | 仍常用      |
+| 适合     | 单个状态     | 表单、复杂对象  |
+
+**最难的点 / 卡了多久**：
+1. day4 遗留一个问题 swagger 是什么？ 
+写完后端接口，别人（包括未来的你）怎么知道有哪些接口、要传什么、返回什么？以前靠口头 + 一份手写的 Word 文档，后端一改代码文档就过时了。Swagger 干的事是：让代码自己生成这份文档，还顺带给你一个能点按钮直接发请求的网页。 
+OpenAPI 是一套描述 HTTP 接口的规范（一个 JSON/YAML 格式，规定怎么写"有哪些路径、每个路径接什么参数、返回什么结构"）。Swagger UI 是把这份 OpenAPI 文件渲染成可交互网页的工具。FastAPI 会自动从你的 Python 类型标注生成 OpenAPI 文件，挂在 /openapi.json，再用 Swagger UI 渲染出来挂在 /docs。
+2. 类型断言 as 以及 ？和？？的区别
+      1.类型断言as 你去快递柜取件，柜子上写着「这里面是个包裹」。你知道这个包裹是你买的键盘，但柜子不知道——它只知道「是个包裹」。 
+      有时你会比 TypeScript 更了解某个值的类型。类型断言（type assertion）告诉编译器「相信我，我知道我在做什么」，它会把该表达式当作你指定的类型来做后续检查。
+▎    类型断言在编译期被完全擦除，不做任何运行时检查、不做任何转换。as 就相当于承诺，所以没报错不等于类型正确
+      2. ?. 的意思是：「点之前先看一眼，左边是 null 或 undefined 就整句停下，返回 undefined，不抛异常。
+      const s = ""
+      s?.length      // 0 —— 不短路。"" 不是 null 也不是 undefined
+      ?. 只认 null 和 undefined 两个值，别的假值（"" / 0 / false / NaN）一律照常走。 
+
+      3. a ?? b 读作：「a 要是空的（null 或 undefined），就用 b。」和 || 的区别：|| 认所有假值（"" / 0 / false 都会被换掉），?? 只认 null 和 undefined。
+**踩的坑**：
+
+**今天的学源落地**：（← 09-10 新增，规则 12 的判据。**不许填「看了」**）
+- 读的是哪一节：vue.js 文档中响应式基础的 ref以及reactive 
+- **哪一行代码是因为读了它才那样写的**：
+- 没落地就如实填「没落地」——**空着 ≠ 填「没落地」**，前者是漏答，后者是数据
+
+**明天开始前要复习的 1 个概念**：
+
+> 教练指定（09-16）：**「解包 unwrap」≠「解构 destructure」。**
+> 第 1 题答成了「模板里自动解构」。这两个词在 Vue 里指相反的两件事：
+> - **解包**：Vue 编译模板时替你补 `.value`（顶层 ref 才有，嵌套在普通对象里的不解包）——Vue 送的好事
+> - **解构**：`const { a } = obj` 这个 JS 语法——**会丢响应性的坑**，正课 reactive 坑 3、5.7 Q2 讲的都是它
+>
+> 用同一个词指代两者，将来写出 `const { selectedFile } = props` 出问题时，
+> 回头查笔记查不到——笔记里「解构」是好的那个意思。
+
+**我自己独立发现的 bug**：（← 本周新增，不能填 0）
+
+**我交付前验的判据**：（← 本周新增，格式：跑了 X 条路径 / 判据 Y / 结果 Z）
+
+**今天的 Claude Code 出题得分**：**2/3**（本周最高，前三次为 0.5 / 0 / 0.5）
+
+> 题目原文与逐题点评（09-16 当场落盘，不隔会话）：
+>
+> **Q1**（0.5）模板写 `:disabled="!selectedFile || isUploading"` 不带 `.value`，
+> `handleSubmit` 里写 `selectedFile.value` 带 `.value`，为什么？
+> 答：「模板里自动**解构**」——机制对、**术语错**。正确是**解包 unwrap**，见上方「明天复习的概念」。
+>
+> **Q2**（1）`handleSubmit` 的 else 分支设 `errorMsg='No file selected'`，
+> 而按钮有 `:disabled="!selectedFile || isUploading"`。这行文案用户看得到吗？
+> 答：「不能，disabled 兜住了」——**对**。未说出的后果：**那个 else 是死代码，永不可达**
+> （本周主线「函数写了 ≠ 被调用」的又一实例）。注意 `errorMsg` 本身不死，Day 6 接真接口后
+> 413/502 都要写它；死的只是 `'No file selected'` 这一支。
+> **待 ly 拍板**：A 删掉 else ｜ B 去掉 `!selectedFile` 那半个 disabled，改由函数内校验并显示原因
+> （disabled 的按钮不会告诉任何人为什么不能点，无障碍上 B 更好）。教练未代改。
+>
+> **Q3**（0.5）删掉 `?? null` 后 type-check 会不会报错？哪两个类型对不上？
+> 答：「会报错，`selectedFile.value` 是 `File | null`」——只答了**左边**，漏了右边。
+> 实跑（删掉 `?? null` 后 `pnpm type-check`，跑完已还原）：
+> `error TS2322: Type 'File | undefined' is not assignable to type 'File | {...}'.`
+> `  Type 'undefined' is not assignable to ...`
+> 右边 `input.files?.[0]` 是 **`File | undefined`**。核心：**`undefined` 与 `null` 是两个类型，
+> 不能互相赋值**。`?? null` 不是"保险起见"，是把 undefined 翻译成 null 的**类型转换**。
+>
+> **丢分形状**：两处都不是不会，是**不够精确**——Q1 机制对词错，Q3 方向对只说一边。
+
+---
+
+### Day 6 · 2026-09-17
+
+**今天学到的最关键 1 件事**：
+1. fetch和axios概念和区别：
+      - fetch = 快递员送到门口就算送达。不管箱子里是货还是一张「缺货通知单」，他都算完成任务——你自己拆开看。
+      - axios = 快递公司帮你验货。箱子里要是缺货通知单，他直接给你打电话说「这单失败了」。
+
+例 1 —— 后端返 413（服务器回话了）
+
+// fetch：不抛
+const res = await fetch('/api/summarize', { method: 'POST', body: fd })
+res.ok       // false
+res.status   // 413
+const data = await res.json()   // { detail: "文件 14.2 MB，超过..." }
+
+// axios：抛了
+try {
+  await axios.post('/api/summarize', fd)
+} catch (err) {
+  err.response.status         // 413
+  err.response.data.detail    // "文件 14.2 MB，超过..."
+}
+
+
+2. 了解Vue 是一个声明式（declarative）框架——你声明状态和 UI 之间的关系，Vue 负责在状态变化时高效地更新 DOM。 
+3. 计算属性computed，与普通方法区分最主要的地方是缓存
+**最难的点 / 卡了多久**：
+1. 
+**踩的坑**：
+
+**今天的学源落地**：（← 09-10 新增，规则 12 的判据。**不许填「看了」**）
+- 读的是哪一节：
+- **哪一行代码是因为读了它才那样写的**：
+- 没落地就如实填「没落地」——**空着 ≠ 填「没落地」**，前者是漏答，后者是数据
+
+**明天开始前要复习的 1 个概念**：
+
+**我自己独立发现的 bug**：（← 本周新增，不能填 0）
+
+**我交付前验的判据**：（← 本周新增，格式：跑了 X 条路径 / 判据 Y / 结果 Z）
+
+**今天的 Claude Code 出题得分**：　/3
+> 考完**当场**把三道题原文粘进本栏，不隔会话（Day 2 与 Day 4 连续两次没留档）。
 
 ---
 
