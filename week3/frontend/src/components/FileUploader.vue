@@ -132,8 +132,10 @@ function toUserMessage(err: any): string {
         return `文件 ${err.response.data.detail[0].msg}，请换一个`
       case 500:
         return ` 服务器内部错误，请截图发给教练 `
+      case 502:
+        return `后端服务未启动，请先运行后端（Week 2 Day 3）`
       default:
-        return `未知错误 ${err.response.status}，请截图发给教练`
+        return `未知错误，请稍后重试`
     }
   } else {
     return `网络异常，请检查后重试`
