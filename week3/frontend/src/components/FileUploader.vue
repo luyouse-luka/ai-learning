@@ -123,6 +123,7 @@ const handleSubmit = () => {
 // ---------------------------------------------------------------
 function toUserMessage(err: any): string {
   if (err.response) {
+    console.error(`HTTP ${err.response.status}:`, err.response.data)
     switch (err.response.status) {
       case 400:
         return `文件 ${selectedFile.value?.name} 不是 PDF，请换一个`
@@ -133,9 +134,8 @@ function toUserMessage(err: any): string {
       case 500:
         return ` 服务器内部错误，请截图发给教练 `
       case 502:
-        return ` 网络异常，请检查后重试 `
+        return `服务暂时不可用，请稍后重试`
       default:
-        console.error(`未处理的状态码 ${err.response.status}:`, err.response.data)
         return `未知错误，请稍后重试`
     }
   } else {
