@@ -15,7 +15,7 @@
 // ---------------------------------------------------------------
 import { ref, computed } from 'vue'
 import axios from 'axios'
-import type { SummarizeResponse } from '@/types/api'
+import type { SummarizeResponse, ApiError } from '@/types/api'
 
 // ---------------------------------------------------------------
 // Day 5 的三个状态（保留）
@@ -121,16 +121,18 @@ const handleSubmit = () => {
 //       {"detail":[{"type":"missing","loc":["body","file"],"msg":"Field required","input":null}]}
 //      取文案要从数组里挑，直接 textContent 会显示 [object Object]
 // ---------------------------------------------------------------
-function toUserMessage(err: any): string {
-  if (err.response) {
+function toUserMessage(err: unknown): string {
+  if (axios.isAxiosError<ApiError>(err) && err.response) {
     console.error(`HTTP ${err.response.status}:`, err.response.data)
     switch (err.response.status) {
       case 400:
         return `文件 ${selectedFile.value?.name} 不是 PDF，请换一个`
       case 413:
         return `文件 ${((selectedFile.value?.size || 0) / (1024 * 1024)).toFixed(1)} MB，超过 10 MB 上限，请换一个`
-      case 422:
-        return `文件 ${err.response.data.detail[0].msg}，请换一个`
+      case 422: {
+        const detail = err.response.data.detail
+        return `文件 ${Array.isArray(detail) ? detail[0]?.msg : detail}，请换一个`
+      }
       case 500:
         return ` 服务器内部错误，请截图发给教练 `
       case 502:
@@ -138,9 +140,8 @@ function toUserMessage(err: any): string {
       default:
         return `未知错误，请稍后重试`
     }
-  } else {
-    return `网络异常，请检查后重试`
   }
+  return `网络异常，请检查后重试`
 }
 const buttonText = computed(() => {
   switch (status.value) {

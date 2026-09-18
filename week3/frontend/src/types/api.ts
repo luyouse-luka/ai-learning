@@ -41,6 +41,10 @@ export type ApiErrorCode = 400 | 413 | 504 | 502 | 429 | 422 | 500;
 //      错误 UI 时再加（2026-09-08 调整：ValidationIssue 砍掉，
 //      现阶段没有真实使用处，Day 6 用到时讲一次就懂）
 // ---------------------------------------------------------------
+export interface ValidationIssue {
+  msg: string;
+}
+
 export interface ApiError {
-  detail?: string;
+  detail?: string | ValidationIssue[];
 }
