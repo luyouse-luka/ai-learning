@@ -64,8 +64,14 @@
 
 ## 从 Week 3 结转的债
 
-- [ ] **Week 3 自检⑤** —— Vue 版四条路径**由 ly 本人跑**并写下具体值（**Day 1 第一件事**）。
-      Week 3 那份表的数据来源是教练在服务器上跑的，针对瓶颈 4「能写≠能自查」的硬要求未兑现
+- [-] **Week 3 自检⑤** —— **09-21 ly 决定跳过，不再排期**。当天实跑到一半的结果如实留档：
+      **路径 2 ☑** 400 /「上传的文件不是 PDF」，与期望逐字一致；
+      **路径 4 ☑** 502，且 `console.error` 打出 `HTTP 502: ` **冒号后为空** ——
+      实证了 Vite 代理自造 502 是空响应体（Week 3 那条独立发现），同时证明 09-18 把
+      `console.error` 挪到 `switch` 之前生效了（留在 `default` 里这行永不打印）；
+      **路径 1 ✗ 未对上** 期望 200 实得 400「PDF 提取出来是空的」，未做 `attention.pdf` 控制变量实验，真因未定；
+      **路径 3 ☐ 未跑**。
+      ⚠️ 因此「ly 本人跑满四条」这条针对瓶颈 4 的硬要求**Week 3、Week 4 连续两周未兑现**，记在案
 - [ ] **目录重构** —— `week1/week2/week3` 混着 AI 线和前端线，候选 `stage1-frontend/` + `stage3-ai/{week1,week2}`。
       改路径要连带改 `week1/CLAUDE.md` / 各 README / `LEARNING-PLAN.md` / memory 全部引用（推到 Day 7）
 - [ ] `week3/day7_review.md` Part 2 的 Day 6·Day 7 两行、Part 3/4/5 若干栏
