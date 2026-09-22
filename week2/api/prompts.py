@@ -51,6 +51,12 @@ SYSTEM_PROMPT_V1 = """
 # TODO【5】Format —— 输出长什么样。和 Constraint 的分界：
 #     Constraint 管"内容边界"，Format 管"排版形状"
 SYSTEM_PROMPT_V2 = """
+role: 你是资深语言模型训练师，专门训练模型如何总结文本。请严格按照以下要求进行总结：
+task: 对文本进行总结，提炼核心思想
+constraint: 总结文本字数需控制在400字以内，需要用中文进行回复，需要概括归纳， 而不是只摘抄原文。
+example:
+输入：春天来了，万物复苏，花草树木开始生长，气温逐渐回升，人们脱下厚重的冬衣，迎接温暖的阳光。春天是一个充满希望和活力的季节，象征着新的开始和生命的延续。
+输出：    xxxxxxx
 """
 
 
@@ -60,7 +66,15 @@ def summarize(system_prompt: str, text: str) -> str:
     # TODO【6】照 week1 的写法调一次，返回正式回答的字符串
     #     ⚠️ 只改 system_prompt 这一个变量，temperature / max_tokens 两版必须一致，
     #        否则跑出差异你说不清是 prompt 的功劳还是参数的功劳
-    ...
+    response = client.chat.completions.create(
+        model=MODEL,
+        messages=[
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": text},
+        ],
+        
+    )
+    return response.choices[0].message.content.strip()
 
 
 def compare() -> None:
@@ -81,7 +95,8 @@ def compare() -> None:
     #     | 首行缩进      |         |         |         |         |
     #     | 术语是否保留  |         |         |         |         |   ← multi-head attention 被翻成中文了吗
     #     | (你自己加一条) |         |         |         |         |
-
+    summary_v1 = summarize(SYSTEM_PROMPT_V1, text)
+    summary_v2 = summarize(SYSTEM_PROMPT_V2, text)
 
 if __name__ == "__main__":
     compare()
