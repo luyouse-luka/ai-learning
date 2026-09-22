@@ -77,26 +77,48 @@ def summarize(system_prompt: str, text: str) -> str:
     return response.choices[0].message.content.strip()
 
 
+def measure(label: str, s: str) -> None:
+    """把能机械判定的量打出来 —— 这是判据的【实得值】，不靠肉眼看。"""
+    paras = [p for p in s.split("\n") if p.strip()]
+    print(f"\n--- {label} ---")
+    print(f"字数      {len(s)}")
+    print(f"段数      {len(paras)}")
+    print(f"首段开头  {paras[0][:4]!r}" if paras else "首段开头  (空)")   # repr 才看得见空格是全角还是半角
+    print(f"术语保留  {'multi-head attention' in s.lower()}")
+
+
 def compare() -> None:
     """跑 V1 / V2 各一次，落盘，然后按判据逐条比。"""
     text = SAMPLE.read_text(encoding="utf-8")
+    out = Path(__file__).parent.parent.parent / "week4"
 
-    # TODO【7】两版各跑一次，各自写进 week4/day2_v1.txt / day2_v2.txt
-    #     落盘不是为了好看 —— 是为了明天还能翻出来看，以及被别人质疑时有原件
-
-    # TODO【8】判据：下面这张表你来填期望值，跑完填实得值
-    #     ⚠️ 硬要求（本周自检第 2 条）：每一格必须是**能当场判对错的具体值**，
-    #        "读起来更顺了" 不算判据，"段数 3、首行缩进 2 个全角空格" 才算
-    #
-    #     | 判据          | V1 期望 | V1 实得 | V2 期望 | V2 实得 |
-    #     |---------------|---------|---------|---------|---------|
-    #     | 字数          |         |         |         |         |
-    #     | 段数          |         |         |         |         |
-    #     | 首行缩进      |         |         |         |         |
-    #     | 术语是否保留  |         |         |         |         |   ← multi-head attention 被翻成中文了吗
-    #     | (你自己加一条) |         |         |         |         |
+    # 【7】落盘 —— 不是为了好看，是为了明天还能翻出来，以及被质疑时有原件
+    #     每花一次钱就立刻落一次盘：攒到最后一起写，后面任何一步崩掉，前面的钱全白花
     summary_v1 = summarize(SYSTEM_PROMPT_V1, text)
+    (out / "day2_v1.txt").write_text(summary_v1, encoding="utf-8")
+
     summary_v2 = summarize(SYSTEM_PROMPT_V2, text)
+    (out / "day2_v2.txt").write_text(summary_v2, encoding="utf-8")
+
+    measure("V1", summary_v1)
+    measure("V2", summary_v2)
+
+    # TODO【8】判据表 —— 【实得值】measure() 已经替你量出来了，
+    #     但【期望值】必须你自己填，而且要在**跑之前**填。
+    #     跑完再填期望 = 照着结果编期望，判据恒绿，等于没判（你栽过的那种自洽）。
+    #
+    #     ⚠️ 每格必须是能当场判对错的具体值。"读起来更顺了" 不算。
+    #
+    #     | 判据         | V1 期望 | V2 期望 |
+    #     |--------------|---------|---------|
+    #     | 字数         |         |         |
+    #     | 段数         |         |         |
+    #     | 首段开头     |         |         |   ← 你昨天选的是路 A 还是路 B，这格的期望就不同
+    #     | 术语保留     |         |         |
+    #     | (你自己加一条)|         |         |
+    #
+    #     填完把这张表连同终端实得值抄进 week4/README.md 的 Day 2 节。
+
 
 if __name__ == "__main__":
     compare()
