@@ -3,7 +3,7 @@
 //
 // 今天只做 props（父 → 子）。往上回传用的 onPick 是教学权宜：
 // Vue 的地道做法是 emit（Day 4），今天先用函数 prop，是为了 Day 4 有个能对照的旧版本。
-// 真实项目里跨组件通信一律用 emit，函数 prop 是 React 习惯，写进 Vue 会被 review 打回。
+// Callback props are supported; Day 4 compares this version with component events.
 
 // ---------------------------------------------------------------
 // TODO【3.1】defineProps —— 今天的核心
@@ -16,7 +16,11 @@
 //   ⚠️ onPick 的类型要写完整函数签名，不是 Function —— 写 Function 等于 any，
 //      Day 4 你自己写的那份 types/api.ts 就白写了
 // ---------------------------------------------------------------
-
+const props = defineProps<{
+  accept: string
+  disabled: boolean
+  onPick: (file: File | null) => void
+}>()
 
 // ---------------------------------------------------------------
 // TODO【3.2】handleChange —— 把 FileUploader.vue:58-61 那三行搬过来，改最后一行
@@ -30,7 +34,10 @@
 //   ⚠️ `input.files?.[0]` 的类型是 File | undefined，而 onPick 要 File | null。
 //      `?? null` 那半句为什么不能省？想清楚再写，我会问
 // ---------------------------------------------------------------
-
+function handleFileChange(e: Event) {
+  const input = e.target as HTMLInputElement
+  props.onPick(input.files?.[0] ?? null)
+}
 
 // ---------------------------------------------------------------
 // TODO【3.3】读了学源才答得出的三问（正课**故意没讲**，答不出就是没读）
@@ -38,16 +45,16 @@
 //
 //   Q1: defineProps 在 <script setup> 里不需要 import 就能用。
 //       官方管这种东西叫什么？一个词。
-//       答：
+//       答：编译器宏
 //
 //   Q2: 文档明说「所有 props 都遵循单向绑定原则」，
 //       并给了两个「你确实想改 prop」的常见场景 + 各自的正确做法。
 //       写出其中一个场景和它的做法。
-//       答：
+//       答：当 prop 只用于提供初始值，而子组件需要独立修改时，用这个初始值创建局部 ref，之后修改 ref，不直接修改 prop。
 //
 //   Q3: 文档里 props 用 camelCase 声明，模板里却可以用 kebab-case 传。
 //       为什么两边可以不一样？
-//       答：
+//       答：Vue 支持将 kebab-case 的属性名匹配到 camelCase 的 prop，因此声明和传入可以采用不同的命名格式。
 //
 //   出处：cn.vuejs.org「组件基础 → Props」整节（跳过 props 校验、透传 attributes）
 // ---------------------------------------------------------------
@@ -59,9 +66,11 @@
          accept    绑 props 的 accept    —— 要不要冒号？想清楚再写
          disabled  绑 props 的 disabled  —— 要不要冒号？和上面一样吗？
          @change   绑 3.2 的函数
-       ⚠️ 模板里读 props 不写 props. 前缀，直接写名字
+       props.accept and props.disabled are valid template expressions.
        ⚠️ 冒号写错不会报错，界面会静默坏掉 —— 这就是瓶颈 2 的样子
        --------------------------------------------------------------- -->
+       <input type="file" :accept="props.accept" :disabled="props.disabled" @change="handleFileChange" />
+
 </template>
 
 <!--

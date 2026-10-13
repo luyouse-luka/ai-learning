@@ -37,7 +37,7 @@
 |---|---|---|---|---|---|
 | 1 | 清账 + AI 线 | **ly 本人跑满四条路径**（清 Week 3 自检⑤）+ **Prompt 黄金 5 段结构** | `week2/api/prompts.py`（新建） | ☑ | 1.5 / 3 |
 | 2 | AI 线 | **8 大技法挑 3 个**（Role / Few-shot / Negative）真改进 `/summarize` 的 prompt，前后对照 | `week2/api/prompts.py` | ☑ | 1 / 3（09-23 补答） |
-| 3 | 主线 | **组件拆分（一）**：从 `FileUploader.vue` 切出「选文件」子组件，**props 往下传** | `components/FilePicker.vue` | ◐ 正课☑ 动手☐ | — |
+| 3 | 主线 | **组件拆分（一）**：从 `FileUploader.vue` 切出「选文件」子组件，**props 往下传** | `components/FilePicker.vue` | ◐ 正课☑ 动手与测试☑；正式复盘未做 | — |
 | 4 | 主线 | **组件拆分（二）**：切出「结果展示」子组件，**emit 往上抛** | `components/ResultPanel.vue` | ☐ | — |
 | 5 | 主线 | **状态提升**：三个组件都要读的状态放哪？先用「提到父组件」做一版，**亲眼看见 props 钻透** | 同上 | ☐ | — |
 | 6 | 主线 | **Pinia 入门**：把提升上去的状态搬进 store，对照 Day 5 那版看省掉了什么 | `stores/summarize.ts` | ☐ | — |
@@ -301,10 +301,10 @@ V2 r3            259      250      209
 
 ### ⚠️ 教学权宜，已当场标注（规则 10）
 
-`:onPick` 函数 prop **不是 Vue 工程做法**，地道机制是 emit（Day 4）。
-今天刻意用旧写法，是为了 Day 4 学 emit 时手上有能对照的版本 ——
-改动只有两行（`props.onPick(file)` → `emit('pick', file)`），**从那两行的差别里看出 emit 买到了什么**。
-真实项目里跨组件通信一律 emit；函数 prop 是 React 习惯，写进 Vue 会被 review 打回。
+Vue 支持函数 prop；通知父组件通常使用组件事件 emit（Day 4）。
+今天保留 `:onPick`，是为了 Day 4 对照 `props.onPick(file)` 与 `emit('pick', file)`。
+迁移时还要调整声明和父组件绑定，不能只替换调用语句。
+2026-10-13 更正旧记录：「函数 prop 在 Vue 中不合法」和「跨组件通信一律 emit」均不准确。
 
 ### 📚 学源已报（规则 12）
 
@@ -322,10 +322,42 @@ ly 说「推送 git」时才暴露。违反全局铁律 9（用真工具调用�
 - `week3/frontend/src/components/FilePicker.vue`（**新建**，79 行，全是 TODO，实现未填）
 - `week4/README.md`（本节 + 进度表 Day 2/Day 3 两行）
 
-### 待 ly 动手（未完成）
+### Day 3 动手验收（2026-10-13 更新）
 
-- [ ] 【3.1】`defineProps` 三个 prop（`onPick` 要写完整函数签名，不许 `Function`）
-- [ ] 【3.2】`handleChange` 搬运 + 改最后一行（`?? null` 为什么不能省）
-- [ ] 【3.3】学源三问（defineProps 叫什么 / 单向绑定的两个例外场景 / camelCase↔kebab-case）
-- [ ] 【3.4】模板三处绑定（**哪个要冒号哪个不要**）
-- [ ] 父组件 `FileUploader.vue` 三处：import / 换 `<input>` 那行 / 改 `handleFileChange` 签名
+- [x] 【3.1】声明 `accept`、`disabled` 和完整函数签名的 `onPick`；`defineProps<...>()` 已调用。
+- [x] 【3.2】子组件读取文件并调用 `props.onPick(input.files?.[0] ?? null)`。
+- [x]* 【3.3】Q1 由 ly 回答；Q2/Q3 经教练讲解后填入参考答案，不计为独立答题通过。
+- [x] 【3.4】绑定 `props.accept`、`props.disabled` 和 `@change`；模板可使用 `props.` 前缀。
+- [x] 父组件引入并使用 FilePicker，通过函数 prop 更新自己的 selectedFile；旧处理函数已注释保留。
+- [x] `pnpm build` 通过，含 TypeScript 检查和 Vite 构建。
+- [x] 后端依赖检查通过，直连 `/health` 与代理 `/api/health` 均返回 HTTP 200。
+- [x] 项目自带 `attention.pdf` 经 `/api/summarize` 返回 HTTP 200、有效摘要、`truncated: false`；ly 随后确认浏览器测试通过。
+- [ ] 正式 Day 3 复盘未出题、未评分；文档阅读时长未自报。
+
+### 本次环境恢复与验证边界
+
+- Windows 本地使用 pnpm 11.20.0 与项目 Node 24.19.0；Axios、Router、Pinia 的现有配置已核对，未重复创建。
+- 后端使用根目录 `.venv`，前端监听 127.0.0.1:5174，后端监听 127.0.0.1:8000。
+- 本次 502 由后端未启动引起；已补齐依赖和本机配置，恢复前后端链路。
+- 根目录 `.env` 和 `.venv/` 被 Git 忽略，不进入提交。新机器须自行安装依赖并配置密钥。
+- 推送前复查：前端已重新启动，但当前本机密钥配置为空，后端启动被 SDK 拒绝；此前真实上传成功的记录仍有效，后端再次启动前须补回本机配置。
+- 上传成功路径已验；未重新验证全部错误码、截断场景和 loading 时的禁用交互。
+
+### 下一步：Week 4 Day 4（尚未开始）
+
+1. 学习组件事件和 defineEmits，将 FilePicker 的 onPick 函数 prop 改成 pick 事件，父组件用 @pick 接收。
+2. 拆出 ResultPanel.vue，以 props 接收结果，保留摘要换行、token、成本、模型名和截断提示。
+3. 构建并验证上传后的结果展示。学源：Vue「组件事件」与 defineEmits，预算 30 分钟。
+
+### 不要报成 bug 的清单
+
+- 未选文件时按钮可点击是现有设计，由 handleSubmit 显示 No file selected；只有 loading 时禁用。教练此前的按钮验收条件已更正。
+- Day 3 保留函数 prop 是对照教学安排；Day 4 才改成 emit。
+- 前端仍放在 week3/frontend，Week 4 的目录重构留到 Day 7。
+
+### 本次文件清单
+
+- `week3/frontend/src/components/FilePicker.vue`、`FileUploader.vue`：ly 完成组件拆分与父子连接；教练仅更正误导性注释和空白。
+- `week3/frontend/package.json`、`pnpm-lock.yaml`：固定 Windows 本地 pnpm/Node 运行时。
+- `week3/frontend/README.md`：补齐前后端启动步骤和验证记录。
+- `week4/README.md`、`LEARNING-PLAN.md`、`week1/CLAUDE.md`：更新当前位置、验收证据和下一步。

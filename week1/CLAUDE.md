@@ -436,6 +436,13 @@ screen.pdf（2026-03 · 15 页）《个人定制学习路线》 ← 根，9 个�
 
 ## 当前进度
 
+**2026-10-13 更新：Week 4 Day 3 动手与上传测试通过，正式复盘未做。**
+FilePicker 已声明 props、处理文件选择并通过函数 prop 回传；父组件继续维护 selectedFile。
+Q2/Q3 经教练讲解后填入参考答案，不计为独立答题成绩。
+下一步 Week 4 Day 4：defineEmits / pick 事件 + ResultPanel，尚未开始。
+Windows 本机前后端已恢复；启动步骤见 `week3/frontend/README.md`，详细进度见 `week4/README.md`。
+当前位置以 `LEARNING-PLAN.md` §1 与 Week 4 日志为准，以下为旧进度留档。
+
 **2026-08-05：Week 2 Day 3 完成**（FastAPI 服务实跑通过，复盘 1.3/3），**Day 4 进行中**。
 同日发现三份路线文档只读了一份，**路线按总纲 `screen.pdf` 重排**（见上）。
 

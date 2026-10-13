@@ -16,7 +16,7 @@
 import { ref, computed } from 'vue'
 import axios from 'axios'
 import type { SummarizeResponse, ApiError } from '@/types/api'
-
+import FilePicker from './FilePicker.vue'
 // ---------------------------------------------------------------
 // Day 5 的三个状态（保留）
 // ---------------------------------------------------------------
@@ -55,10 +55,10 @@ const canSubmit = computed(() => status.value !== 'loading')
 // ---------------------------------------------------------------
 // Day 5 的 handleFileChange（保留，但有一处要补 —— 见 6.5 的 ⚠️）
 // ---------------------------------------------------------------
-function handleFileChange(e: Event) {
-  const input = e.target as HTMLInputElement
-  selectedFile.value = input.files?.[0] ?? null
-}
+// function handleFileChange(e: Event) {
+//   const input = e.target as HTMLInputElement
+//   selectedFile.value = input.files?.[0] ?? null
+// }
 
 // ---------------------------------------------------------------
 // TODO【6.5】handleSubmit —— 今天的主干
@@ -178,7 +178,7 @@ const buttonText = computed(() => {
 
 <template>
   <!-- Day 5 的三个元素（保留） -->
-  <input type="file" accept="application/pdf" @change="handleFileChange" />
+  <FilePicker :accept="'application/pdf'" :disabled="status === 'loading'" :onPick="(file) => selectedFile = file" />
   <button @click="handleSubmit"  :disabled="!canSubmit">{{ buttonText }}</button>
   <!-- ---------------------------------------------------------------
        TODO【6.7】模板三态 + 结果
