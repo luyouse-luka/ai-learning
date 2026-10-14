@@ -4,6 +4,9 @@
 // 今天只做 props（父 → 子）。往上回传用的 onPick 是教学权宜：
 // Vue 的地道做法是 emit（Day 4），今天先用函数 prop，是为了 Day 4 有个能对照的旧版本。
 // Callback props are supported; Day 4 compares this version with component events.
+const emit = defineEmits<{
+  (e: 'pick', file: File | null): void
+}>()
 
 // ---------------------------------------------------------------
 // TODO【3.1】defineProps —— 今天的核心
@@ -19,7 +22,6 @@
 const props = defineProps<{
   accept: string
   disabled: boolean
-  onPick: (file: File | null) => void
 }>()
 
 // ---------------------------------------------------------------
@@ -36,7 +38,7 @@ const props = defineProps<{
 // ---------------------------------------------------------------
 function handleFileChange(e: Event) {
   const input = e.target as HTMLInputElement
-  props.onPick(input.files?.[0] ?? null)
+  emit('pick', input.files?.[0] ?? null)
 }
 
 // ---------------------------------------------------------------

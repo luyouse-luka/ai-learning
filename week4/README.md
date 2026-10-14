@@ -37,9 +37,9 @@
 |---|---|---|---|---|---|
 | 1 | 清账 + AI 线 | **ly 本人跑满四条路径**（清 Week 3 自检⑤）+ **Prompt 黄金 5 段结构** | `week2/api/prompts.py`（新建） | ☑ | 1.5 / 3 |
 | 2 | AI 线 | **8 大技法挑 3 个**（Role / Few-shot / Negative）真改进 `/summarize` 的 prompt，前后对照 | `week2/api/prompts.py` | ☑ | 1 / 3（09-23 补答） |
-| 3 | 主线 | **组件拆分（一）**：从 `FileUploader.vue` 切出「选文件」子组件，**props 往下传** | `components/FilePicker.vue` | ◐ 正课☑ 动手与测试☑；正式复盘未做 | — |
-| 4 | 主线 | **组件拆分（二）**：切出「结果展示」子组件，**emit 往上抛** | `components/ResultPanel.vue` | ☐ | — |
-| 5 | 主线 | **状态提升**：三个组件都要读的状态放哪？先用「提到父组件」做一版，**亲眼看见 props 钻透** | 同上 | ☐ | — |
+| 3 | 主线 | **组件拆分（一）**：从 `FileUploader.vue` 切出「选文件」子组件，**props 往下传** | `components/FilePicker.vue` | ☑ 正课、动手与测试通过；与 Day 4 合并复盘 | 合并 2 / 3 |
+| 4 | 主线 | **组件拆分（二）**：切出「结果展示」子组件，**emit 往上抛** | `components/ResultPanel.vue` | ☑ 动手与验证通过；非空检查误解已讲解，后续回顾 | 同上，不另计 |
+| 5 | 主线 | **状态提升**：三个组件都要读的状态放哪？先用「提到父组件」做一版，**亲眼看见 props 钻透** | 同上 | ◐ 兄弟组件共享 result 的场景回顾待答，未动手 | — |
 | 6 | 主线 | **Pinia 入门**：把提升上去的状态搬进 store，对照 Day 5 那版看省掉了什么 | `stores/summarize.ts` | ☐ | — |
 | 7 | — | 巩固：三版对照（单组件 / props 提升 / Pinia）+ Week 4 总复盘 + **目录重构**（Week 3 欠的） | — | ☐ | — |
 
@@ -341,18 +341,42 @@ ly 说「推送 git」时才暴露。违反全局铁律 9（用真工具调用�
 - 本次 502 由后端未启动引起；已补齐依赖和本机配置，恢复前后端链路。
 - 根目录 `.env` 和 `.venv/` 被 Git 忽略，不进入提交。新机器须自行安装依赖并配置密钥。
 - 推送前复查：前端已重新启动，但当前本机密钥配置为空，后端启动被 SDK 拒绝；此前真实上传成功的记录仍有效，后端再次启动前须补回本机配置。
+- 后续更新（2026-10-13）：本机密钥已重新配置，ly 明确授权提交并推送根目录 `.env`（含密钥）；本次将其强制加入 Git 跟踪，`.venv/` 仍忽略。此前「.env 不进入提交」描述的是上一次推送，本次决定已改变；未重新验证后端启动。
 - 上传成功路径已验；未重新验证全部错误码、截断场景和 loading 时的禁用交互。
 
-### 下一步：Week 4 Day 4（尚未开始）
+### Day 4 计划（2026-10-13 留档）
 
 1. 学习组件事件和 defineEmits，将 FilePicker 的 onPick 函数 prop 改成 pick 事件，父组件用 @pick 接收。
 2. 拆出 ResultPanel.vue，以 props 接收结果，保留摘要换行、token、成本、模型名和截断提示。
 3. 构建并验证上传后的结果展示。学源：Vue「组件事件」与 defineEmits，预算 30 分钟。
 
+### Day 4 开课与 emit 验收（2026-10-14）
+
+- Day 3 不计分回顾：状态归属回答正确；未取到文件时的 undefined 与 null 混淆；父组件函数 prop 的绑定与接收函数经讲解订正。正式 Day 3 复盘仍未做。
+- 已讲解组件事件、defineEmits、事件参数及类型声明；学源已报，预算 30 分钟，阅读完成情况未自报。
+- ly 完成 FilePicker 的 pick 事件声明与触发、删除 onPick prop，父组件改用 @pick 更新 selectedFile。
+- 教练执行 `pnpm build`，TypeScript 检查与 Vite 构建均通过；本次未启动前后端，未重新验证浏览器选择文件或真实上传。
+- 已实际创建 ResultPanel.vue 待填写骨架；下一步由 ly 声明 result prop、迁移结果展示和样式，随后完成分段缩进。
+- 后续验收：ly 已填写 ResultPanel，迁移六字段展示与 summary 样式，父组件通过 `status === 'done' && result !== null` 保证子组件接收非空结果；模板中的可见 `//` 文本已改成 HTML 注释。`pnpm build` 再次通过。下一步摘要分段与首行缩进，浏览器展示及真实上传尚未重验。
+- 最新验收：摘要分段、首尾空白清理、空段过滤及 `text-indent: 2em` 已实现，旧全文摘要节点已删除。使用 Vue 编译器与服务端渲染，以明确标注的测试数据检查：摘要仅显示一次，截断提示 true/false 两分支通过，scoped 样式编译通过；但 input_tokens、output_tokens、cost、model 四个展示节点同时被删除，元数据展示检查未通过，待 ly 恢复。构建仍通过；本次无模型调用，未测浏览器视觉与真实上传。检查命令直接经标准输入运行，未创建临时文件。
+- 再次检查：四个元数据展示行已恢复，标签及测试值的服务端渲染检查通过；但 ly 同时恢复旧全文摘要节点并注释 v-for，测试摘要实际仅生成一个 p，分段/去首尾空白/空段过滤未作用于展示。computed 仍存在；下一步恢复分段摘要节点、移除旧全文节点，保留四字段。测试先移除 HTML 注释再统计实际摘要节点，避免注释内的模板代码污染判据。截断提示两分支仍通过。
+- 最后一次代码检查：ly 删除旧全文摘要节点并恢复 v-for，四字段保留。同一测试数据实际生成两个摘要 p，内容分别为「第一段测试」「第二段测试」，分段、trim 和空段过滤通过；四字段标签和值、截断提示 true/false 两分支及 scoped 样式编译均通过。pnpm build 的类型检查与构建通过。摘要目前位于元数据和截断提示之后，属于展示顺序选择；可移到标题之后。无模型调用，浏览器视觉、迁移后真实上传与正式复盘仍待完成；未代写核心代码，未创建临时文件。
+- 文件清单：`week3/frontend/src/components/FilePicker.vue`、`FileUploader.vue`（ly 修改）、`ResultPanel.vue`（教练提供骨架）；`week4/README.md`、`LEARNING-PLAN.md`、`week1/CLAUDE.md`（更新进度）。
+- 有意保留：FilePicker 的 Day 3 历史教学注释仍提及 onPick，不代表当前实现仍使用函数 prop。
+- 浏览器验收：ly 确认上一轮给出的浏览器测试全部通过，包括 loading 提示与禁用、summarize 返回 200、摘要无重复与段落缩进、四字段展示及 truncated=false 时无警告。这是 ly 的实测反馈，教练未独立操作浏览器；truncated=true 分支的验证仍来自此前服务端渲染测试。Day 3 / Day 4 动手阶段收尾，下一步三题复盘，待 ly 作答后记录结果。
+
+### Day 3 / Day 4 合并收尾复盘（2026-10-14）
+
+- 合并三题得分 2 / 3，不拆成两份独立成绩。Q1：ly 回答通过 emit pick 传文件、selectedFile 由父组件修改，正确。Q2：ly 将额外非空检查归因于 idle 或其他状态，未答到 status 与 result 独立；idle 已被 status 条件挡住，教练讲解 done 本身不能证明 result 非空，不计独立通过。Q3：ly 回答依赖变化触发 computed 更新，正确；题面明确假设 ResultPanel 保持挂载。
+- Day 3 / Day 4 收尾，非空检查纳入后续间隔回顾；官方学源阅读完成情况仍未自报，不补造完成记录。
+- Day 5 首步：以假设新增、与 ResultPanel 并列的 CostPanel 展示同一结果 cost/model 为场景，回顾 result 的状态归属与传递。仅提出场景问题，待 ly 回答后讲解；尚未创建 CostPanel 或修改核心代码。
+- 本次保存的接续问题：新增与 ResultPanel 并列的 CostPanel 后，共用的 result 应由哪个组件维护、怎样传给两个子组件？ly 尚未作答；下次从这里继续，不重复 Day 3 / Day 4 动手验收。
+- Git 保存：本次原始推送被 GitHub 密钥保护拦截，原因是此前尚未发布的提交跟踪了根目录 .env。保留本机配置文件与旧提交的本地备份，从待推送历史排除 .env；推送范围为组件代码、学习进度及修正后的本机启动文档。`.env` 和 `.venv/` 继续忽略，不绕过 GitHub 保护。
+
 ### 不要报成 bug 的清单
 
 - 未选文件时按钮可点击是现有设计，由 handleSubmit 显示 No file selected；只有 loading 时禁用。教练此前的按钮验收条件已更正。
-- Day 3 保留函数 prop 是对照教学安排；Day 4 才改成 emit。
+- Day 3 保留函数 prop 是对照教学安排；Day 4 已迁移为 emit。
 - 前端仍放在 week3/frontend，Week 4 的目录重构留到 Day 7。
 
 ### 本次文件清单

@@ -17,6 +17,7 @@ import { ref, computed } from 'vue'
 import axios from 'axios'
 import type { SummarizeResponse, ApiError } from '@/types/api'
 import FilePicker from './FilePicker.vue'
+import ResultPanel from './ResultPanel.vue'
 // ---------------------------------------------------------------
 // Day 5 的三个状态（保留）
 // ---------------------------------------------------------------
@@ -178,7 +179,7 @@ const buttonText = computed(() => {
 
 <template>
   <!-- Day 5 的三个元素（保留） -->
-  <FilePicker :accept="'application/pdf'" :disabled="status === 'loading'" :onPick="(file) => selectedFile = file" />
+  <FilePicker :accept="'application/pdf'" :disabled="status === 'loading'" @pick="(file) => selectedFile = file" />
   <button @click="handleSubmit"  :disabled="!canSubmit">{{ buttonText }}</button>
   <!-- ---------------------------------------------------------------
        TODO【6.7】模板三态 + 结果
@@ -199,7 +200,8 @@ const buttonText = computed(() => {
        --------------------------------------------------------------- -->
   <p v-if="status === 'loading'">生成中…</p>
   <p v-else-if="status === 'error'">{{ errorMsg }}</p>
-  <section v-else-if="status === 'done'">
+  <!-- // 结果块的内容在 ResultPanel.vue 里，Day 7 再搬过来 -->
+  <!-- <section v-else-if="status === 'done'">
     <h2>结果</h2>
     <p class="summary">{{ result?.summary }}</p>
     <p>input_tokens: {{ result?.input_tokens }}</p>
@@ -207,12 +209,12 @@ const buttonText = computed(() => {
     <p>cost: {{ result?.cost }}</p>
     <p>model: {{ result?.model }}</p>
     <p v-if="result?.truncated">⚠️ 警告：内容被截断，请换一个 PDF</p>
-  </section>
+  </section> -->
+  <ResultPanel v-if="status === 'done' && result !== null" :result="result" />
 </template>
+
 
 <style scoped>
 /* 唯一的功能性样式：不写这行，后端 summary 里的换行会被全压成一行 */
-.summary {
-  white-space: pre-wrap;
-}
+
 </style>

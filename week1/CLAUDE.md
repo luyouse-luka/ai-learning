@@ -436,10 +436,10 @@ screen.pdf（2026-03 · 15 页）《个人定制学习路线》 ← 根，9 个�
 
 ## 当前进度
 
-**2026-10-13 更新：Week 4 Day 3 动手与上传测试通过，正式复盘未做。**
-FilePicker 已声明 props、处理文件选择并通过函数 prop 回传；父组件继续维护 selectedFile。
-Q2/Q3 经教练讲解后填入参考答案，不计为独立答题成绩。
-下一步 Week 4 Day 4：defineEmits / pick 事件 + ResultPanel，尚未开始。
+**2026-10-14 更新：Week 4 Day 3 / Day 4 收尾，合并复盘 2/3；Day 5 场景回顾待答。**
+ly 已将 FilePicker 的函数 prop 迁移为 pick 事件，父组件用 @pick 维护 selectedFile；类型检查与构建通过，ly 确认迁移后的浏览器测试全部通过，教练未独立操作浏览器。
+Day 3 的 Q2/Q3 经教练讲解后填入参考答案，不计为独立答题成绩；本日三条回顾不计分。
+ResultPanel 非空检查、摘要分段/trim/空段过滤及四字段展示通过，截断提示两分支与 scoped 样式编译通过；类型检查与构建通过。浏览器视觉与迁移后真实上传由 ly 确认通过。合并复盘 Q1/Q3 正确，Q2 未区分 status 与 result 的独立性，教练已讲解，纳入后续回顾；不拆成两份成绩。Day 5 以假设兄弟 CostPanel 共享 result 的场景回顾开场，待答，未动手。
 Windows 本机前后端已恢复；启动步骤见 `week3/frontend/README.md`，详细进度见 `week4/README.md`。
 当前位置以 `LEARNING-PLAN.md` §1 与 Week 4 日志为准，以下为旧进度留档。
 

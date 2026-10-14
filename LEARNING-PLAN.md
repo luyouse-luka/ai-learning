@@ -41,7 +41,7 @@ Claude Code 在本目录工作时读 `week1/CLAUDE.md`（教学合约）→ 再�
 
 | 轨道 | 位置 | 说明 |
 |---|---|---|
-| **主线**（总纲 9 个月） | 阶段一 · **第 1 个月第 2 周**（Week 4） | 2026-10-13：Day 3 FilePicker 拆分、类型检查、构建与真实上传通过；正式复盘未做。下一步 Day 4：emit + ResultPanel，尚未开始。前端仍在 week3/frontend；Windows 使用项目 Node 24.19.0 / pnpm 11.20.0。 |
+| **主线**（总纲 9 个月） | 阶段一 · **第 1 个月第 2 周**（Week 4） | 2026-10-14：Day 3 / Day 4 收尾，合并复盘 2/3；状态与结果独立的非空检查误解已讲解，列入后续回顾。代码、构建与结果渲染检查通过，ly 确认迁移后的浏览器测试全部通过；教练未独立操作浏览器。Day 5 开始，以兄弟组件共享 result 为场景回顾，待答，未修改核心代码。前端仍在 week3/frontend；Windows 使用项目 Node 24.19.0 / pnpm 11.20.0。 |
 | **AI 线**（可并行） | 阶段 1 收尾完成 → 阶段 2 · **Prompt 工程** | Week 4 Day 1-2 的五段结构与 Role / Few-shot / Negative 实验已记录于 week4/README.md；复盘得分分别为 1.5/3、1/3。测试集与 LangSmith 不排入本周。 |
 
 **当前 Week 4 排期** → 详见 **`week4/README.md`**：

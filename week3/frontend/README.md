@@ -43,8 +43,10 @@ python -m venv .venv
 
 Create a root `.env` using `.env.example` as the reference and set your own
 `DEEPSEEK_API_KEY` locally. The backend initializes its model client at import
-time, so configure the key before starting it. `.env` and `.venv/` are ignored
-by Git. Do not reuse an imported Linux virtual environment on Windows.
+time, so configure the key before starting it. GitHub push protection blocked
+the unpublished commit that tracked `.env`; the 2026-10-14 progress sync removes
+it from the outgoing history while preserving the local file. Both `.env` and
+`.venv/` are ignored. Do not reuse an imported Linux virtual environment on Windows.
 
 ```powershell
 .\.venv\Scripts\python.exe -m uvicorn week2.api.main:app --host 127.0.0.1 --port 8000
@@ -69,6 +71,8 @@ also confirmed the browser upload worked; other error paths were not rechecked.
 At the pre-push recheck, the local key setting was empty and the backend could
 not restart. Restore the local key before running the backend again; the
 earlier successful upload does not establish current service availability.
+The key was subsequently configured again and the learner authorized committing
+the root `.env`; backend availability was not rechecked in that follow-up.
 
 ### 顺带发现 / 未修
 
