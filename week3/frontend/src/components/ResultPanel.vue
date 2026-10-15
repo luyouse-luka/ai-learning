@@ -23,7 +23,7 @@ const paragraphs = computed(() => props.result.summary.split('\n\n').map(p => p.
     <p>model: {{ result?.model }}</p>
     <p v-if="props.result.truncated">⚠️ 警告：内容被截断，请换一个 PDF</p>
     <p v-for="(paragraph, index) in paragraphs" :key="index" class="summary">
-  {{ paragraph }}
+   {{ paragraph }}
   </p>
   </section>
 </template>

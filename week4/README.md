@@ -39,7 +39,7 @@
 | 2 | AI 线 | **8 大技法挑 3 个**（Role / Few-shot / Negative）真改进 `/summarize` 的 prompt，前后对照 | `week2/api/prompts.py` | ☑ | 1 / 3（09-23 补答） |
 | 3 | 主线 | **组件拆分（一）**：从 `FileUploader.vue` 切出「选文件」子组件，**props 往下传** | `components/FilePicker.vue` | ☑ 正课、动手与测试通过；与 Day 4 合并复盘 | 合并 2 / 3 |
 | 4 | 主线 | **组件拆分（二）**：切出「结果展示」子组件，**emit 往上抛** | `components/ResultPanel.vue` | ☑ 动手与验证通过；非空检查误解已讲解，后续回顾 | 同上，不另计 |
-| 5 | 主线 | **状态提升**：三个组件都要读的状态放哪？先用「提到父组件」做一版，**亲眼看见 props 钻透** | 同上 | ◐ 兄弟组件共享 result 的场景回顾待答，未动手 | — |
+| 5 | 主线 | **状态提升**：三个组件都要读的状态放哪？先用「提到父组件」做一版，**亲眼看见 props 钻透** | 同上 | ◐ 状态提升构建通过，ly 确认浏览器上传与重传通过；CostPanel 骨架已建，待填写与接入 | — |
 | 6 | 主线 | **Pinia 入门**：把提升上去的状态搬进 store，对照 Day 5 那版看省掉了什么 | `stores/summarize.ts` | ☐ | — |
 | 7 | — | 巩固：三版对照（单组件 / props 提升 / Pinia）+ Week 4 总复盘 + **目录重构**（Week 3 欠的） | — | ☐ | — |
 
@@ -372,6 +372,17 @@ ly 说「推送 git」时才暴露。违反全局铁律 9（用真工具调用�
 - Day 5 首步：以假设新增、与 ResultPanel 并列的 CostPanel 展示同一结果 cost/model 为场景，回顾 result 的状态归属与传递。仅提出场景问题，待 ly 回答后讲解；尚未创建 CostPanel 或修改核心代码。
 - 本次保存的接续问题：新增与 ResultPanel 并列的 CostPanel 后，共用的 result 应由哪个组件维护、怎样传给两个子组件？ly 尚未作答；下次从这里继续，不重复 Day 3 / Day 4 动手验收。
 - Git 保存：本次原始推送被 GitHub 密钥保护拦截，原因是此前尚未发布的提交跟踪了根目录 .env。保留本机配置文件与旧提交的本地备份，从待推送历史排除 .env；推送范围为组件代码、学习进度及修正后的本机启动文档。`.env` 和 `.venv/` 继续忽略，不绕过 GitHub 保护。
+
+### Day 5 状态提升（2026-10-15）
+
+- 场景回顾：ly 回答共用 result 由 FileUploader 维护、通过 prop 传给两个子组件，正确，不计分。随后讲解状态提升与逐级传递；目前上移属于教学安排，CostPanel 尚未创建。
+- ly 在教练示例指导下完成：App 持有唯一的 result ref，通过 prop 传给 FileUploader；FileUploader 经 result-change 通知清空与成功结果，再把收到的 prop 传给 ResultPanel。status、selectedFile、errorMsg 仍由 FileUploader 维护。
+- 已讲解模板自动解包 ref 与 script 函数中使用 .value 的区别；事件处理箭头函数写在模板中时仍属于模板表达式。ly 已更正模板赋值并恢复 ApiError 类型导入。
+- 教练执行 pnpm build，vue-tsc 类型检查与 Vite 构建均通过；未运行浏览器交互或调用模型。下一步先验证上传成功及再次上传时清除旧结果，再加入 App 下的 CostPanel 观察共享状态；Day 5 尚未完成，未出正式复盘题。
+- 后续浏览器验收：ly 确认上传后摘要与四字段展示、再次上传时 loading 清除旧结果并显示新结果两条通过，教练未独立操作浏览器。已创建 CostPanel.vue 的 TODO 骨架，待 ly 声明非空 result prop、展示 cost/model，并在 App 中以 result 非空为条件接入；CostPanel 不维护另一份结果或调用接口。ResultPanel 原有 cost/model 暂时保留，作为两个读取者数值一致的对照，属于本轮有意重复展示。
+- 文件清单：week3/frontend/src/App.vue、week3/frontend/src/components/FileUploader.vue（ly 修改）；ResultPanel.vue 仅有 ly 的缩进变化；week4/README.md、LEARNING-PLAN.md、week1/CLAUDE.md（教练更新进度）。核心代码未由教练代改。
+- 新增文件：week3/frontend/src/components/CostPanel.vue（教练创建 TODO 骨架，尚未接入 App；实现由 ly 填写）。
+- Git 保存接续点（ly 授权记录并推送）：本轮保存状态提升代码、CostPanel TODO 骨架及三份进度文档；下一次从填写 CostPanel 的 result prop、展示 cost/model、在 App 中非空接入继续，尚未完成 Day 5。保存前重新执行 pnpm build 通过，fetch 后本地与 origin/master 无分叉；教练仅清理 App.vue、FileUploader.vue 各一处行尾空格。文件清单为 App.vue、FileUploader.vue、ResultPanel.vue、CostPanel.vue、week4/README.md、LEARNING-PLAN.md、week1/CLAUDE.md；.env 与 .venv 仍忽略。
 
 ### 不要报成 bug 的清单
 
