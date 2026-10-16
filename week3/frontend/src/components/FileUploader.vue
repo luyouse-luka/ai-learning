@@ -36,6 +36,7 @@ const status = ref<'idle' | 'loading' | 'done' | 'error'>('idle')
 const props= defineProps<{
   result: SummarizeResponse | null // 读取父组件传来的结果。
 }>()
+
 const emit = defineEmits<{
   (e: 'result-change', newResult: SummarizeResponse | null): void // emit('result-change', 某个值)：通知父组件保存这个值。
 }>()

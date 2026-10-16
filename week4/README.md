@@ -39,7 +39,7 @@
 | 2 | AI 线 | **8 大技法挑 3 个**（Role / Few-shot / Negative）真改进 `/summarize` 的 prompt，前后对照 | `week2/api/prompts.py` | ☑ | 1 / 3（09-23 补答） |
 | 3 | 主线 | **组件拆分（一）**：从 `FileUploader.vue` 切出「选文件」子组件，**props 往下传** | `components/FilePicker.vue` | ☑ 正课、动手与测试通过；与 Day 4 合并复盘 | 合并 2 / 3 |
 | 4 | 主线 | **组件拆分（二）**：切出「结果展示」子组件，**emit 往上抛** | `components/ResultPanel.vue` | ☑ 动手与验证通过；非空检查误解已讲解，后续回顾 | 同上，不另计 |
-| 5 | 主线 | **状态提升**：三个组件都要读的状态放哪？先用「提到父组件」做一版，**亲眼看见 props 钻透** | 同上 | ◐ 状态提升构建通过，ly 确认浏览器上传与重传通过；CostPanel 骨架已建，待填写与接入 | — |
+| 5 | 主线 | **状态提升**：三个组件都要读的状态放哪？先用「提到父组件」做一版，**亲眼看见 props 钻透** | 同上 | ◐ 动手、学源及 props/inject 两版验证通过；浏览器由 ly 确认，待三题正式复盘作答 | 待答 |
 | 6 | 主线 | **Pinia 入门**：把提升上去的状态搬进 store，对照 Day 5 那版看省掉了什么 | `stores/summarize.ts` | ☐ | — |
 | 7 | — | 巩固：三版对照（单组件 / props 提升 / Pinia）+ Week 4 总复盘 + **目录重构**（Week 3 欠的） | — | ☐ | — |
 
@@ -382,13 +382,35 @@ ly 说「推送 git」时才暴露。违反全局铁律 9（用真工具调用�
 - 后续浏览器验收：ly 确认上传后摘要与四字段展示、再次上传时 loading 清除旧结果并显示新结果两条通过，教练未独立操作浏览器。已创建 CostPanel.vue 的 TODO 骨架，待 ly 声明非空 result prop、展示 cost/model，并在 App 中以 result 非空为条件接入；CostPanel 不维护另一份结果或调用接口。ResultPanel 原有 cost/model 暂时保留，作为两个读取者数值一致的对照，属于本轮有意重复展示。
 - 文件清单：week3/frontend/src/App.vue、week3/frontend/src/components/FileUploader.vue（ly 修改）；ResultPanel.vue 仅有 ly 的缩进变化；week4/README.md、LEARNING-PLAN.md、week1/CLAUDE.md（教练更新进度）。核心代码未由教练代改。
 - 新增文件：week3/frontend/src/components/CostPanel.vue（教练创建 TODO 骨架，尚未接入 App；实现由 ly 填写）。
+
+### Day 5 接续（2026-10-16）
+
+- 非空条件回顾：ly 回答 `v-if="result !== null"`，正确，不计分。
+- ly 已填写 CostPanel 的非空 result prop 与 cost/model 展示，在 App 中导入并通过 `v-if="result"`、`:result="result"` 接入。当前 result 仅有对象或 null 两种值，此条件符合要求；ResultPanel 的重复字段按原安排保留作对照。
+- 教练执行 `cd week3/frontend` 后运行 `pnpm build`，类型检查与 Vite 构建通过。尚未验证此次接入后的浏览器交互，未调用模型；下一步由 ly 检查初始隐藏、成功后两处数值一致、再次上传时费用面板随旧结果清空。Day 5 尚未完成。
+- 文件清单：week3/frontend/src/App.vue、week3/frontend/src/components/CostPanel.vue（ly 修改）；week4/README.md（教练记录）。
+- 浏览器验收：ly 确认此次 CostPanel 接入后的三条验证通过（初始隐藏、上传成功后 cost/model 与结果区一致、再次上传时旧费用清空并更新）；教练未独立操作浏览器。本日继续学习逐级传递的代价，provide/inject 仅按学源了解用途，暂不改代码；Day 5 尚未正式收尾、未出复盘题。同步更新 LEARNING-PLAN.md 与 week1/CLAUDE.md 的当前位置。
+- 学源与对照实验：ly 确认已读，随后主动尝试在 App 提供 result、CostPanel 注入，范围由原定只阅读扩为小型对照实验。最初再次 ref(null) 生成独立状态，且 inject 类型误写为普通结果；教练说明原因与对应写法后，ly 已改为提供原 result、以 Ref<SummarizeResponse | null> 注入、模板条件渲染并读取 cost/model，移除 App 对 CostPanel 的 result prop 绑定。教练重跑 pnpm build，类型检查与构建通过；此次 inject 版浏览器行为尚待 ly 验证，不沿用 props 版验收。未调用模型，未出正式复盘题。文件清单：App.vue、CostPanel.vue（ly 修改），week4/README.md、LEARNING-PLAN.md、week1/CLAUDE.md（教练更新）；FileUploader.vue、ResultPanel.vue 的现有差异仅为空白，未由教练修改。
 - Git 保存接续点（ly 授权记录并推送）：本轮保存状态提升代码、CostPanel TODO 骨架及三份进度文档；下一次从填写 CostPanel 的 result prop、展示 cost/model、在 App 中非空接入继续，尚未完成 Day 5。保存前重新执行 pnpm build 通过，fetch 后本地与 origin/master 无分叉；教练仅清理 App.vue、FileUploader.vue 各一处行尾空格。文件清单为 App.vue、FileUploader.vue、ResultPanel.vue、CostPanel.vue、week4/README.md、LEARNING-PLAN.md、week1/CLAUDE.md；.env 与 .venv 仍忽略。
+
+### Day 5 正式复盘（2026-10-16，待答）
+
+ly 确认 inject 版初始隐藏、上传成功后两处数值一致、再次上传清空并更新三条浏览器验证通过；教练未独立操作浏览器。动手与验证完成，以下三题待答，尚未评分或标记 Day 5 完成。
+
+本次 Git 保存接续点（ly 授权记录并推送）：保留 App 提供同一 result ref、CostPanel 注入的当前版本；下次直接回答以下三题，由教练逐题点评后收尾 Day 5，不重复已完成的动手和浏览器验收。Pinia 留到 Day 6。此前本会话的 pnpm build 已通过，之后未改功能代码；保存时仅清理 ResultPanel.vue 一处行尾空格，该文件因此与 HEAD 一致。提交文件清单：week3/frontend/src/App.vue、components/CostPanel.vue、components/FileUploader.vue（仅新增空行），week4/README.md、LEARNING-PLAN.md、week1/CLAUDE.md。
+
+1. 当前代码中，唯一一份 result 状态由哪个组件保存？只答组件名。
+2. FileUploader 发出 `emit('result-change', null)` 后，等页面完成更新，CostPanel 还会显示旧费用吗？回答「会 / 不会」，并用一句话说明原因。
+3. 假设 App 初始 result 为 `ref<SummarizeResponse | null>(null)`，把 `provide('result', result)` 改成 `provide('result', result.value)`，其他代码保持当前写法。上传成功后 App 的 result.value 已有结果，CostPanel 能显示费用吗？回答「能 / 不能」，并说明 provide 执行时实际提供了什么。
+
+本次记录文件清单：week4/README.md、LEARNING-PLAN.md、week1/CLAUDE.md。源码未由教练修改。
 
 ### 不要报成 bug 的清单
 
 - 未选文件时按钮可点击是现有设计，由 handleSubmit 显示 No file selected；只有 loading 时禁用。教练此前的按钮验收条件已更正。
 - Day 3 保留函数 prop 是对照教学安排；Day 4 已迁移为 emit。
 - 前端仍放在 week3/frontend，Week 4 的目录重构留到 Day 7。
+- Day 5 按 ly 的提问新增 provide/inject 对照实验：CostPanel 改为注入，FileUploader → ResultPanel 仍保留 props 链，用于对照；共享结果仍只有 App 中一份。
 
 ### 本次文件清单
 
