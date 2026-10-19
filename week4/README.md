@@ -39,8 +39,8 @@
 | 2 | AI 线 | **8 大技法挑 3 个**（Role / Few-shot / Negative）真改进 `/summarize` 的 prompt，前后对照 | `week2/api/prompts.py` | ☑ | 1 / 3（09-23 补答） |
 | 3 | 主线 | **组件拆分（一）**：从 `FileUploader.vue` 切出「选文件」子组件，**props 往下传** | `components/FilePicker.vue` | ☑ 正课、动手与测试通过；与 Day 4 合并复盘 | 合并 2 / 3 |
 | 4 | 主线 | **组件拆分（二）**：切出「结果展示」子组件，**emit 往上抛** | `components/ResultPanel.vue` | ☑ 动手与验证通过；非空检查误解已讲解，后续回顾 | 同上，不另计 |
-| 5 | 主线 | **状态提升**：三个组件都要读的状态放哪？先用「提到父组件」做一版，**亲眼看见 props 钻透** | 同上 | ◐ 动手、学源及 props/inject 两版验证通过；浏览器由 ly 确认，待三题正式复盘作答 | 待答 |
-| 6 | 主线 | **Pinia 入门**：把提升上去的状态搬进 store，对照 Day 5 那版看省掉了什么 | `stores/summarize.ts` | ☐ | — |
+| 5 | 主线 | **状态提升**：三个组件都要读的状态放哪？先用「提到父组件」做一版，**亲眼看见 props 钻透** | 同上 | ☑ 动手、学源及 props/inject 两版验证已有通过记录；10-19 正式复盘完成 | 2.5 / 3 |
+| 6 | 主线 | **Pinia 入门**：把提升上去的状态搬进 store，对照 Day 5 那版看省掉了什么 | `stores/summarize.ts` | ◐ 回顾已答并订正；进入 Setup Store 讲解，待阅读学源和填写首个 store | — |
 | 7 | — | 巩固：三版对照（单组件 / props 提升 / Pinia）+ Week 4 总复盘 + **目录重构**（Week 3 欠的） | — | ☐ | — |
 
 > **为什么 Day 5 要先做「明知会难受」的 props 提升版**：Pinia 的价值只有在**先痛过一次**之后才看得见。
@@ -55,7 +55,7 @@
 | 2 | Anthropic Prompt Engineering 文档 | Role prompting + Few-shot 两节。**跳过 CoT / 长上下文技巧** | 30 min | `§5:386` | ☐ 待 ly 自报 |
 | 3 | cn.vuejs.org | 「组件基础 → Props」一节。**跳过 props 校验、透传 attributes** | 30 min | `§2:148` | ☐ |
 | 4 | cn.vuejs.org | 「组件事件 emit」一节 + `defineEmits`。**跳过 v-model 自定义** | 30 min | `§2:148` | ☐ |
-| 5 | cn.vuejs.org | 「provide/inject」一节 —— 只为看懂它想解决什么，**今天不用它** | 20 min | `§2:148` | ☐ |
+| 5 | cn.vuejs.org | 「provide/inject」一节 —— 原定只阅读；10-16 按 ly 提问追加对照实验 | 20 min | `§2:148` | ☑ ly 确认已读，已落地 App provide / CostPanel inject；实际阅读时长未自报 |
 | 6 | pinia.vuejs.org | 「Defining a Store」+「State」两节。**跳过 getters 高级用法、插件** | 40 min | `§2:151` | ☐ |
 
 > 落地判据（规则 12）：**当天代码里有没有一处，是因为读了它才那样写的？** 复盘时写出来。答不出 = 等于没看。
@@ -393,7 +393,7 @@ ly 说「推送 git」时才暴露。违反全局铁律 9（用真工具调用�
 - 学源与对照实验：ly 确认已读，随后主动尝试在 App 提供 result、CostPanel 注入，范围由原定只阅读扩为小型对照实验。最初再次 ref(null) 生成独立状态，且 inject 类型误写为普通结果；教练说明原因与对应写法后，ly 已改为提供原 result、以 Ref<SummarizeResponse | null> 注入、模板条件渲染并读取 cost/model，移除 App 对 CostPanel 的 result prop 绑定。教练重跑 pnpm build，类型检查与构建通过；此次 inject 版浏览器行为尚待 ly 验证，不沿用 props 版验收。未调用模型，未出正式复盘题。文件清单：App.vue、CostPanel.vue（ly 修改），week4/README.md、LEARNING-PLAN.md、week1/CLAUDE.md（教练更新）；FileUploader.vue、ResultPanel.vue 的现有差异仅为空白，未由教练修改。
 - Git 保存接续点（ly 授权记录并推送）：本轮保存状态提升代码、CostPanel TODO 骨架及三份进度文档；下一次从填写 CostPanel 的 result prop、展示 cost/model、在 App 中非空接入继续，尚未完成 Day 5。保存前重新执行 pnpm build 通过，fetch 后本地与 origin/master 无分叉；教练仅清理 App.vue、FileUploader.vue 各一处行尾空格。文件清单为 App.vue、FileUploader.vue、ResultPanel.vue、CostPanel.vue、week4/README.md、LEARNING-PLAN.md、week1/CLAUDE.md；.env 与 .venv 仍忽略。
 
-### Day 5 正式复盘（2026-10-16，待答）
+### Day 5 正式复盘（2026-10-16 出题，2026-10-19 完成）
 
 ly 确认 inject 版初始隐藏、上传成功后两处数值一致、再次上传清空并更新三条浏览器验证通过；教练未独立操作浏览器。动手与验证完成，以下三题待答，尚未评分或标记 Day 5 完成。
 
@@ -404,6 +404,34 @@ ly 确认 inject 版初始隐藏、上传成功后两处数值一致、再次上
 3. 假设 App 初始 result 为 `ref<SummarizeResponse | null>(null)`，把 `provide('result', result)` 改成 `provide('result', result.value)`，其他代码保持当前写法。上传成功后 App 的 result.value 已有结果，CostPanel 能显示费用吗？回答「能 / 不能」，并说明 provide 执行时实际提供了什么。
 
 本次记录文件清单：week4/README.md、LEARNING-PLAN.md、week1/CLAUDE.md。源码未由教练修改。
+
+#### 2026-10-19 作答与批改：2.5 / 3
+
+- Q1：ly 答「App」，正确，1 / 1；唯一 result ref 由 App 保存。
+- Q2：ly 答「不会，result 会更新，costpanel 重新调用」，结论正确、机制不准确，0.5 / 1。教练订正：App 将 result 设为 null，父模板的 v-if 不成立，CostPanel 被移除，不是重新调用它来展示空值。
+- Q3：ly 答「不能，实际就已经解包了」，正确识别取出当前值而非提供原 ref，1 / 1；教练补明：执行 provide 时 result.value 为 null，之后 App 替换 result.value 不会更新这份已提供的 null。不要泛化为所有 .value 都不具响应性；对象值需区分属性修改与整体替换。
+- Day 5 正式收尾。此前两版构建及 ly 确认的浏览器验证沿用 10-16 记录，本轮未重跑构建、浏览器或模型调用；仅更新学习文档。
+- 下一接续点：Week 4 Day 6，先做不计分的间隔回顾，再讲 Pinia；回顾优先覆盖条件渲染与 provide 原 ref / 当前值的区别。ly 要求题目一次发齐，后续回顾或复盘同轮给出全部题目，答案另轮点评。
+- 文件清单：week4/README.md、LEARNING-PLAN.md、week1/CLAUDE.md。未修改功能代码，未提交或推送。
+
+### Day 6 开课（2026-10-19，回顾完成，Pinia 入门）
+
+- 已按合约一次发齐三条不计分回顾，原题如下；作答与后续进度见本节末尾。
+  1. App 中的 result 变成 null 后，v-if="result" 不成立。此时 CostPanel 是被移除，还是仍保留、只把费用文字清空？
+  2. status 和 result 是两个独立状态。只知道 status === 'done'，能否断定 result 一定不是 null？回答「能 / 不能」，说明一句原因。
+  3. 假设 ResultPanel 保持挂载，父组件传入了另一份结果，其中 summary 发生变化。用于摘要分段的 computed 会自动更新，还是需要手动调用？
+- ly 补充月度要求：每完成一个课程月的内容，及时核查技术发展并更新计划，确保所学能实际使用。流程已写入 LEARNING-PLAN.md §0/§11 与 week1/CLAUDE.md 规则 13；本轮未把任何课程月标为完成，未调整 Day 6 的 Pinia 安排。
+- 文件清单：LEARNING-PLAN.md、week1/CLAUDE.md、week4/README.md；仅更新教学约定和接续点，未修改功能代码，未执行构建、模型调用、提交或推送。
+
+#### 回顾批改与首步任务
+
+- 不计分。Q1：ly 答「保留组件，清空费用文字」，错误；教练订正为 v-if 不成立会移除并卸载 CostPanel，再次成立时重新创建。Q2：ly 答「不能，……」，判断正确、原因未展开；教练补明 status 与 result 独立，设置 done 不会自动使 result 非空。Q3：ly 答「自动更新」，正确；摘要 computed 的依赖变化后，在下次读取时重新计算，无需手动调用。
+- 已核对 package.json 声明 Pinia ^4.0.2，main.ts 已 app.use(createPinia())，src/stores/counter.ts 已有 Setup Store 示例。无需重复安装注册；本轮未运行安装或修改源码。
+- 正课使用已有 counter 示例讲解 store、state、getter、action、defineStore 与 useStore；说明同一应用同一 Pinia 实例中的共享状态、store 属性解包及直接解构基本类型的陷阱。目标是将唯一 result 搬入 summarize store，上传请求和本地交互状态仍留在 FileUploader，ResultPanel 继续接收结果 prop。
+- 已查官方资料：[Defining a Store](https://pinia.vuejs.org/core-concepts/)、[State](https://pinia.vuejs.org/core-concepts/state.html)、[Vue 条件渲染](https://vuejs.org/guide/essentials/conditional.html)，核查日期 2026-10-19。当天学源按挂载表预算 40 min，跳过插件、SSR 和 getters 高级用法，出处 LEARNING-PLAN.md §2 的 Pinia 条目；ly 是否阅读及实际时长尚未自报。
+- 首步由 ly 新建 src/stores/summarize.ts，按对话 TODO 骨架填写 result 的 ref 声明、setResult 的赋值和 return。未创建该文件或代填核心实现；组件迁移、类型检查、构建、浏览器验证均待后续完成。
+- 文件清单：week4/README.md、LEARNING-PLAN.md、week1/CLAUDE.md；本轮仅更新教学记录，未提交或推送。
+- 2026-10-20 Git 保存接续点（ly 授权推送）：Day 6 正课及 TODO 骨架已在对话给出，当前 src/stores/summarize.ts 尚不存在。下次从阅读 Defining a Store 与 State、创建 useSummarizeStore 开始：声明初始 null 的 result ref、在 setResult 中保存新值、返回 result 和 setResult；完成后由教练检查再迁移组件。学源阅读尚未由 ly 确认，本日核心实现与验收均未完成。本次提交仅含上述三份学习文档。
 
 ### 不要报成 bug 的清单
 

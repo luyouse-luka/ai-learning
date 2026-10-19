@@ -267,6 +267,15 @@ ly 当场反问：**「那我之后每传一个不一样的文件，都要自己
 
 ---
 
+### 规则 13：每完成一个课程月，复核路线并验收实际应用（2026-10-19 新增）
+
+- ly 要求及时跟进技术变化，确保所学能用。每完成 LEARNING-PLAN.md 的一个课程月，教练主动按该文件 §0「每完成一个课程月」执行，下一课程月开课前完成记录。
+- 查当时的官方文档、发布说明与弃用信息，写明来源、日期及适用版本；更正过时做法，按当前项目需求决定工具取舍，保留有用基础，不为追新压缩学习周期。
+- 用当前 PDF 总结项目的功能与一个小型变式任务验收迁移能力，检查正常及失败或边界路径；区分独立完成、教练指导与尚未验证。
+- 更新 LEARNING-PLAN.md §1/§11 和当时学习日志：完成证据、保留/更新/降级/替换/延后的内容及理由、欠账与下一月安排。课程月完成不按自然日期推定；核心代码仍由 ly 编写。
+
+---
+
 ## 触发关键词
 
 | 我说 | 你应该 |
@@ -436,10 +445,10 @@ screen.pdf（2026-03 · 15 页）《个人定制学习路线》 ← 根，9 个�
 
 ## 当前进度
 
-**2026-10-16 更新：Week 4 Day 5 动手、学源与验证完成，三题正式复盘待答，尚未评分或正式收尾。状态提升、CostPanel props 版及 ly 主动追加的 provide/inject 对照实验均构建通过，ly 确认两版浏览器验证通过；教练未独立操作浏览器。当前 App 提供原 result ref，CostPanel 按 Ref 类型注入，FileUploader → ResultPanel 保留 props 链。题目与后续进度见 week4/README.md。Day 3 / Day 4 合并复盘 2/3。**
+**2026-10-19 更新：Week 4 Day 6 进行中。三条不计分回顾已答：v-if 移除组件答错并订正，status 与 result 独立的判断及 computed 自动更新判断正确，Q2 原因由教练补明。进入 Pinia Setup Store 讲解，项目已有安装注册及 counter 示例；首步待 ly 阅读学源并在 stores/summarize.ts 填写 result、setResult 与 return，尚未迁移组件或完成本日验证。Day 5 已收尾，复盘 2.5/3；此前两版构建及 ly 确认的浏览器验证沿用 10-16 记录。ly 要求题目同轮一次发齐；每完成一个课程月按规则 13 更新路线并验收应用。详情见 week4/README.md。**
 ly 已将 FilePicker 的函数 prop 迁移为 pick 事件，父组件用 @pick 维护 selectedFile；类型检查与构建通过，ly 确认迁移后的浏览器测试全部通过，教练未独立操作浏览器。
 Day 3 的 Q2/Q3 经教练讲解后填入参考答案，不计为独立答题成绩；本日三条回顾不计分。
-ResultPanel 非空检查、摘要分段/trim/空段过滤及四字段展示通过，截断提示两分支与 scoped 样式编译通过；类型检查与构建通过。Day 3 / Day 4 的浏览器视觉与真实上传由 ly 确认通过。合并复盘 Q1/Q3 正确，Q2 未区分 status 与 result 的独立性，教练已讲解，纳入后续回顾；不拆成两份成绩。Day 5 状态归属回顾回答正确；ly 在教练示例指导下完成 App → FileUploader → ResultPanel 的 result prop 传递，以及 FileUploader → App 的 result-change 通知。ly 随后完成 CostPanel props 版，并在阅读学源后主动尝试 provide/inject；当前 App 提供原 result ref，CostPanel 以 Ref<SummarizeResponse | null> 注入，模板条件渲染 cost/model。两版 pnpm build 均通过，ly 确认两版初始隐藏、成功后数值一致、再次上传清空并更新三条浏览器验证通过，教练未独立操作浏览器。模板自动解包与 script 中 .value 的区别已讲解。下次直接从 week4/README.md 的 Day 5 三题正式复盘作答继续，答完再收尾；Pinia 留到 Day 6。
+ResultPanel 非空检查、摘要分段/trim/空段过滤及四字段展示通过，截断提示两分支与 scoped 样式编译通过；类型检查与构建通过。Day 3 / Day 4 的浏览器视觉与真实上传由 ly 确认通过。合并复盘 Q1/Q3 正确，Q2 未区分 status 与 result 的独立性，教练已讲解，纳入后续回顾；不拆成两份成绩。Day 5 状态归属回顾回答正确；ly 在教练示例指导下完成 App → FileUploader → ResultPanel 的 result prop 传递，以及 FileUploader → App 的 result-change 通知。ly 随后完成 CostPanel props 版，并在阅读学源后主动尝试 provide/inject；当前 App 提供原 result ref，CostPanel 以 Ref<SummarizeResponse | null> 注入，模板条件渲染 cost/model。两版 pnpm build 均通过，ly 确认两版初始隐藏、成功后数值一致、再次上传清空并更新三条浏览器验证通过，教练未独立操作浏览器。模板自动解包与 script 中 .value 的区别已讲解。Day 5 三题已于 10-19 作答并点评，2.5/3，正式收尾。Day 6 回顾已完成，当前进入 Pinia 入门，首步从新建 summarize store 开始；不重复 Day 5 动手和浏览器验收。
 Windows 本机前后端已恢复；启动步骤见 `week3/frontend/README.md`，详细进度见 `week4/README.md`。
 当前位置以 `LEARNING-PLAN.md` §1 与 Week 4 日志为准，以下为旧进度留档。
 
