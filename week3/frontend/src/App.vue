@@ -3,14 +3,14 @@ import { RouterLink, RouterView } from 'vue-router'
 import HelloWorld from './components/HelloWorld.vue'
 import FileUploader from './components/FileUploader.vue'
 
-import { ref } from 'vue'
-import type { SummarizeResponse } from '@/types/api'
+// import { ref } from 'vue'
+// import type { SummarizeResponse } from '@/types/api'
 import CostPanel from './components/CostPanel.vue'
-import {provide} from 'vue'
+// import {provide} from 'vue'
 
-const result = ref<SummarizeResponse | null>(null) // 允许保存一份接口结果，也允许没有结果。
+// const result = ref<SummarizeResponse | null>(null) // 允许保存一份接口结果，也允许没有结果。
 
-provide('result', result) // 提供一个响应式的 result，供子组件使用。
+// provide('result', result) // 提供一个响应式的 result，供子组件使用。
 
 </script>
 
@@ -27,9 +27,9 @@ provide('result', result) // 提供一个响应式的 result，供子组件使�
       </nav>
     </div>
   </header>
-  <FileUploader :result="result" @result-change ="(newResult)=> result= newResult" />
+  <FileUploader  />
     <!-- 当 FileUploader 发出 result-change 事件时，它携带的数据会成为这里的 newResult，再由 App 保存到自己的 result 中。 -->
-  <CostPanel v-if="result"  />
+  <CostPanel  />
     <!-- 只有 result 有值时才显示 CostPanel。 -->
   <RouterView />
 </template>

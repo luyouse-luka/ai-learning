@@ -57,7 +57,7 @@ Claude Code 在本目录工作时读 `week1/CLAUDE.md`（教学合约）→ 再�
 
 | 轨道 | 位置 | 说明 |
 |---|---|---|
-| **主线**（总纲 9 个月） | 阶段一 · **第 1 个月第 2 周**（Week 4） | 2026-10-19：Day 6 进行中。三条不计分回顾已答：v-if 移除组件答错并订正，独立状态非空判断与 computed 自动更新判断正确；Q2 原因由教练补明。进入 Pinia Setup Store 讲解，已确认项目安装注册 Pinia 且有 counter 示例；待 ly 阅读官方学源、新建 stores/summarize.ts 并填写 result、setResult 与 return。尚未迁移组件、运行本日构建或浏览器验收。Day 5 已收尾，复盘 2.5/3，两版构建与 ly 确认的浏览器验证沿用 10-16 记录，教练未独立操作浏览器。题目同轮一次发齐。前端仍在 week3/frontend；Windows 使用项目 Node 24.19.0 / pnpm 11.20.0。 |
+| **主线**（总纲 9 个月） | 阶段一 · **第 1 个月第 2 周**（Week 4） | 2026-10-20：Day 6 实现、验收及正式复盘完成，复盘 2/3。Q1 状态归属与 Q2 .value 用法正确；Q3 误判删除清空操作后请求失败会隐藏费用，已订正：失败只改 status/errorMsg，store 保留旧结果，CostPanel 仍显示上次费用。下一步 Day 7 三版对照与目录重构，间隔回顾优先覆盖此错题。store 由 ly 在完整示例后写入，组件在指导下迁移，非独立盲写。pnpm run build 通过；三条浏览器验证由 ly 确认通过，教练未独立操作浏览器。学源阅读与旧代码清理仍待核实。前端仍在 week3/frontend。 |
 | **AI 线**（可并行） | 阶段 1 收尾完成 → 阶段 2 · **Prompt 工程** | Week 4 Day 1-2 的五段结构与 Role / Few-shot / Negative 实验已记录于 week4/README.md；复盘得分分别为 1.5/3、1/3。测试集与 LangSmith 不排入本周。 |
 
 **当前 Week 4 排期** → 详见 **`week4/README.md`**：

@@ -17,7 +17,8 @@ import { ref, computed } from 'vue'
 import axios from 'axios'
 import FilePicker from './FilePicker.vue'
 import ResultPanel from './ResultPanel.vue'
-import type { SummarizeResponse, ApiError } from '@/types/api'
+import type { ApiError } from '@/types/api'
+import { useSummarizeStore } from '@/stores/summarize'
 // ---------------------------------------------------------------
 // Day 5 的三个状态（保留）
 // ---------------------------------------------------------------
@@ -32,14 +33,14 @@ const errorMsg = ref('')
 //   这样拼错 'lodaing' 时 TS 当场报错，而不是运行时界面卡住
 // ---------------------------------------------------------------
 const status = ref<'idle' | 'loading' | 'done' | 'error'>('idle')
+const summarizeStore = useSummarizeStore()
+// const props= defineProps<{
+//   result: SummarizeResponse | null // 读取父组件传来的结果。
+// }>()
 
-const props= defineProps<{
-  result: SummarizeResponse | null // 读取父组件传来的结果。
-}>()
-
-const emit = defineEmits<{
-  (e: 'result-change', newResult: SummarizeResponse | null): void // emit('result-change', 某个值)：通知父组件保存这个值。
-}>()
+// const emit = defineEmits<{
+//   (e: 'result-change', newResult: SummarizeResponse | null): void // emit('result-change', 某个值)：通知父组件保存这个值。
+// }>()  改用pinia store
 // ---------------------------------------------------------------
 // TODO【6.3】结果状态
 //   成功时后端返回 6 个字段 —— 你 Day 4 已经给它写过 interface 了。
@@ -96,13 +97,15 @@ const handleSubmit = () => {
   }
   status.value = 'loading' // ① 进 loading
   // result.value = null // ① 清掉上一次的结果 清空父组件
-  emit('result-change', null) // ① 清掉上一次的结果 清空父组件
+  // emit('result-change', null) // ① 清掉上一次的结果 清空父组件
+  summarizeStore.setResult(null) // ① 清掉上一次的结果 清空父组件
   const formData = new FormData() // ② 造 FormData
   formData.append('file', selectedFile.value as File) // ② append 的字段
   axios.post(`${import.meta.env.VITE_API_BASE}/summarize`, formData) // ③  axios.post
     .then((response) => {
       // result.value = response.data // 成功 写进result
-      emit('result-change', response.data) // 成功 写进result
+      // emit('result-change', response.data) // 成功 写进result
+      summarizeStore.setResult(response.data) // 成功 写进result
       status.value = 'done' // 状态进 'done'
     })
     .catch((err) => {
@@ -216,7 +219,7 @@ const buttonText = computed(() => {
     <p>model: {{ result?.model }}</p>
     <p v-if="result?.truncated">⚠️ 警告：内容被截断，请换一个 PDF</p>
   </section> -->
-  <ResultPanel v-if="status === 'done' && props.result !== null" :result="props.result" />
+  <ResultPanel v-if="status === 'done' && summarizeStore.result !== null" :result="summarizeStore.result" />
 </template>
 
 

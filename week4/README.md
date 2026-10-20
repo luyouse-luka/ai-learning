@@ -40,7 +40,7 @@
 | 3 | 主线 | **组件拆分（一）**：从 `FileUploader.vue` 切出「选文件」子组件，**props 往下传** | `components/FilePicker.vue` | ☑ 正课、动手与测试通过；与 Day 4 合并复盘 | 合并 2 / 3 |
 | 4 | 主线 | **组件拆分（二）**：切出「结果展示」子组件，**emit 往上抛** | `components/ResultPanel.vue` | ☑ 动手与验证通过；非空检查误解已讲解，后续回顾 | 同上，不另计 |
 | 5 | 主线 | **状态提升**：三个组件都要读的状态放哪？先用「提到父组件」做一版，**亲眼看见 props 钻透** | 同上 | ☑ 动手、学源及 props/inject 两版验证已有通过记录；10-19 正式复盘完成 | 2.5 / 3 |
-| 6 | 主线 | **Pinia 入门**：把提升上去的状态搬进 store，对照 Day 5 那版看省掉了什么 | `stores/summarize.ts` | ◐ 回顾已答并订正；进入 Setup Store 讲解，待阅读学源和填写首个 store | — |
+| 6 | 主线 | **Pinia 入门**：把提升上去的状态搬进 store，对照 Day 5 那版看省掉了什么 | `stores/summarize.ts` | ☑ 指导下完成迁移，构建通过，ly 确认浏览器三条验证通过；学源阅读与旧代码清理仍待核实 | 2 / 3 |
 | 7 | — | 巩固：三版对照（单组件 / props 提升 / Pinia）+ Week 4 总复盘 + **目录重构**（Week 3 欠的） | — | ☐ | — |
 
 > **为什么 Day 5 要先做「明知会难受」的 props 提升版**：Pinia 的价值只有在**先痛过一次**之后才看得见。
@@ -432,6 +432,30 @@ ly 确认 inject 版初始隐藏、上传成功后两处数值一致、再次上
 - 首步由 ly 新建 src/stores/summarize.ts，按对话 TODO 骨架填写 result 的 ref 声明、setResult 的赋值和 return。未创建该文件或代填核心实现；组件迁移、类型检查、构建、浏览器验证均待后续完成。
 - 文件清单：week4/README.md、LEARNING-PLAN.md、week1/CLAUDE.md；本轮仅更新教学记录，未提交或推送。
 - 2026-10-20 Git 保存接续点（ly 授权推送）：Day 6 正课及 TODO 骨架已在对话给出，当前 src/stores/summarize.ts 尚不存在。下次从阅读 Defining a Store 与 State、创建 useSummarizeStore 开始：声明初始 null 的 result ref、在 setResult 中保存新值、返回 result 和 setResult；完成后由教练检查再迁移组件。学源阅读尚未由 ly 确认，本日核心实现与验收均未完成。本次提交仅含上述三份学习文档。
+
+### Day 6 接续验收（2026-10-20）
+
+- ly 要求重开 Day 6；三条不计分回顾（v-if 卸载、status/result 独立、provide 当前 null 与原 ref 的区别）均答对。
+- ly 表示不会写后，教练给出完整 Setup Store 示例；ly 在原 counter.ts 中填写，按指导改名 summarize.ts，并补齐 setResult 接受 null。后续组件按教练逐处指导迁移，不计作独立盲写。
+- 当前数据流：唯一 result 保存在 summarize store；FileUploader 调用 setResult 清空及保存响应，ResultPanel 仍接收非空 prop，CostPanel 直接读取 store，App 不再维护或传递结果。
+- 教练执行 pnpm run build，vue-tsc 类型检查与 Vite 生产构建均通过。最后一次源码检查仍见部分旧注释与未使用导入，已告知清理；此后清理结果未独立核实。
+- ly 在三条浏览器验收要求后回复「完成」：记为本人确认初始隐藏、成功后摘要与费用出现且数值一致、再次上传时旧结果清空并成功更新。教练未独立操作浏览器或调用模型；失败路径本轮未验。官方学源是否阅读及实际时长仍未自报。
+- 正式复盘三题待答：① 当前唯一 result 保存在哪个文件？② store 内部与组件通过 store 访问 result 时各是否需要 .value？③ 若删掉上传前 setResult(null)，一次成功后再次上传失败，CostPanel 会隐藏还是仍显示上次费用，为什么？答完点评后再收尾 Day 6。
+- 文件清单：本轮学习代码涉及 week3/frontend/src/stores/counter.ts → summarize.ts、App.vue、components/FileUploader.vue、components/CostPanel.vue；教练本次仅修改 LEARNING-PLAN.md、week1/CLAUDE.md、week4/README.md 保存进度，未提交或推送。
+
+### Day 6 正式复盘批改（2026-10-20）：2 / 3
+
+- Q1：ly 答 store/summarize 文件，状态归属正确，1 / 1；Q2：store 内部 result.value、组件 summarizeStore.result，两处均正确，1 / 1。
+- Q3：ly 答会隐藏，理由为 result 更新会隐藏，0 / 1。题设删掉了上传前 setResult(null)，第二次请求失败不执行成功分支，只修改 status/errorMsg；store 的 result 保留上次响应，CostPanel 的 v-if 仍成立，旧费用继续显示。ResultPanel 另受 status === 'done' 约束，失败后隐藏，不能用它的显示状态推断 CostPanel。
+- 下一接续点：Day 7 不计分回顾优先复习「状态独立、失败路径不自动清空共享结果」，再做三版对照和原定目录重构。Day 6 实现、验收和复盘完成；学源阅读与旧代码清理尚未核实，不据此补记已读或已清理。
+- 本次仅更新 LEARNING-PLAN.md、week1/CLAUDE.md、week4/README.md；未改源码、重跑构建、提交或推送。
+
+### Day 6 Git 保存接续点（2026-10-20，ly 授权记录并推送）
+
+- 保存 Pinia 迁移及正式复盘 2/3；下次从 Day 7 的不计分回顾开始，优先复习「失败不会自动清空旧结果」，再做三版对照与目录重构，不重复 Day 6 动手验收。
+- 保存前 fetch，HEAD 与 origin/master 无分叉；重新执行 pnpm run build，类型检查与生产构建通过。浏览器三条验证沿用 ly 本轮确认，失败路径未实测，学源阅读未自报。
+- 复查确认 App、FileUploader、CostPanel 中部分旧 props/emit/provide 注释和 TODO 仍保留，后续清理；未代写或改变业务逻辑，仅清理新 store 一处行尾空格。
+- 本次文件清单：LEARNING-PLAN.md、week1/CLAUDE.md、week4/README.md、week3/frontend/src/App.vue、components/FileUploader.vue、components/CostPanel.vue、stores/counter.ts（删除）、stores/summarize.ts（新增）；后五项均位于 week3/frontend/src。仅暂存这份清单，.env、.venv 与 dist 不在本次变更中。
 
 ### 不要报成 bug 的清单
 
