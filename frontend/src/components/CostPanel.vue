@@ -1,8 +1,6 @@
 <script setup lang="ts">
 // TODO: Import SummarizeResponse from '@/types/api'.
-// import type { SummarizeResponse } from '@/types/api';
-// import {inject} from 'vue';
-// import type { Ref } from 'vue'
+
 import { useSummarizeStore } from '@/stores/summarize'
 // TODO: Declare a required result prop of type SummarizeResponse.
 

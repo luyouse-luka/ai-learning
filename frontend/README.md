@@ -29,8 +29,12 @@ The existing application configuration includes:
 
 The frontend can start independently. Actual PDF uploads require the FastAPI
 backend running on port 8000 and its model API credentials configured locally.
-The Week 4 Day 3 `FilePicker.vue` exercise is implemented and verified. Day 4
-will replace its callback prop with a component event and extract the result panel.
+The Week 4 Day 6 version stores the shared summary result in Pinia.
+FileUploader handles requests, CostPanel reads the store, and ResultPanel
+receives its result through a prop. Learning progress is in `../week4/README.md`.
+
+This application moved from `week3/frontend/` to `frontend/` on 2026-10-20.
+The backend moved from `week2/api/` to `backend/`; older lesson paths are historical.
 
 ### Windows backend setup
 
@@ -49,7 +53,7 @@ it from the outgoing history while preserving the local file. Both `.env` and
 `.venv/` are ignored. Do not reuse an imported Linux virtual environment on Windows.
 
 ```powershell
-.\.venv\Scripts\python.exe -m uvicorn week2.api.main:app --host 127.0.0.1 --port 8000
+.\.venv\Scripts\python.exe -m uvicorn backend.main:app --host 127.0.0.1 --port 8000
 Invoke-RestMethod http://127.0.0.1:8000/health
 Invoke-RestMethod http://127.0.0.1:5174/api/health
 ```
@@ -71,8 +75,8 @@ also confirmed the browser upload worked; other error paths were not rechecked.
 At the pre-push recheck, the local key setting was empty and the backend could
 not restart. Restore the local key before running the backend again; the
 earlier successful upload does not establish current service availability.
-The key was subsequently configured again and the learner authorized committing
-the root `.env`; backend availability was not rechecked in that follow-up.
+The key was subsequently configured again. The current root `.env` remains
+ignored; configuration values are not part of this directory migration.
 
 ### 顺带发现 / 未修
 

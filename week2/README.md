@@ -1,5 +1,7 @@
 # LLM API Week 2 学习日志
 
+> 2026-10-20 目录迁移：本日志历史路径 `week2/api/` 现为 `backend/`，`week3/frontend/` 现为 `frontend/`。当前启动步骤见根目录 [README](../README.md)，以下保留当时记录。
+
 > 目标：从「单次问答」进到「处理真实长文本」——分段策略、prompt 工程、结构化输出。
 > 教学合约：见 `../week1/CLAUDE.md`（2026-07-23 已更新学习边界与运行约定）
 > 上一周：`../week1/README.md` ｜ 总路线：`../LEARNING-PLAN.md`

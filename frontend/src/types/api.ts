@@ -1,5 +1,5 @@
 // Day 4 · /summarize 接口契约的 TS 镜像
-// 后端出处：week2/api/main.py 的 SummarizeResponse（:113）+ 各处的 HTTPException
+// 后端出处：backend/main.py 的 SummarizeResponse（:113）+ 各处的 HTTPException
 // ⚠️ 这份文件是契约的另一半：后端改字段名，这里必须跟着改（改一次两边都要动）
 
 // ---------------------------------------------------------------

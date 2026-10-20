@@ -12,11 +12,13 @@ from pathlib import Path
 from dotenv import load_dotenv
 from openai import OpenAI
 
-load_dotenv()
+ROOT_DIR = Path(__file__).resolve().parent.parent
+load_dotenv(ROOT_DIR / ".env")
 
 MODEL = "deepseek-v4-flash"
 MAX_OUTPUT_TOKENS = 1500          # ⚠️ 小了会被 reasoning token 吃光，返回空字符串（Week 3 Day 6 栽过两小时）
-SAMPLE = Path(__file__).parent.parent / "attention_extracted.txt"   # 固定输入 = 控制变量
+SAMPLE = ROOT_DIR / "week2" / "attention_extracted.txt"
+OUTPUT_DIR = ROOT_DIR / "week4"
 
 
 # ===================================================================
@@ -99,7 +101,7 @@ def measure(label: str, s: str) -> None:
 def compare() -> None:
     """跑 V1 / V2 各一次，落盘，然后按判据逐条比。"""
     text = SAMPLE.read_text(encoding="utf-8")
-    out = Path(__file__).parent.parent.parent / "week4"
+    out = OUTPUT_DIR
 
     # 【7】落盘 —— 不是为了好看，是为了明天还能翻出来，以及被质疑时有原件
     #     每花一次钱就立刻落一次盘：攒到最后一起写，后面任何一步崩掉，前面的钱全白花

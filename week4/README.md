@@ -1,5 +1,7 @@
 # Week 4 学习日志 · 组件拆分与 Prompt 工程
 
+> 2026-10-20 目录迁移：应用代码现位于 `frontend/` 与 `backend/`；本日志旧路径按根目录 [README](../README.md) 的映射阅读，按周练习与日志继续保留。
+
 > 目标：**把 `FileUploader.vue` 拆成多组件**（引出 props/emit + Pinia），AI 线开 Prompt 工程阶段 2 正题。
 > 教学合约：`../week1/CLAUDE.md` ｜ 上一周：`../week3/README.md` ｜ 总路线：`../LEARNING-PLAN.md`
 >
@@ -41,7 +43,7 @@
 | 4 | 主线 | **组件拆分（二）**：切出「结果展示」子组件，**emit 往上抛** | `components/ResultPanel.vue` | ☑ 动手与验证通过；非空检查误解已讲解，后续回顾 | 同上，不另计 |
 | 5 | 主线 | **状态提升**：三个组件都要读的状态放哪？先用「提到父组件」做一版，**亲眼看见 props 钻透** | 同上 | ☑ 动手、学源及 props/inject 两版验证已有通过记录；10-19 正式复盘完成 | 2.5 / 3 |
 | 6 | 主线 | **Pinia 入门**：把提升上去的状态搬进 store，对照 Day 5 那版看省掉了什么 | `stores/summarize.ts` | ☑ 指导下完成迁移，构建通过，ly 确认浏览器三条验证通过；学源阅读与旧代码清理仍待核实 | 2 / 3 |
-| 7 | — | 巩固：三版对照（单组件 / props 提升 / Pinia）+ Week 4 总复盘 + **目录重构**（Week 3 欠的） | — | ☐ | — |
+| 7 | — | 巩固：三版对照（单组件 / props 提升 / Pinia）+ Week 4 总复盘 + **目录重构**（Week 3 欠的） | — | ◐ 开课回顾已答并订正，进入三版对照；清理、目录重构及周自检待完成 | — |
 
 > **为什么 Day 5 要先做「明知会难受」的 props 提升版**：Pinia 的价值只有在**先痛过一次**之后才看得见。
 > 直接上 Pinia 会变成「照着文档敲三件套」，说不出它解决了什么。
@@ -72,8 +74,8 @@
       **路径 1 ✗ 未对上** 期望 200 实得 400「PDF 提取出来是空的」，未做 `attention.pdf` 控制变量实验，真因未定；
       **路径 3 ☐ 未跑**。
       ⚠️ 因此「ly 本人跑满四条」这条针对瓶颈 4 的硬要求**Week 3、Week 4 连续两周未兑现**，记在案
-- [ ] **目录重构** —— `week1/week2/week3` 混着 AI 线和前端线，候选 `stage1-frontend/` + `stage3-ai/{week1,week2}`。
-      改路径要连带改 `week1/CLAUDE.md` / 各 README / `LEARNING-PLAN.md` / memory 全部引用（推到 Day 7）
+- [x] **目录重构** —— 2026-10-20 按 ly 选定结构将应用移至根目录 `frontend/` + `backend/`，各周练习、样本与日志保留；当前入口与映射见根 README，历史日志保留当时路径。
+      验证：迁移前后构建通过，根配置和实验路径、健康/静态/422/400 检查通过，Vite `/api/health` 联调 200；详见本日迁移记录及 `tools/verify_workspace_layout.py`。
 - [ ] `week3/day7_review.md` Part 2 的 Day 6·Day 7 两行、Part 3/4/5 若干栏
 - [ ] **Learn Git Branching**（1 小时，`§2:129`）—— 主线第 1 个月的 Git 那条一直没动
 - [ ] `deepseek-chat` 硬编码 8 处（week1 各脚本），该模型 2026-07-24 已弃用
@@ -457,12 +459,50 @@ ly 确认 inject 版初始隐藏、上传成功后两处数值一致、再次上
 - 复查确认 App、FileUploader、CostPanel 中部分旧 props/emit/provide 注释和 TODO 仍保留，后续清理；未代写或改变业务逻辑，仅清理新 store 一处行尾空格。
 - 本次文件清单：LEARNING-PLAN.md、week1/CLAUDE.md、week4/README.md、week3/frontend/src/App.vue、components/FileUploader.vue、components/CostPanel.vue、stores/counter.ts（删除）、stores/summarize.ts（新增）；后五项均位于 week3/frontend/src。仅暂存这份清单，.env、.venv 与 dist 不在本次变更中。
 
+### Day 7 开课与三版对照（2026-10-20）
+
+- 已按 ly 指令执行 git pull --ff-only，更新至 04e5675，未覆盖本地未跟踪文件。
+- 三条不计分回顾：① 假设删除上传前 setResult(null)，先成功一次再失败且失败仅改 status/errorMsg，CostPanel 隐藏还是显示旧费用？② store 内和组件中读取结果分别如何写？③ v-if 从真变假时卸载组件还是只清空文字？
+- ly 原答：①「继续显示上次的费用，因为调用失败，不会调用result」；②「内部 summarizeRespose.result.value，组件直接调用 summarizeResponse.result」；③「组件会被卸载」。
+- 订正：Q1 判断正确，准确原因是失败分支未更新或清空 store.result，旧值保留；result 是状态而非被调用的函数。Q2 组件通过 store.result 的访问层级正确，变量名以声明为准；本项目为 summarizeStore.result。store 内部 result 直接由 ref 声明，读取用 result.value，不再加外层对象。Q3 题面未明确 v-if 位置，作废，不归为学习者错误：组件标签上的 v-if 可卸载该组件，但当前 Pinia 版 App 的 CostPanel 标签无条件，v-if 位于 CostPanel 内部 section，只移除 section，CostPanel 实例保留。教练核对源码后纠正此前将其直接判对的说明。
+- 已核对三版真实来源：82a658b 的父提交中 FileUploader 保存 result 且内联展示；f6bd30e 中 App 保存 result，FileUploader emit 更新、ResultPanel 接收 prop；04e5675 中 summarize store 保存 result，FileUploader 调 setResult、CostPanel 直接读取，ResultPanel 仍接收 prop。Day 5 provide/inject 作为附加对照，状态仍由 App 保存。
+- 本日先对照状态归属与读写路径，再清理迁移遗留，随后核对目录迁移范围及引用并做 Week 4 自检。首步动手交给 ly：清理 App.vue 内已失效的 ref/provide 注释、旧 result 声明及 result-change/条件渲染说明，保留当前可执行代码；完成后教练检查。尚未修改源码或移动目录。
+- 本段学源：复看 Pinia「Defining a Store → Using the store」，预算 10 min，跳过插件、SSR、getter 高级用法，出处 LEARNING-PLAN.md §2 Pinia 条目及本周学源挂载表；三版对照另读项目历史。阅读完成尚待 ly 自报；目录迁移所需资料在进入该步骤前给出。
+- 本轮文件清单：week4/README.md、LEARNING-PLAN.md、week1/CLAUDE.md；仅更新学习记录，未运行构建、浏览器验收、模型调用、提交或推送。Day 7 与 Week 4 未标记完成。
+
+#### 清理暂缓，进入目录重构准备
+
+- ly 删除了 App.vue 脚本区的旧 ref/provide 注释和 CostPanel.vue 的三个旧导入注释；App.vue 两条模板说明及 CostPanel.vue 三条旧 TODO 仍保留。ly 明确要求「忽略，开始下一个」，剩余注释清理暂缓，不标记全部清理完成。两份组件的现有改动由 ly 完成，教练未覆盖。
+- 迁移前基线：在原 week3/frontend 运行 pnpm build，类型检查与 Vite 构建通过；通过根 .venv 的 FastAPI TestClient 调用现有 /health，HTTP 200、status=ok、api_key_configured=true；未调用模型。该结果不代表真实上传或失败路径已经重验。
+- 已发现路径依赖：main.py 用 BASE_DIR.parent.parent 定位根 .env；prompts.py 用相对父目录定位 week2 样本和 week4 输出；Vite/TypeScript 的 src 别名基于前端自身目录。移动后须对应调整并重验。
+- 旧文档只有 stage1-frontend/ + stage3-ai/ 候选，尚未定稿。已向 ly 提出一次结构选择：推荐 frontend/ + backend/ 放应用代码，week1–week4 保留练习与日志；另一选项沿用旧阶段式归档。等待结构选择期间未移动目录、修改后端或升级依赖。
+- 本轮文件清单：week4/README.md、LEARNING-PLAN.md、week1/CLAUDE.md（教练更新），App.vue、CostPanel.vue（ly 已有改动）；未提交或推送。
+
+#### 目录迁移与验证（2026-10-20）
+
+- ly 选择根目录 `frontend/` + `backend/`。已将 `week3/frontend/` 的应用文件移至 `frontend/`，`week2/api/` 移至 `backend/`；按周样本、练习和学习日志保留，教学合约仍为 `week1/CLAUDE.md`。
+- 路径调整：backend/main.py 从新位置定位根 `.env`；backend/prompts.py 显式定位仓库根，样本仍读取 week2/attention_extracted.txt、对照输出仍写入 week4；frontend/src/types/api.ts 的后端出处更新为 backend/main.py。请求、状态管理、模型参数和业务逻辑均未改写。
+- 当前启动步骤统一见根 README.md，前端 README 更新；week2/week3/week4 日志入口补迁移映射，旧学习记录中的旧路径作为历史保留。LEARNING-PLAN.md 与教学合约更新当前入口。
+- Windows pnpm 依赖使用绝对目录链接，迁移后按原锁文件离线重建，复用 312 个缓存包、下载 0 个包。43 个已跟踪应用文件逐项校验，只有预定的两份后端路径配置、前端 README 和类型文件出处注释内容变化；其余 39 个文件（包含 ly 两份组件修改）保持一致，根 `.env`、锁文件保持不变。
+- 迁移后实测：frontend 的 pnpm build（类型检查 + 生产构建）通过；`.venv/Scripts/python.exe tools/verify_workspace_layout.py` 从无关工作目录验证根配置、Prompt 输入/输出路径以及健康 200、静态页 200、缺少文件 422、非 PDF 400；全部通过，无模型调用。
+- 临时启动本次自己的 backend.main:app 和 Vite，实测后端健康、前端页面及 Vite `/api/health` 均 200；两次工具管理的服务会话已停止。未将此记为浏览器交互或真实 PDF 上传验收。
+- 有意遗留：旧依赖缓存 frontend/.migration-node-modules/、week3/frontend/node_modules/ 的链接已解除，余下普通文件的递归删除被自动审批拒绝（仅返回 blocked by policy）；保留并通过根 .gitignore 忽略。旧路径无应用入口，不应从旧目录启动；缓存不属于源码迁移清单。CostPanel 与 FileUploader 的历史教学注释按 ly 要求暂缓清理。
+- 文件清单：43 个应用文件从 week3/frontend、week2/api 映射至 frontend、backend；新增 README.md、tools/verify_workspace_layout.py、docs/superpowers/plans/2026-10-20-app-directory-migration.md；修改 .gitignore、LEARNING-PLAN.md、week1/CLAUDE.md、week2/README.md、week3/README.md、week4/README.md。具体内容变更为 backend/main.py、backend/prompts.py、frontend/README.md、frontend/src/types/api.ts；App.vue、CostPanel.vue 保留 ly 先前改动。
+- 接续点：目录迁移验证完成，Week 4 六项结束自检与 Day 7 正式复盘尚未完成；不标记本周或课程月完成。未提交、推送或部署。
+- 只读复核：后端仅有路径和启动示例变化，前端保留 ly 既有修改；未发现迁移导致的运行回归。复核发现教学合约一条当前启动说明仍指向旧 frontend README，已修正为根 README / frontend README。
+
+#### Day 7 Git 保存接续点（2026-10-20，ly 授权推送）
+
+- 保存 frontend/ + backend/ 目录迁移、路径修正、根启动说明、可复跑验证脚本、三版对照及回顾记录。App.vue、CostPanel.vue 保留 ly 的注释清理改动；其余暂缓清理的教学注释继续保留。
+- 下次从 Week 4 六项结束自检开始，再完成 Day 7 正式复盘；不重复目录迁移或 Day 6 动手验收。Week 4、Day 7 及课程月验收尚未标记完成。
+- 提交清单：应用的 43 个文件按旧目录映射迁移；.gitignore、README.md、LEARNING-PLAN.md、week1/CLAUDE.md、week2/README.md、week3/README.md、week4/README.md、tools/verify_workspace_layout.py、docs/superpowers/plans/2026-10-20-app-directory-migration.md。根 .env、.venv、依赖、构建产物和旧依赖缓存均忽略；两份 Zone.Identifier 未跟踪文件不纳入提交。
+
 ### 不要报成 bug 的清单
 
 - 未选文件时按钮可点击是现有设计，由 handleSubmit 显示 No file selected；只有 loading 时禁用。教练此前的按钮验收条件已更正。
 - Day 3 保留函数 prop 是对照教学安排；Day 4 已迁移为 emit。
-- 前端仍放在 week3/frontend，Week 4 的目录重构留到 Day 7。
-- Day 5 按 ly 的提问新增 provide/inject 对照实验：CostPanel 改为注入，FileUploader → ResultPanel 仍保留 props 链，用于对照；共享结果仍只有 App 中一份。
+- 2026-10-20 起应用代码位于 frontend/ 与 backend/；旧路径的本地依赖残留被 Git 忽略，不是第二份应用，历史日志按根 README 的映射阅读。
+- Day 5 的 provide/inject 是历史对照实验；Day 6 起 CostPanel 读取 Pinia store，FileUploader → ResultPanel 继续保留 props，属于展示组件的接口设计。
 
 ### 本次文件清单
 

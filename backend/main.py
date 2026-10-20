@@ -5,7 +5,7 @@ Day 3 · 把 day2_summarize.py 包成一个服务
      变成任何人拿着 URL 就能调用的接口。
 
 跑起来（教练来跑，你只写）：
-    week1/venv/bin/python -m uvicorn week2.api.main:app --reload --port 8000
+    .venv/Scripts/python.exe -m uvicorn backend.main:app --host 127.0.0.1 --port 8000
     然后浏览器开 http://127.0.0.1:8000/docs 点着测
 
 今天的边界：
@@ -29,7 +29,8 @@ from openai import OpenAI,APITimeoutError,APIConnectionError,RateLimitError,APIS
 # 外围（教练直接给，和 day2 一样，不是今天的考点）
 # ---------------------------------------------------------------
 BASE_DIR = Path(__file__).resolve().parent
-load_dotenv(BASE_DIR.parent.parent / ".env")          # .env 在仓库根
+ENV_FILE = BASE_DIR.parent / ".env"
+load_dotenv(ENV_FILE)
 
 MODEL = "deepseek-v4-flash"
 PRICE_IN = 0.14                                       # $ / 1M token

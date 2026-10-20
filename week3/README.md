@@ -1,5 +1,7 @@
 # Week 3 学习日志 · 主线阶段一开工
 
+> 2026-10-20 目录迁移：历史路径 `week3/frontend/` 现为 `frontend/`，`week2/api/` 现为 `backend/`。当前启动步骤见根目录 [README](../README.md)，以下保留当时记录。
+
 > 目标：**用 Vue 3 + TS 重写 `/summarize` 前端**（方案 C），顺带清掉 Week 2 的两笔 AI 线欠账。
 > 教学合约：`../week1/CLAUDE.md` ｜ 上一周：`../week2/README.md` ｜ 总路线：`../LEARNING-PLAN.md`
 >
