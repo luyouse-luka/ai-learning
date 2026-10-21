@@ -563,6 +563,20 @@ ly 确认 inject 版初始隐藏、上传成功后两处数值一致、再次上
 - 本人曾反馈归档完成，但教练随后核对当前仓库未新增记录提交，故归档仍待核实；保留本人反馈与实际状态，不计作完成。下一步由本人检查并仅提交三份学习记录，再在新的本地练习分支开始交互式 rebase；尚未创建该分支或执行 rebase。
 - 文件清单：LEARNING-PLAN.md、week1/CLAUDE.md、week4/README.md；教练仅同步进度，未代暂存、提交、推送或部署。Git 总项、课程月与周自检状态不变。
 
+#### 交互式 rebase 实操验收（2026-10-22）
+
+- 前置归档已核实：本人提交 61e189d 仅含三份学习记录，已跟踪文件无待提交修改、暂存区为空。本人随后在 codex/git-rebase-practice 创建 19f6387（新增练习 txt）与 2a5d18d（补第二行）；第二次修改最初未重新暂存，教练讲解暂存快照后，由本人重新 add 并提交。
+- 本人依指导保留备份 codex/backup-git-rebase-2a5d18d，执行交互式 rebase 合并两次提交。询问第三步时教练核对 rebase 已结束、HEAD 为 61ce844，随后由本人用 amend 修改提交说明，最终为 27c34e8（docs: add complete rebase practice note），父提交为 61e189d，仅新增 week4/git-rebase-practice.txt 两行。教练未代执行提交或 rebase。
+- 验收：合并后与备份分支的完整文件树 diff 为空；练习文件 Git 指纹均为 b07ca5ec18215e579f7484e756de420759800727，内容保持本人原有两行中文笔记。原 cherry-pick 分支保留 61e189d，practice-cherry-pick 标签仍指向 04d1312；暂存区为空，已跟踪文件无待提交修改，两个 Zone.Identifier 文件仍未跟踪。该步通过，不记为独立掌握。学源 git-rebase 2.44.0 的 Interactive Mode（pick/squash）已安排阅读 5 分钟，跳过 exec、--onto 与合并提交；出处 LEARNING-PLAN.md §2，阅读未自报。
+- 下一接续点：remote -v / fetch 尚未讲解或执行；继续前核对当前状态。原分支、标签与 rebase 备份保留；周自检仍 5/6，独立 bug 证据待补，Git 总项与课程月未完成。
+- 文件清单：LEARNING-PLAN.md、week1/CLAUDE.md、week4/README.md；本轮教练仅核对与更新进度，记录更新后待归档，未代暂存、提交、推送或部署。
+
+#### 学习记录归档与远端同步（2026-10-22）
+
+- 本人明确要求记录并推送到 Git；本次由教练执行，仅暂存 LEARNING-PLAN.md、week1/CLAUDE.md、week4/README.md，推送目标为当前分支 origin/codex/git-rebase-practice，包含此前尚未推送的学习记录及练习提交；备份分支和标签保留在本地，两个 Zone.Identifier 文件不纳入。
+- 推送前已通过本机现有系统代理 fetch origin 并核对远端：远端仅有 master，当前练习分支尚不存在；本地 origin/master 至 HEAD 的差异为三份记录与两份练习 txt。Git 直连连接失败后，使用单次命令代理配置完成读取，未修改全局网络配置。教练本次 fetch 不记为本人已完成 remote/fetch 学习。
+- 下一接续点仍为 remote -v / fetch 的讲解及本人练习；Git 总项、课程月与周自检状态不变。文件清单同上三份学习记录；提交与同步由教练代操作，不计本人独立实操。
+
 ### 不要报成 bug 的清单
 
 - 未选文件时按钮可点击是现有设计，由 handleSubmit 显示 No file selected；只有 loading 时禁用。教练此前的按钮验收条件已更正。
