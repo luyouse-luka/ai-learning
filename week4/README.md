@@ -541,6 +541,28 @@ ly 确认 inject 版初始隐藏、上传成功后两处数值一致、再次上
 - 下一接续点：由 ly 检查三份学习记录的 diff、明确暂存范围并提交，反馈提交及状态后核对；随后继续剩余 Git 命令。周自检仍 5/6，独立 bug 证据仍待补，Git 总项与课程月均未完成。
 - 文件清单：LEARNING-PLAN.md、week1/CLAUDE.md、week4/README.md；保留 ly 的第 4 条练习笔记，仅更新进度，未提交或推送。
 
+#### 新窗口接续：reset / reflog 已验收，cherry-pick 待开始（2026-10-21）
+
+- 已完成：ly 自行组织三份学习记录的暂存和提交，得到 7d7e0d2（docs: update stash learning progress）；教练核对仅含 LEARNING-PLAN.md、week1/CLAUDE.md、week4/README.md，暂存区为空。
+- reset / reflog 练习由 ly 依指导执行：在 codex/git-reset-practice 新增 week4/git-reset-practice.txt 并提交 a54c49c（docs: add reset practice note）；默认 mixed reset HEAD~1 后分支退回 7d7e0d2，文件成为未跟踪且暂存区为空；通过 reflog 找到原提交后 reset a54c49c 恢复，HEAD 回到同一提交，文件恢复跟踪且无差异。文件 Git 指纹与原提交均为 37ca303c19a5bc6324c8d24ce0fb1a41a6195797；教练只读核对，不记为独立掌握。
+- 最新仓库状态（本段写入前核对）：当前分支 codex/git-cherry-pick-practice，HEAD=7d7e0d2，与 master 同起点；来源分支 codex/git-reset-practice 保留 a54c49c。ly 已执行切回 master、创建并切换新分支；本轮未合并或删除练习分支。origin/master 本地引用仍为 e6ee019，本段未重新 fetch。
+- 下一窗口：读取教学合约与本段后，先核对实际分支、HEAD、工作区；从 cherry-pick 原理和实操开始，由 ly 操作，将来源提交 a54c49c 应用到当前练习分支。cherry-pick 尚未讲解、执行或验收，不重复已完成的 stash、提交、reset/reflog。遵守概念五段讲解与当天学源规则；不要仅因创建了练习分支就标记掌握 cherry-pick。
+- 交接修改：本轮三份学习记录未提交，保留于当前工作区；与来源提交仅新增的练习 txt 不重叠，后续操作前核对并保留。新分支当前版本不含练习 txt 是预期版本差异；恢复提交和练习分支都需保留供后续使用。原 r-pull-20260910 旧 stash 与 codex/backup-before-pull-20261017-223930 分支保留，两个 Zone.Identifier 文件仍未跟踪。
+- 整体进度仍为主线第 1 个月第 2 周，周自检 5/6，独立 bug 证据待补；Git 总项、Vite/TS 缺项和课程月尚未完成。文件清单：LEARNING-PLAN.md、week1/CLAUDE.md、week4/README.md；本次只写交接记录，未提交、推送、部署或代执行 Git 练习。
+
+#### cherry-pick 实操验收（2026-10-21）
+
+- 本人依指导执行 git cherry-pick a54c49c，在 codex/git-cherry-pick-practice 生成 04d1312（docs: add reset practice note），父提交为 7d7e0d2，仅新增 week4/git-reset-practice.txt；教练未代操作。
+- 教练只读核对：来源与目标文件 Git 指纹同为 37ca303c19a5bc6324c8d24ce0fb1a41a6195797；来源 codex/git-reset-practice 仍指向 a54c49c，暂存区为空，三份学习记录仍为未提交修改，两个 Zone.Identifier 文件仍未跟踪。该步验收通过，不记为独立掌握；学源阅读未自报。
+- 下一接续点：先由本人检查三份学习记录的 diff、明确暂存范围并归档，反馈提交与状态后核对；随后继续剩余 Git 命令。周自检仍 5/6，独立 bug 证据待补，Git 总项与课程月尚未完成；来源与目标练习分支保留。
+- 文件清单：LEARNING-PLAN.md、week1/CLAUDE.md、week4/README.md；本轮仅更新学习进度，未代暂存、提交、推送或部署。
+
+#### tag 实操验收与归档待办（2026-10-21）
+
+- 本人依指导创建附注标签 practice-cherry-pick；教练只读核对标签对象类型为 tag，目标为 04d1312883d75a237893b1b70052dc37f13bf9c6，附注为 Mark cherry-pick practice completion。HEAD 仍为 04d1312，暂存区为空，三份学习记录仍未提交，两个 Zone.Identifier 文件仍未跟踪。该步验收通过，不记为独立掌握；官方 git-tag 2.44.0 的 DESCRIPTION 与 OPTIONS（-a/-m）已安排阅读 5 分钟，跳过签名、强制覆盖与删除，出处 LEARNING-PLAN.md §2；阅读未自报。
+- 本人曾反馈归档完成，但教练随后核对当前仓库未新增记录提交，故归档仍待核实；保留本人反馈与实际状态，不计作完成。下一步由本人检查并仅提交三份学习记录，再在新的本地练习分支开始交互式 rebase；尚未创建该分支或执行 rebase。
+- 文件清单：LEARNING-PLAN.md、week1/CLAUDE.md、week4/README.md；教练仅同步进度，未代暂存、提交、推送或部署。Git 总项、课程月与周自检状态不变。
+
 ### 不要报成 bug 的清单
 
 - 未选文件时按钮可点击是现有设计，由 handleSubmit 显示 No file selected；只有 loading 时禁用。教练此前的按钮验收条件已更正。
