@@ -25,6 +25,7 @@ from pydantic import BaseModel, Field
 from pypdf import PdfReader
 from pathlib import Path
 from openai import OpenAI,APITimeoutError,APIConnectionError,RateLimitError,APIStatusError
+from backend.prompts import SYSTEM_PROMPT_V2 as SYSTEM_PROMPT
 # ---------------------------------------------------------------
 # 外围（教练直接给，和 day2 一样，不是今天的考点）
 # ---------------------------------------------------------------
@@ -98,11 +99,7 @@ def check_daliy_limit ():
 app = FastAPI(title="PDF 总结服务", version="0.1.0")
 
 # day2 的 system prompt，原样搬过来
-SYSTEM_PROMPT = """
-    1. 你的任务是对文本进行总结，不能只是摘抄原文，要提炼出核心思想
-    2. 总结的文本最多不要超过400字,需要用中文进行回复，总结回复的文本需要符合中文语言逻辑，通顺无语病
-    3. 总结文本根据逻辑语义进行分段，并首行缩进，方便阅读
-"""
+
 
 
 # ---------------------------------------------------------------
