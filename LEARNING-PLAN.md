@@ -57,7 +57,7 @@ Claude Code 在本目录工作时读 `week1/CLAUDE.md`（教学合约）→ 再�
 
 | 轨道 | 位置 | 说明 |
 |---|---|---|
-| **主线**（总纲 9 个月） | 阶段一 · **第 1 个月第 2 周**（Week 4） | 2026-10-20：Day 7 进行中。三版对照已讲解；ly 选定 frontend/ + backend/，应用迁移与路径修正完成。类型检查、生产构建、根配置与实验路径、健康/静态/422/400 检查及 Vite /api/health 联调均通过，无模型调用；根 .env、锁文件与 ly 的组件修改保留。旧依赖普通文件清理受自动审批限制，已隔离忽略，详见 week4/README.md。当前启动步骤见根 README，学习合约仍在 week1/CLAUDE.md，周记录保留历史路径。下一步 Week 4 六项结束自检，Day 7 正式复盘与课程月验收尚未完成。回顾的 v-if 题因位置不明确作废；.value 用法已订正。Day 6 复盘 2/3，先前浏览器三条验证由 ly 确认；学源阅读待核实。 |
+| **主线**（总纲 9 个月） | 阶段一 · **第 1 个月第 2 周**（Week 4） | 2026-10-20：Day 7 进行中。三版对照已讲解；ly 选定 frontend/ + backend/，应用迁移与路径修正完成。类型检查、生产构建、根配置与实验路径、健康/静态/422/400 检查及 Vite /api/health 联调均通过，无模型调用；根 .env、锁文件与 ly 的组件修改保留。旧依赖普通文件清理受自动审批限制，已隔离忽略，详见 week4/README.md。当前启动步骤见根 README，学习合约仍在 week1/CLAUDE.md，周记录保留历史路径。2026-10-21 结束自检 5/6 项通过；V2 已由本人接入接口，真实 attention.pdf 返回 200、285 字符、未截断，缺文件 422 / 非 PDF 400 通过；独立 bug 待本人证据。复核确认实验保存前 .strip() 会去掉首段全角缩进，旧模型能力归因撤回；去掉 .strip() 后已重跑 V1/V2：304/319 字符、2/3 段，所有段落缩进且均在 400 字符内；V2 导入与正常/边界验证通过，本地后端运行于 127.0.0.1:8000；真实接口证据 week4/day7_api_v2_2026-10-21.json，详见 week4/README.md。Day 7 正式复盘完成，2.5/3；Q2 的对照因果理由已订正，周自检仍 5/6。主线实际为第 1 个月第 2 周；Git/Vite/TS 证据核对已完成，具体缺项见 §2 与 week4/README.md，Learn Git Branching 基础篇前四关已由本人反馈完成（未独立复核命令）；本人已展示 status/log 与部分 diff，并正确概括两个后端文件的改动；本人已完成 add -p、cached diff 与提交，1b5a0bd 仅包含 prompts.py 的 strip 修复，教练已核对提交范围与暂存区为空；本人完成 V2 接入提交 cbaaeda，教练核对仅修改 main.py 且暂存区为空；下一步按文件名归档三份学习记录与三份实测输出，提交待本人操作。完成课程月内容后再执行月验收。回顾的 v-if 题因位置不明确作废；.value 用法已订正。Day 6 复盘 2/3，先前浏览器三条验证由 ly 确认；学源阅读待核实。 |
 | **AI 线**（可并行） | 阶段 1 收尾完成 → 阶段 2 · **Prompt 工程** | Week 4 Day 1-2 的五段结构与 Role / Few-shot / Negative 实验已记录于 week4/README.md；复盘得分分别为 1.5/3、1/3。测试集与 LangSmith 不排入本周。 |
 
 **当前 Week 4 排期** → 详见 **`week4/README.md`**：
@@ -142,17 +142,20 @@ Claude Code 在本目录工作时读 `week1/CLAUDE.md`（教学合约）→ 再�
 ### 第 1 个月：工程化基础 `[总纲 §二]`
 
 - [ ] **Git & GitHub** —— 分支管理、PR、代码回滚。每天提交代码
-  - [ ] 过一遍 Learn Git Branching（交互式，learngitbranching.js.org，1 小时掌握 90% 用法）
-  - [ ] 个人开发必会 12 命令 `[FS §六]`：`status`/`log --oneline`、`diff`/`diff --staged`、`add -p`（分块提交）、`commit --amend`、`stash`/`stash pop`、`reset HEAD~1`、`rebase -i HEAD~5`、`cherry-pick`、`reflog`（后悔药）、`tag v1.0.0`、`remote -v`/`fetch`、`branch -d`/`-D`
+  - [ ] 过一遍 Learn Git Branching（交互式，https://learngitbranching.js.org/?locale=zh_CN ，原预算约 1 小时；完成关卡不等于掌握全部 Git 工作流）。2026-10-21 首段安排：Introduction Sequence 的 Introduction to Git Commits、Branching in Git，预算 20 分钟，先跳过 merge/rebase 与远端关卡；本人已反馈基础篇前四关完成，未独立复核命令；高级篇与远端尚未完成。接续真实项目 status / log / diff，预算 15 分钟，学源为 Pro Git §2.2 的检查状态/查看差异及 §2.3 的基本日志；暂跳过撤销、重写和远端操作。
+  - [~] 个人开发必会 12 命令 `[FS §六]`：`status`/`log --oneline`、`diff`/`diff --staged`、`add -p`（分块提交）、`commit --amend`、`stash`/`stash pop`、`reset HEAD~1`、`rebase -i HEAD~5`、`cherry-pick`、`reflog`（后悔药）、`tag v1.0.0`、`remote -v`/`fetch`、`branch -d`/`-D`
+  - 已实操 status/log/diff、add -p 与 staged diff，并由本人完成修复提交 1b5a0bd 与 V2 接入提交 cbaaeda（均有教练指导）；其余命令待练，不将 12 项整体判为通过。
   - [ ] 分支策略选一个：Trunk-Based / Git Flow / **GitHub Flow（团队 10 内最简洁，事实标准）** / GitLab Flow
   - [ ] Commit 规范 Conventional Commits：`<type>(<scope>): <subject>`，type = feat/fix/docs/refactor/test/chore
 - [x] **Node.js 环境** —— nvm v0.40.3 + Node **v24.19.0**（`nvm alias default`）+ pnpm **11.20.0**（corepack）· 08-07 Day 6
   - ⚠️ 装的时候踩到：`~/.npmrc` 里 `prefix=` 与 nvm **互斥**，`nvm use` 会直接拒绝生效（已注释，备份 `~/.npmrc.bak-20260807`）
   - **npm vs pnpm 的两个差别**：① 硬链接共享全局 store（12.7s 装完 40+ 包）② **幽灵依赖** —— npm 扁平化让你能 `import` 没在 `package.json` 声明的包，换机器就炸；pnpm 声明了才 import 得到
-- [~] **Vite** —— 比 webpack 快 10-100 倍（原生 ESM + 按需编译），Vue3/React 标配。**dev 不打包 / 生产用 Rollup 打包，是两套机制**
+- [~] **Vite** —— 开发服务器、模块处理与生产构建工具；开发与生产采用不同处理流程。当前项目实际安装 Vite 8.2.0，Vite 8 使用 Rolldown 与 Oxc，旧版“生产用 Rollup”说明不再适用于当前版本；移除无本项目基准支撑的性能倍数。官方依据：[Vite 迁移说明](https://vite.dev/guide/migration.html)（2026-10-21 核查）。
   - [~] 必须会的 5 件事 `[FS §二]`：① **`npm create vue@latest` 建项目 ✅ 08-07**（`week3/frontend/`，Vite 8.2.0 冷启动 685ms）② 配代理（`vite.config.ts` 的 `server.proxy` 解决跨域）← **Week 3 第一件会撞的事**，前端 5174 调后端 8000 ③ 环境变量（`.env.development` / `.env.production`）④ 别名（`@` → `src`）⑤ 生产打包 `npm run build` → `dist`
-- [ ] **TypeScript 基础** —— 目标：能把现有 JS 代码加上类型，消除 `any`。配 TS Playground 在线练
-  - [ ] TS 8 大核心 `[FS §二]`：① 基本类型注解（能省则省，TS 会推断）② `interface` vs `type`（描述对象形状用 interface）③ 联合类型 `|`（`type Status = "loading"|"ok"|"error"`，替代 enum）④ 可选 `?` 与默认值 ⑤ 泛型（Array、Promise 最常见）⑥ `as` 类型断言（避免滥用，杀手锏但杀的是自己）⑦ 内置工具类型 `Partial`/`Required`/`Pick`/`Omit`/`Record` ⑧ 严格模式 `strict: true`（一开始报错多，但避免 90% 运行时 bug）
+  - 2026-10-21 证据核对：脚手架、`server.proxy`（含 `/api/health` 联调）、`@` 别名、开发环境 `VITE_API_BASE` 与多次类型检查/生产构建均有记录；开发与生产环境变量的差异及部署后的接口地址行为仍待本人解释与验证，暂不整项打勾。不存在 `.env.production` 本身不判为错误；未要求部署。
+- [~] **TypeScript 基础** —— 目标：能把现有 JS 代码加上类型，消除 `any`。配 TS Playground 在线练
+  - [~] TS 8 大核心 `[FS §二]`：① 类型注解与推断 ② `interface` 与 `type` ③ 联合类型 `|` ④ 可选 `?` 与默认值 ⑤ 泛型 ⑥ `as` 类型断言及其边界 ⑦ 内置工具类型 `Partial`/`Required`/`Pick`/`Omit`/`Record` ⑧ 严格模式 `strict: true`。各项需结合代码独立解释和迁移应用，不由代码出现过直接判定掌握。
+  - 2026-10-21 证据核对：实际 TypeScript 6.0.3；`api.ts` 已有接口、联合及可选属性，store/组件已用泛型、注解与断言；有效配置 `strict=true`、`noUncheckedIndexedAccess=true`。FileUploader 当前为 `err: unknown` 与 `axios.isAxiosError<ApiError>`，旧“错误参数仍为 any”记录已过时。工具类型、断言与运行时检查区别、泛型独立应用等尚待补练；不重复已完成的 any 清理。
 
 ### 第 2 个月：Vue 3 核心 `[总纲 §二]` + 推荐学习顺序 `[FS §二]`
 
@@ -683,6 +686,8 @@ Claude Code 在本目录工作时读 `week1/CLAUDE.md`（教学合约）→ 再�
 | 2026-08-09 | **新增交付格式要求**：交给教练之前先自己跑路径、写下验过哪些判据 | 新瓶颈 4「能写 ≠ 能自查」—— Day 7 盲写脚本过了，但独立发现的 bug 是 **0 条**。判据：Week 3 结束时这栏不能再是 0 |
 | 2026-10-19 | 新增课程月收尾复核：核查官方更新、调整过时内容、交付主项目功能并做变式验收，结果用于下一月排期 | ly 要求学习随技术变化及时更新并能实际使用；完整流程见 §0，教练主动执行，尚未完成首轮月度验收 |
 | 2026-10-20 | Day 7 按 ly 选择将应用移至根 frontend/ + backend/，周练习、样本和日志保留；新增当前入口与路径验证脚本 | 解除应用与课程周数的目录耦合；替代旧阶段式候选方案。构建、路径及本地代理验证通过，完整记录与文件清单见 week4/README.md |
+| 2026-10-21 | Day 7 正式复盘 2.5/3；订正课程月验收触发时点 | Week 4 实际为主线第 1 个月第 2 周，Git/Vite/TS 尚有未完成或待核验项；先补证据与内容，课程月完成后再按 §0 验收。不是按累计四周或自然日期判定月完成；本轮仅核对排期，未宣称完成月验收。 |
+| 2026-10-21 | 第 1 个月 Git/Vite/TS 证据核对及 Git 模拟接续 | Vite 代理/别名/开发变量/构建已有证据，按 Vite 8 官方资料订正旧 Rollup 说明；TS 标为部分完成，当前 unknown 错误参数已核实。Git 独立操作与 TS 缺项待补；本人反馈前四关完成，未独立复核命令；本人已展示只读输出并正确概括后端差异；接续 add -p 与 staged diff（15 分钟），暂存待本人操作。详见 §2 和 week4/README.md 当日接续。 |
 |  |  |  |
 
 ### 外部建议的三道筛选判据（2026-08-06 定）

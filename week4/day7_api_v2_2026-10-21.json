@@ -1,0 +1,50 @@
+{
+  "checked_at": "2026-10-21T11:08:28.443989+08:00",
+  "endpoint": "http://127.0.0.1:8000/summarize",
+  "pdf": "week2\\attention.pdf",
+  "pdf_sha256": "bdfaa68d8984f0dc02beaca527b76f207d99b666d31d1da728ee0728182df697",
+  "http_status": 200,
+  "elapsed_seconds": 7.692,
+  "response": {
+    "summary": "论文提出 Transformer，一种完全基于注意力机制的序列转导架构，摒弃循环神经网络和卷积网络。模型采用编码器—解码器结构，以多头自注意力、逐位置前馈网络、残差连接与层归一化为核心，并通过位置编码注入词序信息；解码器用掩码保证自回归生成。其关键思想是让任意位置直接建立依赖，缩短长距离依赖路径，提升并行计算效率。\n\n　　在 WMT 2014 英德、英法机器翻译任务上，Transformer 取得当时最优 BLEU，并显著降低训练成本；在英语句法分析等任务上也表现出良好泛化能力。论文证明纯注意力架构可替代传统循环/卷积序列模型，为后续大规模预训练语言模型奠定基础。",
+    "truncated": false,
+    "input_tokens": 10501,
+    "output_tokens": 705,
+    "cost": 0.0016675400000000001,
+    "model": "deepseek-v4-flash"
+  },
+  "cost_note": "API cost field uses configured application prices; not independently verified billing.",
+  "checks": {
+    "http_200": true,
+    "six_field_contract": true,
+    "nonempty_summary": true,
+    "not_truncated": true,
+    "within_400_characters": true,
+    "missing_file_422": true,
+    "non_pdf_400": true
+  },
+  "boundary_responses": {
+    "missing_file": {
+      "http_status": 422,
+      "body": {
+        "detail": [
+          {
+            "type": "missing",
+            "loc": [
+              "body",
+              "file"
+            ],
+            "msg": "Field required",
+            "input": null
+          }
+        ]
+      }
+    },
+    "non_pdf": {
+      "http_status": 400,
+      "body": {
+        "detail": "上传的文件不是 PDF"
+      }
+    }
+  }
+}

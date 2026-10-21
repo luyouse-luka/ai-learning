@@ -43,7 +43,7 @@
 | 4 | 主线 | **组件拆分（二）**：切出「结果展示」子组件，**emit 往上抛** | `components/ResultPanel.vue` | ☑ 动手与验证通过；非空检查误解已讲解，后续回顾 | 同上，不另计 |
 | 5 | 主线 | **状态提升**：三个组件都要读的状态放哪？先用「提到父组件」做一版，**亲眼看见 props 钻透** | 同上 | ☑ 动手、学源及 props/inject 两版验证已有通过记录；10-19 正式复盘完成 | 2.5 / 3 |
 | 6 | 主线 | **Pinia 入门**：把提升上去的状态搬进 store，对照 Day 5 那版看省掉了什么 | `stores/summarize.ts` | ☑ 指导下完成迁移，构建通过，ly 确认浏览器三条验证通过；学源阅读与旧代码清理仍待核实 | 2 / 3 |
-| 7 | — | 巩固：三版对照（单组件 / props 提升 / Pinia）+ Week 4 总复盘 + **目录重构**（Week 3 欠的） | — | ◐ 开课回顾已答并订正，进入三版对照；清理、目录重构及周自检待完成 | — |
+| 7 | — | 巩固：三版对照（单组件 / props 提升 / Pinia）+ Week 4 总复盘 + **目录重构**（Week 3 欠的） | — | ◐ 三版对照、目录迁移、V2 接入及真实 PDF 验证完成；正式复盘已批改，周自检 5/6，独立发现项待证据 | 2.5 / 3 |
 
 > **为什么 Day 5 要先做「明知会难受」的 props 提升版**：Pinia 的价值只有在**先痛过一次**之后才看得见。
 > 直接上 Pinia 会变成「照着文档敲三件套」，说不出它解决了什么。
@@ -97,11 +97,11 @@
 > 记号（`LEARNING-PLAN.md §0`）：`[x]` = 过，**后面必须跟证据**；`[ ]` = 未过；
 > `[x]*` = 教练代填，答案不是 ly 产出的。**全部 ☑ 才解锁 Week 5。**
 
-- [ ] 能用 5 段结构写出一个 200+ 字的 system prompt，并说清每段在管什么
-- [ ] 至少 3 种 prompt 技法真用在 `/summarize` 上，**有前后对照的实测输出**（不是「感觉变好了」）
-- [ ] 能说清 props 和 emit 各自的方向，并答出「**子组件不许直接改 props**」及其原因
-- [ ] 拆出的子组件能独立跑通，父组件只负责协调
-- [ ] 能说出「状态提升」难受在哪，以及 Pinia 具体省掉了哪一步（**要能举出自己代码里的行**）
+- [x] 能用 5 段结构写出一个 200+ 字的 system prompt，并说清每段在管什么 —— 2026-10-21 ly 贴出 backend/prompts.py 的 V2 并说明五段用途；结构项通过，不代表效果或接口接入通过。
+- [x] 至少 3 种 prompt 技法真用在 `/summarize` 上，**有前后对照的实测输出**（不是「感觉变好了」） —— 2026-10-21 ly 导入包含角色/示例/负向约束的 V2；未 strip 的 V1/V2 输出保存在 day2_v1.txt、day2_v2.txt。真实 attention.pdf 调用 V2 接口返回 200、285 字符、未截断，缺文件 422 / 非 PDF 400 通过，证据 day7_api_v2_2026-10-21.json。接入按教练两处指导完成；本项证明已应用并留存对照，不代表各技法独立增益已证实。
+- [x] 能说清 props 和 emit 各自的方向，并答出「**子组件不许直接改 props**」及其原因 —— 2026-10-21 ly 说明父传子、父组件维护值，并解释 emit 的事件名和载荷；教练补明单向数据流与通过事件请求修改。
+- [x] 拆出的子组件能独立跑通，父组件只负责协调 —— 2026-10-21 ly 正确说明 FilePicker / FileUploader / ResultPanel 职责；运行证据沿用 Day 3/4/6 的构建及本人浏览器确认，本轮未重新操作浏览器；独立指职责分离，不要求脱离必要 props 单独运行。
+- [x] 能说出「状态提升」难受在哪，以及 Pinia 具体省掉了哪一步（**要能举出自己代码里的行**） —— 2026-10-21 ly 对照 props、provide/inject 与 Pinia，说明去掉 App 的结果声明和传递，并举出 useSummarizeStore() / summarizeStore.result.cost；唯一 result 实际仍由 store 维护。
 - [ ] 「我自己独立发现的 bug」≥ 1 条，且在教练指出之前
 
 ---
@@ -496,6 +496,39 @@ ly 确认 inject 版初始隐藏、上传成功后两处数值一致、再次上
 - 保存 frontend/ + backend/ 目录迁移、路径修正、根启动说明、可复跑验证脚本、三版对照及回顾记录。App.vue、CostPanel.vue 保留 ly 的注释清理改动；其余暂缓清理的教学注释继续保留。
 - 下次从 Week 4 六项结束自检开始，再完成 Day 7 正式复盘；不重复目录迁移或 Day 6 动手验收。Week 4、Day 7 及课程月验收尚未标记完成。
 - 提交清单：应用的 43 个文件按旧目录映射迁移；.gitignore、README.md、LEARNING-PLAN.md、week1/CLAUDE.md、week2/README.md、week3/README.md、week4/README.md、tools/verify_workspace_layout.py、docs/superpowers/plans/2026-10-20-app-directory-migration.md。根 .env、.venv、依赖、构建产物和旧依赖缓存均忽略；两份 Zone.Identifier 未跟踪文件不纳入提交。
+
+### Day 7 结束自检接续（2026-10-21）
+
+- ly 要求问题一次发齐；已批改本轮回答。六项自检目前 4 项通过，Prompt 三技法的接口落地与独立发现 bug 两项未通过；不另计正式复盘分数。ly 暂时想不起独立 bug，不代编记录；Day 1 的「首行」歧义仅有独立问题贡献记录，未擅自等同本项通过。
+- 五段结构回答正确。三种技法是 Role Prompting、示例提示（本版本仅一组输入/输出，严格称 one-shot）、负向约束；V1/V2 是两版 prompt，与技法数量不同。当前 backend/main.py 仍使用旧 SYSTEM_PROMPT，V2 仅在 backend/prompts.py 的实验中。六份输出存在，但不能据此断言三种技法分别有效；r1 由 ly 实做，r2/r3 是教练接手。
+- 复核发现旧缩进归因不成立：backend/prompts.py 的 summarize() 在落盘前对 content 调用 .strip()。本地无模型验证显示，字符串开头的两个 U+3000 会被移除，第二段开头保留，足以制造旧记录中的现象。原始 API 内容未保存，无法还原当时模型是否生成首段缩进；上文「prompt 层改不动」「西文排版惯例」「三轮实验排除了路 A」不再作为有效结论。ResultPanel 用 CSS 排版的实现保留，但理由应为展示层统一控制，不能引用上述实验作模型能力证据。
+- 本轮只读核查应用与旧输出，运行 .strip() 最小验证；未修改核心代码、调用模型、重新构建或进行浏览器验收。学源补充：Anthropic Prompting best practices 的 Use examples effectively / Give Claude a role / Control the format of responses，复看预算 10 min，跳过模型专属、thinking 与 agents 小节；核查日期 2026-10-21，https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/claude-prompting-best-practices 。该文档针对 Claude，DeepSeek 的具体效果仍需本项目实测；ly 阅读未自报。
+- 同日代码检查：ly 已去掉 backend/prompts.py 返回 content 时的 .strip()。教练提取当前实际 summarize / measure 函数，用模拟响应验证两个 U+3000 开头的文本原样返回、首段前缀原样检测；两条断言通过，无 API 请求、无输出文件写入。measure 中 if p.strip() 仅筛除空白行，不改写保留下来的 p；compare 将返回文本直接落盘。真实模型对照尚未重跑，旧六份输出不能恢复已丢失的空白。
+- ly 授权继续跑对照后，教练执行 `.venv/Scripts/python.exe -m backend.prompts`，退出码 0，两版分别完成一次模型调用并保存未 strip 的文本至 week4/day2_v1.txt、day2_v2.txt；旧 r1/r2/r3 六份文件保留。使用同一 week2/attention_extracted.txt、脚本配置的 deepseek-v4-flash，只换 system prompt；temperature / max_tokens 均未显式传入，不能把未接线的 MAX_OUTPUT_TOKENS=1500 当作生效参数。原始文本指未裁剪的 message.content，不含完整响应元数据；脚本未记录 usage，故本轮不报告 token / 费用。
+- 本轮跑前判据为 len(s) <= 400（含空白与标点的总字符数），以及每个非空段落以两个 U+3000 开头。落盘后读取复核：V1 为 304 字符、2 段、2/2 段缩进；V2 为 319 字符、3 段、3/3 段缩进；两版均通过两项判据。首段前四字符分别为 '\\u3000\\u3000《A' 与 '\\u3000\\u3000论文'。旧模型无法首段缩进的结论已被本轮反例进一步否定；单轮不能证明长期稳定性、V2 语义质量优于 V1 或各技法的独立效果。本轮未做摘要事实核验、接口接入或浏览器验收。
+- 接口接入检查：ly 已在 backend/main.py 导入 SYSTEM_PROMPT_V2 as SYSTEM_PROMPT，并移除旧字符串定义。教练导入实际模块，断言 main.SYSTEM_PROMPT 与 prompts.SYSTEM_PROMPT_V2 为同一对象，POST /summarize 路由处理函数及其全局 SYSTEM_PROMPT 均对应当前 V2；通过。tools/verify_workspace_layout.py 的目录/配置/实验路径、健康 200、静态页 200、缺文件 422、非 PDF 400 均通过，无模型调用。未启动或重启常驻服务，未验证真实 PDF 成功响应和浏览器。
+- ly 授权启动后端并做真实 PDF 验证：教练启动本地 uvicorn backend.main:app，监听 127.0.0.1:8000（本轮 PID 20928，工具会话 84457），保留运行。通过真实 HTTP 上传 week2/attention.pdf，7.692 秒返回 200；六字段类型与非空摘要校验通过，285 字符、2 段、truncated=false、input_tokens=10501、output_tokens=705、model=deepseek-v4-flash。服务返回 cost=0.00166754，按项目现有常量计算，不作为已核实账单费用。运行中服务缺文件 422、非 PDF 400、健康 200 均通过，边界请求未调用模型。本轮一次真实总结请求；最初 httpx 客户端探针因依赖不可导入在发请求前退出，改用标准库完成，未安装依赖或重试总结。
+- 原始 HTTP 响应、PDF SHA256、时间、耗时及七条明确判据保存为 week4/day7_api_v2_2026-10-21.json。接口仍有 content.strip()，因此首段空格在接口响应中被清掉；这是现有返回处理，展示缩进由 ResultPanel 的 CSS 控制，本轮未改，不将它归因于模型。未进行浏览器操作或摘要事实核验。
+- Day 7 正式复盘批改：2.5/3。Q1 旧定义在导入之后赋值会覆盖 V2，正确，1/1；Q2 判断不能证明 V2 更好正确，但理由未涉及单次采样、两版同时改动多处与因果无法分离，也未指出被推翻的旧模型首段缩进结论，0.5/1。V1 实际也有「首行缩进」，只是未像 V2 细化到每段及全角空格，不能说 V1 完全没有缩进要求；Q3 正确识别删除清空后失败不更新 result、status 独立，因此费用仍显示，1/1。教练补充解释不计为本人独立答题。
+- 排期订正：教练前一轮说「复盘后进入课程月验收」过早。LEARNING-PLAN.md §1 与本周定位是主线第 1 个月第 2 周；§2 第 1 个月的 Git / Vite / TypeScript 条目尚有未完成或待核验证据，当前不能认定课程月结束。先核对并补齐必修内容，完成后再按 §0 做官方资料更新及功能/变式月验收；本轮未执行或宣称月验收完成。
+- 下一接续点：正式复盘完成，六项自检仍为 5/6；仅独立发现 bug 尚缺本人证据，不代编或把教练发现计为本人发现。V2 及真实正常/边界路径已验证，不重复调用模型；先补周自查证据并核对课程第 1 个月剩余条目，Week 4 尚未全部收尾。文件清单：week4/README.md、LEARNING-PLAN.md、week1/CLAUDE.md（教练记录）、backend/prompts.py、backend/main.py（ly 修改）、week4/day2_v1.txt、week4/day2_v2.txt、week4/day7_api_v2_2026-10-21.json（新验证输出）；未提交、推送或部署。
+
+#### 课程第 1 个月基础项核对与接续（2026-10-21）
+
+| 条目 | 当前证据 | 尚待完成 |
+| --- | --- | --- |
+| Git / GitHub | 仓库已有提交历史；其中有教练代操作 | 本人分支、PR、回退及计划列出的日常命令练习，不能以有提交直接判掌握 |
+| Vite | 脚手架、代理与健康接口联调、别名、开发环境变量、类型检查及生产构建已有记录 | 开发/生产环境变量差异与部署后的接口地址解释、验证 |
+| TypeScript | 接口、联合、可选属性、注解、泛型和断言已用于当前代码；有效 strict=true | 泛型迁移、工具类型、断言边界等的独立解释与练习 |
+
+- 当前实际安装 Vite 8.2.0、TypeScript 6.0.3；通过包版本查询和 vue-tsc --showConfig 核对，另有 noUncheckedIndexedAccess=true。pnpm 按现有锁文件恢复本地依赖，缓存复用 312、下载 0；package.json 与 pnpm-lock.yaml 无改动。未升级依赖、未重跑模型或浏览器验收。
+- FileUploader 当前错误参数已是 unknown，并使用 axios.isAxiosError<ApiError>；旧 Week 3 的 any 待清理说明不再作为当前任务。Vite 8 已改用 Rolldown/Oxc，LEARNING-PLAN.md §2 的旧 Rollup 说明按官方迁移文档订正：https://vite.dev/guide/migration.html 。
+- 下一步学源：Learn Git Branching 中文版 https://learngitbranching.js.org/?locale=zh_CN ，只做 Introduction Sequence 的 Introduction to Git Commits 与 Branching in Git 两关，预算 20 分钟；跳过 merge/rebase、远端与剩余关卡。官方关卡出处 https://learngitbranching.js.org/generatedDocs/levels.html ，计划出处 LEARNING-PLAN.md §2 第 1 个月 Git 条目。
+- 操作由 ly 在网页模拟仓库完成，教练不代做，不改变真实仓库；提交两关各自使用的命令顺序及是否通关后检查。最初仅安排练习；后续 ly 反馈前两关已完成，按本人反馈记录，教练未独立复核命令，Git 总项仍待后续练习。Day 7 正式复盘仍 2.5/3，周自检仍 5/6，课程月未完成。
+- 接续安排：基础篇 Merging in Git 与 Rebase Introduction（第 3/4 关），预算 20–30 分钟，学源及计划出处同上；只完成这两关，暂跳过高级篇、远端与真实仓库操作。按网页引导操作，记录命令顺序与提交图变化，完成后一起反馈。随后 ly 反馈第 3/4 关完成，基础篇前四关按本人反馈记录；未独立复核命令，不据此认定已掌握 merge/rebase。
+- 真实项目接续：由 ly 在项目根运行 git status --short、git log --oneline -5、git diff -- backend/main.py、git diff -- backend/prompts.py，预算 15 分钟，输出一起反馈；本段先查看状态/历史/实际差异，随后再讲暂存和分块提交。教练已只读确认两个后端文件存在未提交差异，未操作暂存、提交、回退或远端。学源为 Pro Git 中文 §2.2 的“检查当前文件状态”“查看已暂存和未暂存的修改”及 §2.3 的基本日志示例，跳过本段之外高级选项；出处 LEARNING-PLAN.md §2 Git 的 12 命令条目。链接：https://git-scm.com/book/zh/v2/Git-基础-记录每次更新到仓库 、https://git-scm.com/book/zh/v2/Git-基础-查看提交历史 。操作结果待本人反馈。
+- 本人已贴 status/log 与 main.py 的部分 diff，随后正确概括 main.py 导入 V2 并删除旧 prompt、prompts.py 去掉返回内容的 strip；教练复核当前源码差异相符，暂存区为空。下一步讲工作区/暂存区/提交及暂存后继续修改的边界，由 ly 用 git add -p -- backend/prompts.py 只选择 strip 修复，再用 git diff --cached 检查文件清单及内容；随后 ly 贴出暂存状态，教练只读核对 cached 文件清单仅有 backend/prompts.py、cached diff 仅去掉 strip，且该文件无额外未暂存差异，暂存练习通过；本人随后完成提交 1b5a0bd（fix: preserve leading whitespace in prompt comparisons）；教练核对该提交仅含 prompts.py 的 1 行删除/1 行新增，暂存区为空。下一步由本人按同一流程独立暂存并提交 main.py 的 V2 接入（导入 V2、删除旧定义两块放在一起），提交说明用 feat:，完成后反馈最新提交、文件清单和状态；本人已完成提交 cbaaeda（feat: use V2 prompt for PDF summaries）；教练核对仅修改 backend/main.py，两块改动齐全，暂存区为空。本次依照教练具体命令操作，不标记为完全独立完成。下一步由本人用 git add -- 明确列出 LEARNING-PLAN.md、week1/CLAUDE.md、week4/README.md 及 day2_v1.txt、day2_v2.txt、day7_api_v2_2026-10-21.json 六份文件，检查 cached 文件清单后归档；旧 week3/frontend 迁移残留不纳入。已有学源 Pro Git §2.2“跟踪新文件”“暂存已修改的文件”，复看 5 分钟、实操 5 分钟，跳过删除/移动与撤销；出处 LEARNING-PLAN.md §2 Git 日常提交条目。归档提交尚未完成。教练未代暂存或提交。学源 Pro Git §7.2“暂存补丁”一节，预算阅读 5 分钟 + 实操 10 分钟，跳过 add -i 菜单与补丁手动编辑，出处 LEARNING-PLAN.md §2 的 add -p / diff --staged。https://git-scm.com/book/zh/v2/Git-工具-交互式暂存 。
+- 本段文件清单：LEARNING-PLAN.md、week4/README.md、week1/CLAUDE.md，仅同步学习证据与下一步；未提交、推送或部署。
 
 ### 不要报成 bug 的清单
 
