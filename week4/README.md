@@ -534,6 +534,13 @@ ly 确认 inject 版初始隐藏、上传成功后两处数值一致、再次上
 
 - 本轮归档（用户明确要求记录进度并推送）：同步 LEARNING-PLAN.md、week1/CLAUDE.md、week4/README.md，记录已完成的 amend / 快进合并 / 分支清理与 stash 待验收状态；提交和远端同步由教练执行，不记为本人独立 Git 练习。推送目标 origin/master，包含此前四次本地提交；旧 week3/frontend 迁移残留不纳入。当前三份记录内容与布置 stash 时的 SHA256 一致、贮藏列表为空，但这不能证明已执行过收起和恢复。归档后这三份记录不再有待提交差异，下次 stash 练习先新增小幅笔记修改。
 
+#### Git stash 实操验收（2026-10-21）
+
+- ly 在本轮教练指导下新增末尾第 4 条练习笔记，使用限定 week4/README.md 的 stash push 收起，再执行 stash pop 恢复；教练仅执行只读检查，未代操作。
+- 收起后已跟踪文件无待提交差异，新 stash 的 diff 仅含该笔记及原文件末尾换行变化；恢复前后 git hash-object 均为 bd52503a7a696092215a52b97aef6c69791e4f69，HEAD 保持 e6ee019。练习 stash 已移除，原 r-pull-20260910 旧 stash 保留；两个 Zone.Identifier 文件始终未跟踪。该步验收通过，不记为独立掌握。
+- 下一接续点：由 ly 检查三份学习记录的 diff、明确暂存范围并提交，反馈提交及状态后核对；随后继续剩余 Git 命令。周自检仍 5/6，独立 bug 证据仍待补，Git 总项与课程月均未完成。
+- 文件清单：LEARNING-PLAN.md、week1/CLAUDE.md、week4/README.md；保留 ly 的第 4 条练习笔记，仅更新进度，未提交或推送。
+
 ### 不要报成 bug 的清单
 
 - 未选文件时按钮可点击是现有设计，由 handleSubmit 显示 No file selected；只有 loading 时禁用。教练此前的按钮验收条件已更正。
@@ -553,3 +560,4 @@ Git 实操记录
 1. 三次提交分别保存了: 1. 去掉 .strip() 2. use V2 prompt for PDF summaries 3. record V2 verification and Git practice 
 2. 暂存指的保存下一次提交准备采用的文件内容，提交完成不代表已经上传到 GitHub，提交是存入本机档案
 3. 创建分支 git branch <branch-name>,切换分支 git switch / git checkout
+4. stash 实操：这是一条尚未提交的练习笔记。
