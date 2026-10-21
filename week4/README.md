@@ -543,3 +543,9 @@ ly 确认 inject 版初始隐藏、上传成功后两处数值一致、再次上
 - `week3/frontend/package.json`、`pnpm-lock.yaml`：固定 Windows 本地 pnpm/Node 运行时。
 - `week3/frontend/README.md`：补齐前后端启动步骤和验证记录。
 - `week4/README.md`、`LEARNING-PLAN.md`、`week1/CLAUDE.md`：更新当前位置、验收证据和下一步。
+
+
+Git 实操记录
+1. 三次提交分别保存了: 1. 去掉 .strip() 2. use V2 prompt for PDF summaries 3. record V2 verification and Git practice 
+2. 暂存指的保存下一次提交准备采用的文件内容，提交完成不代表已经上传到 GitHub，提交是存入本机档案
+3. 创建分支 git branch <branch-name>,切换分支 git switch / git checkout
