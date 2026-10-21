@@ -85,7 +85,7 @@ def summarize(system_prompt: str, text: str) -> str:
         ],
         
     )
-    return response.choices[0].message.content.strip()
+    return response.choices[0].message.content
 
 
 def measure(label: str, s: str) -> None:
