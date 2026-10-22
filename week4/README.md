@@ -577,6 +577,20 @@ ly 确认 inject 版初始隐藏、上传成功后两处数值一致、再次上
 - 推送前已通过本机现有系统代理 fetch origin 并核对远端：远端仅有 master，当前练习分支尚不存在；本地 origin/master 至 HEAD 的差异为三份记录与两份练习 txt。Git 直连连接失败后，使用单次命令代理配置完成读取，未修改全局网络配置。教练本次 fetch 不记为本人已完成 remote/fetch 学习。
 - 下一接续点仍为 remote -v / fetch 的讲解及本人练习；Git 总项、课程月与周自检状态不变。文件清单同上三份学习记录；提交与同步由教练代操作，不计本人独立实操。
 
+#### remote / fetch 实操验收与接续（2026-10-22）
+
+- 本人已依指导执行 remote -v / fetch 并反馈操作前后输出：远端 origin 指向 ai-learning.git；前后 HEAD 均为 85c232a，master 仍领先 origin/master 五次提交，week3/frontend/ 仍未跟踪。教练只读核对当前状态与 FETCH_HEAD（记录远端 master=e6ee019），与反馈一致。实操通过，不记为独立掌握；学源阅读未自报。
+- 本地 master 此前按本人指令快进合并 origin/codex/git-rebase-practice 的五次提交，当前未推送 master。仓库普通 fetch 配置仅更新 master；练习分支此前由教练显式抓取，本轮不变更抓取配置。
+- branch -d / -D 后续已验收：本人依指导删除同提交的 codex/delete-merged-demo 成功；从原备份创建 codex/delete-unmerged-demo，普通 -d 被未合并检查拒绝，再用 -D 删除成功。本人贴出终端结果，教练只读核对两条临时分支均不存在，原备份仍指向 81682de。12 组日常命令指导实操已覆盖，不记为独立掌握；Git 总项、课程月与周自检尚未整体完成。
+- 文件清单：LEARNING-PLAN.md、week1/CLAUDE.md、week4/README.md；本轮仅更新学习记录，未代提交、删除分支或推送。
+
+#### GitHub Flow / PR 接续（2026-10-22）
+
+- 本轮采用 GitHub Flow 练习主线协作：先由本人创建 codex/git-flow-practice 本地分支，检查并仅提交三份学习记录；后续再推送该分支、创建 PR、检查差异与合并。当前仅布置本地阶段，尚未执行或验收，不代本人推送或创建 PR。
+- 当前 master=85c232a，比 origin/master=e6ee019 多五次已存在的学习记录与练习提交。新分支继承这些提交；后续以远端 master 为目标的 PR 将包含这五次提交及本轮记录提交，需要一并检查范围，不能声称仅含本轮三份文件。
+- 学源：GitHub Docs 的 GitHub flow（Create a branch、Make changes、Create a pull request），阅读 8 分钟，后续审查/合并/删除章节待实际操作时继续；出处 LEARNING-PLAN.md §2 的分支策略与 PR。https://docs.github.com/en/get-started/using-github/github-flow 。阅读未自报，PR 未创建，课程月与独立 bug 欠账状态不变。
+- 文件清单：LEARNING-PLAN.md、week1/CLAUDE.md、week4/README.md；本轮教练仅记录验收与下一步，未代提交、推送或删除分支。
+
 ### 不要报成 bug 的清单
 
 - 未选文件时按钮可点击是现有设计，由 handleSubmit 显示 No file selected；只有 loading 时禁用。教练此前的按钮验收条件已更正。
