@@ -591,6 +591,58 @@ ly 确认 inject 版初始隐藏、上传成功后两处数值一致、再次上
 - 学源：GitHub Docs 的 GitHub flow（Create a branch、Make changes、Create a pull request），阅读 8 分钟，后续审查/合并/删除章节待实际操作时继续；出处 LEARNING-PLAN.md §2 的分支策略与 PR。https://docs.github.com/en/get-started/using-github/github-flow 。阅读未自报，PR 未创建，课程月与独立 bug 欠账状态不变。
 - 文件清单：LEARNING-PLAN.md、week1/CLAUDE.md、week4/README.md；本轮教练仅记录验收与下一步，未代提交、推送或删除分支。
 
+#### GitHub Flow / PR 合并与清理验收（2026-10-22）
+
+- 本人创建并提交 f63314c，仅含三份学习记录；随后本人推送 codex/git-flow-practice，创建 PR #1（https://github.com/luyouse-luka/ai-learning/pull/1），base=master、head=codex/git-flow-practice。教练通过公开 API 核对六次提交、五个文件及无合并冲突，改动均为学习记录与两份练习 txt；无 check runs 或 commit statuses，不将其表述为测试通过。CI 连接工具未连接 GitHub，读取改用公开 API；未请求或修改凭据。
+- 本人完成网页合并，merge commit=94c5c1e，父提交为 e6ee019 与 f63314c。随后本人切回 master、pull --ff-only，删除本地及远端 codex/git-flow-practice。本人贴出最终日志、状态与分支；教练只读核对 master=origin/master=94c5c1e，远端练习分支不存在，原备份 codex/local-backup-before-safe-push-20261014 仍为 81682de，未跟踪 week3/frontend/ 保留。GitHub Flow 指导实操完成，不记为独立掌握。
+- PR 标题已改为 docs: sync Git practice notes and learning checkpoint，正文仍只有同一行，尚未覆盖问题、改动与验证说明；作为后续写作欠账保留，不据合并成功宣称 PR 描述能力通过。
+- 下一步 Conventional Commits：阅读 1.0.0 的 Summary（5 分钟），跳过版本发布、BREAKING CHANGE 与工具配置；结合现有 feat/fix/docs 提交，布置三种场景的类型与标题练习。官方来源 https://www.conventionalcommits.org/en/v1.0.0/ ，2026-10-22 核查；学源阅读及练习尚未自报。周自检仍 5/6、独立 bug 证据与 Vite/TS 欠账未完成，课程月未结束。
+- 文件清单：LEARNING-PLAN.md、week1/CLAUDE.md、week4/README.md；本轮教练仅记录验收与接续，未代提交、推送或删除分支。上述本地同步一致是写入本段之前的状态；本轮新增三份记录尚未提交。
+
+#### Conventional Commits 分类练习验收与 Vite 接续（2026-10-22）
+
+- 本人提交三条练习标题：`feat: 新增下载摘要为 txt 的功能`、`fix: 修复请求失败后仍显示加载中的问题`、`docs: 记录 PR 合并、同步和分支清理的学习进度`。类型、冒号空格与具体描述均正确，基础分类练习通过；官方学源阅读未自报。这是提交标题练习，不作为下载功能或失败状态修复已实现的证据。
+- 下一步来自 LEARNING-PLAN.md §2 的 Vite 欠账：先解释开发与生产模式、构建时替换及部署后的 API 地址。现有 frontend/.env.development 与 .env.example 的 VITE_API_BASE 均为 /api，FileUploader.vue 通过 import.meta.env.VITE_API_BASE 拼接 /summarize，vite.config.ts 的开发代理移除 /api 后转发到 127.0.0.1:8000；仅核对配置，不将其记为生产部署验证。
+- 学源：Vite 官方 Env Variables and Modes 的 Env Variables、.env Files、Modes，阅读约 8 分钟；server.proxy 文档按需阅读约 2 分钟。暂不展开 SSR、自定义环境类型、NODE_ENV 组合与实际部署。来源 https://vite.dev/guide/env-and-mode 、https://vite.dev/config/server-options#server-proxy 。本人已正确回答完整 URL 为 https://example.com/api/summarize、修改配置后执行 pnpm build、server.proxy 不会自动转发线上请求。三项理解检查通过；结合既有实操，Vite 五项基础覆盖完成，不记为独立部署掌握，官方阅读未自报。
+- 教练生产变量实验通过：frontend 内临时设置进程 VITE_API_BASE=https://build-a.example.invalid，运行 pnpm exec vite build --outDir .vite-env-lesson-20261022，Vite 8.2.0 默认 production 模式；先确认输出 JS 非空且含完整 A/summarize URL，再将进程变量改为 B，确认所有输出 JS 的 SHA256 不变且 B 不存在。此顺序即复跑判据；不修改 .env、不发接口请求，进程变量在 finally 恢复，未运行类型检查，不记为本人独立构建或线上部署验证。
+- 临时产物遗留：frontend/.vite-env-lesson-20261022/ 为本次实验生成；递归清理与逐项清理命令均被自动审批拒绝（blocked by policy），未执行删除，需后续清理。现有 dist 与业务源码未改。
+- 文件清单：LEARNING-PLAN.md、week1/CLAUDE.md、week4/README.md，另有上述临时构建产物。未调用模型、提交、推送或部署；周自检仍 5/6，独立 bug 证据、Vite/TS 余项与 PR 正文写作欠账保留。
+
+- 接续 TS：来自 LEARNING-PLAN.md §2，先补 as 类型断言与运行时检查区别，结合 FileUploader.vue 的 selectedFile.value as File 及前置空值返回说明。学源 TypeScript Handbook / Everyday Types / Type Assertions，约 5 分钟：https://www.typescriptlang.org/docs/handbook/2/everyday-types.html#type-assertions 。暂不展开双重断言、复杂类型守卫、泛型与工具类型；讲解及练习不代表当前断言存在 bug，不修改业务代码。本人正确解释数字 as string 仍是数字，随后独立完成 printUpper(value: unknown)，通过 typeof 检查后调用 toUpperCase，其他值输出 Value is not a string；英文输出与题意一致，基础练习通过。
+
+- 教练核验：仅在内存中对本人原函数进行 strict=true 类型检查与转译，输入 hello 得 HELLO，42/null/对象均进入其他类型分支，四项通过；复跑判据为零类型诊断且每次仅输出一个预期结果。不写入业务源码或测试文件。验证脚本曾因 Windows 正反斜线不一致而未匹配虚拟源文件，定位后统一路径格式，重验通过；该问题不归因于本人函数。本轮开始已存在 frontend/env.d.ts 修改，来源未确认，保留未动。
+- 下一步来自 LEARNING-PLAN.md §2：泛型基础，学源 TypeScript Handbook / Generics / Hello World of Generics，阅读约 5 分钟：https://www.typescriptlang.org/docs/handbook/2/generics.html#hello-world-of-generics 。用 identity 的字符串、数字、对象三例解释类型参数，本人已完成 wrapInArrayM<T>(value: T): T[]，函数体 return [value]；泛型入门实现经代码审阅通过，函数名变体不影响题意，未另跑编译或运行。不展开泛型约束、条件类型；项目内迁移应用不据此判为独立掌握。文件清单仍为三份学习记录，未提交或推送。
+
+- 接续工具类型 Pick：来自 LEARNING-PLAN.md §2，学源 TypeScript Handbook / Utility Types / Pick<Type, Keys>，阅读约 3 分钟：https://www.typescriptlang.org/docs/handbook/utility-types.html#picktype-keys 。结合 SummarizeResponse 的现有 summary、model、cost 字段讲解类型选取；强调只生成类型、不裁剪运行时对象。本人回答 type newSummarize = Pick<SummarizeResponse, 'summary' | 'model'>，语法正确但字段与题目不符；经指出后本人要求忽略并继续，故跳过该题，不标记 Pick 验收通过。接续 Omit；Partial/Required/Record 暂不展开。本轮仅更新三份学习记录，未修改业务代码、提交或推送。
+
+- Omit 接续：来自 LEARNING-PLAN.md §2 的内置工具类型，学源 TypeScript Handbook / Utility Types / Omit<Type, Keys>，约 3 分钟：https://www.typescriptlang.org/docs/handbook/utility-types.html#omittype-keys 。结合 SummarizeResponse 的 cost、input_tokens、output_tokens 说明排除单字段、多字段及页面类型边界；只改变静态类型，不删除运行时数据。本人回答 type withOutMOdel = Omit<SummarizeResponse, 'model'>，单字段排除练习经代码审阅通过，类型名大小写不影响本题，不另跑编译或运行。接续 Partial：学源同一官方页 Partial<Type> 小节，约 3 分钟；用空对象、部分属性、错误属性类型三例讲解所有属性可选但保留各自类型。本人先后出现缺少类型参数、别名自引用与类型名排版问题，经提示后最终完整提交 type Summary = Partial<SummarizeResponse> 及仅含 summary 的 draft 声明，基础练习代码审阅通过，不记为独立掌握，未另跑编译或运行。接续 Required，Record 暂不展开。本轮仅更新 LEARNING-PLAN.md、week1/CLAUDE.md、week4/README.md，未修改业务代码、提交或推送。
+
+- Required 接续（本人明确要求下一个）：来自 LEARNING-PLAN.md §2，学源 TypeScript Handbook / Utility Types / Required<Type>，约 3 分钟：https://www.typescriptlang.org/docs/handbook/utility-types.html#requiredtype 。说明将属性设为必填且保留各自类型，以单字段、多字段及 Required<Partial<SummarizeResponse>> 三例解释；不生成默认值、不验证运行时数据。本人正确回答 type CompleteOptions = Required<Options>，可选配置类型转必填练习经代码审阅通过，未另跑编译。本轮仅更新三份学习记录，未修改业务代码、提交或推送。
+
+- Record 接续：来自 LEARNING-PLAN.md §2，学源 TypeScript Handbook / Utility Types / Record<Keys, Type>，约 3 分钟：https://www.typescriptlang.org/docs/handbook/utility-types.html#recordkeys-type 。用单键、多个数值键及状态到对象的映射三例说明键集合和值类型，结合 FileUploader 的 idle/loading/done/error 状态；本人初答将整张文案表的对象类型放入值类型参数，教练最初的对象值示例与字符串值练习衔接不清，随后展示两种完整映射并解释嵌套差异；本人准确复述第二个参数是每个状态对应的值类型，不是整张表，概念理解通过，不记为独立代码应用通过。随后本人完成 getStatusText(state: Status): string，函数体 return statusText[state]；有限状态联合对应完整 Record，返回类型为 string，查表练习经代码审阅通过。未另跑编译或运行，不作为项目迁移应用验收；Pick 按本人要求跳过的记录保留，不标记 TS 整项完成。本轮未运行代码或修改业务源码。本轮仅更新 LEARNING-PLAN.md、week1/CLAUDE.md、week4/README.md，未修改业务代码、提交或推送。
+
+- 项目迁移练习接续：本人明确要求继续下一步，按 LEARNING-PLAN.md §2 的 TS 代码应用安排 FileUploader.vue 局部重构，由本人提取 UploadStatus 联合类型、复用于 status 的 ref，并将 buttonText 的 switch 改为 Record<UploadStatus, string> 查表。已核对当前文案基线 idle=上传、loading=生成中…、done=上传、error=重试；禁用条件、上传流程与模板入口保持原有行为。学源复用官方 Utility Types / Record 小节，回看约 2 分钟；练习约 10 分钟，不引入新工具类型或状态管理方案。本人已修改 FileUploader.vue：定义 Status 联合类型、Record<Status, string> 文案表与 computed 查表，替换原 switch；教练实际运行 frontend 的 pnpm build（vue-tsc --build + vite build），两项均通过。首轮审阅发现 done/error 文案改变且 ref 未复用 Status；本人随后已恢复 done=上传、error=重试，并将 status 改为 ref<Status>。教练复核最终 diff，四状态文案与原 switch 逐项一致，禁用条件与上传流程无改动；再次运行 pnpm build，类型检查与生产构建均通过。Record 项目应用经指导验收通过，未做浏览器交互或真实模型调用，不将本次指导当作独立修复 bug 证据。本轮源码 FileUploader.vue 由本人修改，教练仅更新 LEARNING-PLAN.md、week1/CLAUDE.md、week4/README.md；既有 frontend/env.d.ts 修改与临时构建目录保持原状。未提交或推送。
+
+- Axios 响应泛型接续：来自 LEARNING-PLAN.md §2 的泛型代码应用。已核对现有 axios.post 未指定响应类型，安装包 index.d.ts 的 post 首个泛型参数默认为 any，并经 AxiosResponseResult 传递到 AxiosResponse.data。本人任务仅为 FileUploader.vue 增加既有 SummarizeResponse 的 type 导入并为现有 post 指定响应泛型，保持接口地址、FormData 与状态流程；暂不展开拦截器、请求封装或运行时 schema。学源复用 TypeScript Handbook / Generics 入门段约 2 分钟，并回看本地 Axios 类型签名约 1 分钟。本人已完成 FileUploader.vue 的 type 导入及 axios.post<SummarizeResponse>，教练审阅确认接口地址、FormData 与状态流程保持原样；使用实际安装包的内存静态探针确认 response.data 为 SummarizeResponse、summary 为 string、cost 为 number，pnpm build 类型检查与生产构建通过。响应泛型项目应用经指导验收通过；未发真实接口请求，未重验浏览器，不计为独立 bug 修复。静态探针未生成文件。本轮教练仅更新三份学习记录，未代写源码、提交或推送。
+
+### 新窗口接续（2026-10-22）
+
+- 已完成：Record 状态文案查表与 Axios 响应泛型的既有构建验证通过，详见上文。本轮本人在聊天中提交 getSummaryLength：用 if 判断 null 返回 0，否则返回 result.summary.length；代码审阅通过，按逻辑三例 null、空摘要、abc 分别得到 0、0、3。本轮未实际运行。
+- 已完成：本人提交 getModelName(result: SummarizeResponse): string 并返回 result.model；参数注解与返回类型经代码审阅通过，未另跑编译或运行。已讲解 strict 是一组检查、noImplicitAny 会检查无法推断类型时的隐式 any，但不禁止显式 any；不把两道基础题记为 TS 整项或独立项目迁移验收通过。
+- 当前讲解：LEARNING-PLAN.md §2 的 TS 第④项，可选参数 ? 与默认值。已区分“允许省略”与“省略时采用默认值”；默认参数在省略或显式传 undefined 时生效，空字符串保留，null 不触发默认值。已联系 ApiError.detail? 说明可选属性不会自动产生备用文案。
+- 学源：[TypeScript / Optional Parameters](https://www.typescriptlang.org/docs/handbook/2/functions.html#optional-parameters)，预算 3 分钟，读到 Optional Parameters in Callbacks 前停下；辅以 [Optional Properties](https://www.typescriptlang.org/docs/handbook/2/objects.html#optional-properties)。此前 strictNullChecks 与 noImplicitAny 官方学源已提供；本人尚未自报阅读完成。
+- 下一步：等待本人在聊天中补完以下函数，无需改项目文件。prefix 默认使用字符串“摘要”，返回 prefix + '：' + summary；不代写核心实现。四例验收：formatSummary('abc') → '摘要：abc'；formatSummary('abc', '结果') → '结果：abc'；formatSummary('abc', '') → '：abc'；formatSummary('abc', undefined) → '摘要：abc'。尚未作答、未验收。
+
+```ts
+function formatSummary(summary: string, prefix /* TODO: Add type and default. */): string {
+    // TODO: Return prefix + '：' + summary.
+}
+```
+
+- 推进规则：本人要求每项完成并验收通过后，教练在同一回复中简短点评并直接进入下一环节，不等待“继续”；需要本人作答或动手时等待，遇到疑问、暂停或改向先处理当前要求。已写入 week1/CLAUDE.md。
+- 边界与遗留：Pick 按本人要求跳过，TS 整项未完成；主线仍为第 1 个月第 2 周 / Week 4 Day 7，独立 bug 证据未完成。不重做已通过的练习，不自动开启新一天或月验收。
+- 本次文件清单：LEARNING-PLAN.md、week1/CLAUDE.md、week4/README.md。本次按本人要求由教练记录并执行 Git 同步，不记为本人独立 Git 实操。frontend/env.d.ts、frontend/src/components/FileUploader.vue、frontend/src/stores/summarize.ts 及未跟踪目录的现有改动保留在本地，不纳入本次记录提交。
+
 ### 不要报成 bug 的清单
 
 - 未选文件时按钮可点击是现有设计，由 handleSubmit 显示 No file selected；只有 loading 时禁用。教练此前的按钮验收条件已更正。
