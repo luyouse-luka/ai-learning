@@ -17,7 +17,7 @@ import { ref, computed } from 'vue'
 import axios from 'axios'
 import FilePicker from './FilePicker.vue'
 import ResultPanel from './ResultPanel.vue'
-import type { ApiError } from '@/types/api'
+import type { ApiError ,ValidationIssue} from '@/types/api'
 import { useSummarizeStore } from '@/stores/summarize'
 // ---------------------------------------------------------------
 // Day 5 的三个状态（保留）
@@ -131,6 +131,21 @@ const handleSubmit = () => {
 //       {"detail":[{"type":"missing","loc":["body","file"],"msg":"Field required","input":null}]}
 //      取文案要从数组里挑，直接 textContent 会显示 [object Object]
 // ---------------------------------------------------------------
+
+function getErrorMessage(detail?: string | ValidationIssue[]): string {
+    // undefined → '请求失败'
+    // string → 原样返回
+    // 剩余情况是数组 → 使用上面的拼接表达式
+    if (detail === undefined) {
+        return '请求失败'
+    } else if (typeof detail === 'string') {
+        return detail 
+    } else {
+         return detail.map(issue => issue.msg).join('；')
+     
+    }
+}
+
 function toUserMessage(err: unknown): string {
   if (axios.isAxiosError<ApiError>(err) && err.response) {
     console.error(`HTTP ${err.response.status}:`, err.response.data)
@@ -140,8 +155,8 @@ function toUserMessage(err: unknown): string {
       case 413:
         return `文件 ${((selectedFile.value?.size || 0) / (1024 * 1024)).toFixed(1)} MB，超过 10 MB 上限，请换一个`
       case 422: {
-        const detail = err.response.data.detail
-        return `文件 ${Array.isArray(detail) ? detail[0]?.msg : detail}，请换一个`
+      const message = getErrorMessage(err.response.data.detail)
+       return `${message}，请检查上传文件后重试`
       }
       case 500:
         return ` 服务器内部错误，请截图发给教练 `

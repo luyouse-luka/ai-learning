@@ -643,6 +643,16 @@ function formatSummary(summary: string, prefix /* TODO: Add type and default. */
 - 边界与遗留：Pick 按本人要求跳过，TS 整项未完成；主线仍为第 1 个月第 2 周 / Week 4 Day 7，独立 bug 证据未完成。不重做已通过的练习，不自动开启新一天或月验收。
 - 本次文件清单：LEARNING-PLAN.md、week1/CLAUDE.md、week4/README.md。本次按本人要求由教练记录并执行 Git 同步，不记为本人独立 Git 实操。frontend/env.d.ts、frontend/src/components/FileUploader.vue、frontend/src/stores/summarize.ts 及未跟踪目录的现有改动保留在本地，不纳入本次记录提交。
 
+### TS 错误文案项目应用验收（2026-10-23）
+
+- 本轮覆盖：默认参数与可选参数；interface/type 的对象声明及 SummaryStatus 字符串联合；getErrorMessage 的 undefined / string / ValidationIssue[] 收窄。聊天练习经审阅通过，格式和 !detail 的空字符串误判经指导订正，未将所有聊天片段记为实际编译执行。strict 题最初误判显式 any 与缺省返回类型；讲解后本人已正确复述可根据 return 推断返回类型，尚无新的独立 strict 变式验收。
+- 本人按教练完整示例修改 frontend/src/components/FileUploader.vue：复用 ApiError / ValidationIssue 导入，新增 getErrorMessage；422 分支统一追加重试提示。重复接口声明与缺失分支的重复提示已由本人订正。其他 HTTP 状态码逻辑保持原样。
+- 验证：2026-10-23 pnpm build 退出码 0，包含 vue-tsc 类型检查及 Vite 生产构建；node tools/verify_error_messages.mjs 五例通过，覆盖字段缺失、字符串、多条数组、空字符串、空数组。脚本从实际 Vue 源文件 AST 提取两个函数，模拟 Axios 422 响应，无 HTTP 或模型调用；未做浏览器验收。
+- 有意边界：空字符串与空数组保留为空消息，最终仅显示“，请检查上传文件后重试”，符合本轮既定判据，不擅自增加空值文案。这是指导下项目应用，不计独立发现 bug，周自检仍 5/6，TS 总项与课程月未完成，Pick 仍按本人要求跳过。
+- Omit 变式接续：本人已在聊天中构造仅含 summary / truncated / model 的新对象；类型别名经指导订正为从 SummarizeResponse 排除 input_tokens / output_tokens / cost，代码审阅通过，未另跑编译或运行。直接 return 原对象不会删除字段的边界已讲解；getPreviewModel 参数注解正确，返回类型先误判为对象，随后又将 boolean 误记为 string，教练逐项解释后本人反馈已澄清，不记录为新的独立推断验收。下一步补 GitHub Flow 的 PR 正文写作，仅聊天起草，不创建或更新远端 PR。历史已验收的 Record 查表、Axios 响应泛型改动未进入远端提交，本副本仍为旧源码，列为同步遗留，不重复记为新学习任务。
+- 文件清单：frontend/src/components/FileUploader.vue 由本人修改；教练新增 tools/verify_error_messages.mjs，更新 LEARNING-PLAN.md、week1/CLAUDE.md、week4/README.md。frontend/src/main.ts 的既有空行改动及两个未跟踪 Zone.Identifier 文件保留。未提交、推送或部署。
+- 本人随后明确要求记录进度并推送 Git：本次由教练归档上述五个文件，目标 origin/master；提交前 fetch 核对本地与远端基线一致，并重新通过 pnpm build 和五条错误消息验证。main.ts 的额外空行及两个下载标记文件不纳入。下一窗口从 PR 正文练习开始，题目已给出、本人尚未作答；不重复 Omit 和返回类型讲解。此次 Git 同步不计本人独立实操。
+
 ### 不要报成 bug 的清单
 
 - 未选文件时按钮可点击是现有设计，由 handleSubmit 显示 No file selected；只有 loading 时禁用。教练此前的按钮验收条件已更正。
