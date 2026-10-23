@@ -17,7 +17,7 @@ import { ref, computed } from 'vue'
 import axios from 'axios'
 import FilePicker from './FilePicker.vue'
 import ResultPanel from './ResultPanel.vue'
-import type { ApiError ,ValidationIssue} from '@/types/api'
+import type { SummarizeResponse, ApiError, ValidationIssue } from '@/types/api'
 import { useSummarizeStore } from '@/stores/summarize'
 // ---------------------------------------------------------------
 // Day 5 的三个状态（保留）
@@ -32,7 +32,7 @@ const errorMsg = ref('')
 //      ref<'idle' | 'loading' | 'done' | 'error'>('idle')
 //   这样拼错 'lodaing' 时 TS 当场报错，而不是运行时界面卡住
 // ---------------------------------------------------------------
-const status = ref<'idle' | 'loading' | 'done' | 'error'>('idle')
+const status = ref<Status>('idle')
 const summarizeStore = useSummarizeStore()
 // const props= defineProps<{
 //   result: SummarizeResponse | null // 读取父组件传来的结果。
@@ -101,7 +101,8 @@ const handleSubmit = () => {
   summarizeStore.setResult(null) // ① 清掉上一次的结果 清空父组件
   const formData = new FormData() // ② 造 FormData
   formData.append('file', selectedFile.value as File) // ② append 的字段
-  axios.post(`${import.meta.env.VITE_API_BASE}/summarize`, formData) // ③  axios.post
+
+  axios.post<SummarizeResponse>(`${import.meta.env.VITE_API_BASE}/summarize`, formData) // ③  axios.post
     .then((response) => {
       // result.value = response.data // 成功 写进result
       // emit('result-change', response.data) // 成功 写进result
@@ -162,24 +163,35 @@ function toUserMessage(err: unknown): string {
         return ` 服务器内部错误，请截图发给教练 `
       case 502:
         return `服务暂时不可用，请稍后重试`
+      case 429:
+        return `请求受限，请稍后重试`
+      case 504:
+        return `处理超时，请稍后重试`
       default:
         return `未知错误，请稍后重试`
     }
   }
   return `网络异常，请检查后重试`
 }
+type Status = 'idle' | 'loading' | 'error' | 'done';
+const buttonLabels : Record<Status,string> ={
+  idle: '上传',
+  loading: '生成中…',
+  done: '上传',
+  error: '重试'
+}
 const buttonText = computed(() => {
-  switch (status.value) {
-    case 'idle':
-      return '上传'
-    case 'loading':
-      return '生成中…'
-    case 'error':
-      return '重试'
-    case 'done':
-      return '上传'
-  }
+  return buttonLabels[status.value]
 })
+
+function handlePick(file: File | null): void {
+      // TODO: Update selectedFile.
+  // TODO: Clear errorMsg.
+  // TODO: Reset status to idle.
+  selectedFile.value = file
+  errorMsg.value = ''
+  status.value = 'idle'
+}
 // ---------------------------------------------------------------
 // TODO【6.8】读了学源才答得出的一题（正课**故意没讲**，答不出就是没读）
 //   把答案写在每问后面，写完再往下做 6.7。
@@ -203,7 +215,7 @@ const buttonText = computed(() => {
 
 <template>
   <!-- Day 5 的三个元素（保留） -->
-  <FilePicker :accept="'application/pdf'" :disabled="status === 'loading'" @pick="(file) => selectedFile = file" />
+  <FilePicker :accept="'application/pdf'" :disabled="status === 'loading'" @pick="(file) => handlePick(file)" />
   <button @click="handleSubmit"  :disabled="!canSubmit">{{ buttonText }}</button>
   <!-- ---------------------------------------------------------------
        TODO【6.7】模板三态 + 结果

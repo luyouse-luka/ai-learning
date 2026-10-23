@@ -653,6 +653,51 @@ function formatSummary(summary: string, prefix /* TODO: Add type and default. */
 - 文件清单：frontend/src/components/FileUploader.vue 由本人修改；教练新增 tools/verify_error_messages.mjs，更新 LEARNING-PLAN.md、week1/CLAUDE.md、week4/README.md。frontend/src/main.ts 的既有空行改动及两个未跟踪 Zone.Identifier 文件保留。未提交、推送或部署。
 - 本人随后明确要求记录进度并推送 Git：本次由教练归档上述五个文件，目标 origin/master；提交前 fetch 核对本地与远端基线一致，并重新通过 pnpm build 和五条错误消息验证。main.ts 的额外空行及两个下载标记文件不纳入。下一窗口从 PR 正文练习开始，题目已给出、本人尚未作答；不重复 Omit 和返回类型讲解。此次 Git 同步不计本人独立实操。
 
+### PR 正文练习与 strict 接续（2026-10-23，本地）
+
+- 本人完成问题、改动、验证三部分正文，覆盖 422 数组只取首条、getErrorMessage 的三类输入及多条拼接、五例检查与类型检查通过，并明确未做真实 HTTP / 浏览器验证。内容沿用教练给定事实，指导下练习通过，不记为独立写作掌握；未创建或更新远端 PR。
+- 下一步：strict 三段代码判断变式，检查隐式 any、显式 any 与返回类型推断，等待本人作答，不预先记为通过。Pick 保持跳过，TS 总项、独立 bug 与课程月状态不变。
+- 同步说明：本次拉取到 2d9650e，已恢复本地 Record 和 Axios 响应泛型修改，合并 ValidationIssue 导入；类型检查和错误消息五例均通过，源码尚未提交，原未跟踪目录保留。拉取前的已跟踪修改备份保留在 stash 中。此前“本副本旧源码”描述不再代表本地工作区。
+- 本次学习记录文件：LEARNING-PLAN.md、week4/README.md。未提交、推送或部署。
+
+- strict 变式作答验收：本人一次正确判断 A 的隐式 any 错误、B 的显式 any 合法、C 的返回类型推断为 number，三题代码审阅通过，未另跑编译或运行。下一步回到 Week 4 结束自检的独立 bug 证据，由本人先检查上传交互并报告预期与实际；不预设问题存在，TS 总项与课程月仍未完成。
+
+### 重选文件后的错误状态恢复（2026-10-23）
+
+- 本人报告 map.php 上传提示“不是 PDF，请换一个”，符合预期；随后按教练指定场景换成有效 PDF，观察到旧错误未消失、按钮仍为“重试”。源码确认原 pick 回调只更新 selectedFile，errorMsg 与 status 留在上次失败状态。仅 loading 禁用按钮是既定设计，按钮在 error 时可点不算问题。
+- 本人完成 handlePick(file: File | null)，更新 selectedFile、清空 errorMsg、将 status 设为 idle，并将 FilePicker 的 pick 事件连接到该函数。教练未代写核心实现。
+- 验证：pnpm --dir frontend type-check 通过；node tools/verify_file_pick_state.mjs 三例通过，覆盖 error 换 PDF、null、done 换文件，并检查实际模板事件绑定和处理函数无 Axios 请求；node tools/verify_error_messages.mjs 既有五例通过。状态测试使用真实 Vue ref 和从源码提取的函数，文件对象为测试替身，不等同浏览器上传。未做 HTTP、模型调用或浏览器验证。
+- 本人随后确认浏览器验收：非 PDF 报错后换正常 PDF，先不点上传，旧错误消失、按钮显示“上传”，Network 没有新增上传请求。三项交互验收通过，依据本人反馈，教练未独立操作浏览器。本次指导下发现及修复收尾，独立 bug 项保持未完成，周自检仍 5/6。
+- 自主选场景时本人反馈“不知道”，教练已提供具体检查步骤，后续属于指导下检查，不计独立发现 bug。本人确认两条浏览器检查通过：刷新后未选文件点击上传，显示 No file selected、按钮为“重试”、Network 无新增请求；超过 10 MB 的 PDF 上传返回 413，页面提示文件过大，按钮恢复“重试”。教练未独立操作浏览器，未另发 HTTP 或模型请求。
+- 本轮最后一次正常上传回归已由本人确认：生成中按钮不可点击、接口返回 200、摘要及模型/费用正常显示、按钮恢复“上传”。依据本人浏览器反馈，教练未独立操作浏览器。本轮上传修复及功能检查收尾，不扩大为所有场景无缺陷。
+- 最新接续：代码自查练习，由本人对照 frontend/src/types/api.ts 的 ApiErrorCode 与 FileUploader.vue 的 toUserMessage，找出契约列出但没有单独 case 的状态码，并说明它们当前显示什么提示。先聊天作答，不改代码、不模拟真实限流或超时请求。该题由教练划定检查范围，不预先记为独立发现 bug；Week 4 自检仍 5/6。
+- 文件清单：frontend/src/components/FileUploader.vue 由本人修改；教练新增 tools/verify_file_pick_state.mjs，更新 LEARNING-PLAN.md、week4/README.md。其他既有本地改动保留，未提交、推送或部署。
+
+### 429 / 504 错误提示补齐接续（2026-10-23）
+
+- 本人正确指出 ApiErrorCode 中 429 / 504 没有单独 case，会进入 default 显示“未知错误，请稍后重试”，代码审阅通过；该检查范围由教练指定，不新增独立发现 bug 结论。
+- 本人已新增两个 case。约定文案为“请求受限，请稍后重试”“处理超时，请稍后重试”；实际源码仍分别带“提示”前缀。
+- 按本人要求扩展 tools/verify_error_messages.mjs，使用实际安装 Axios 的 isAxiosError 识别及模拟响应，保留五条 422 检查，新增 429、504、未知状态控制例。实际结果 6/8：五条 422 与未知状态通过；429 / 504 均已进入对应分支，但因文案多了“提示”二字而失败。pnpm --dir frontend type-check 通过。无真实 HTTP、模型调用或浏览器验证。
+- 本人随后删除两句“提示”前缀，教练重跑 node tools/verify_error_messages.mjs，8/8 全部通过；实际源码文案与约定一致，429 / 504 本轮修复验收通过。此前类型检查通过，本次只改文案未重跑类型检查，无真实 HTTP 或浏览器验证。未代改核心源码，未提交、推送或部署。
+- 下一步由本人设计一条尚未覆盖的操作顺序，先在聊天中写出步骤和预期，再实施检查；由本人选择组合，教练不提前指出具体故障。无需预设存在 bug，独立 bug 项仍待实际证据，Week 4 仍 5/6。
+- 文件清单：frontend/src/components/FileUploader.vue 由本人修改；教练更新 tools/verify_error_messages.mjs、LEARNING-PLAN.md、week4/README.md；保留其他既有本地改动。
+
+### 成功后换文件仍保留旧费用（2026-10-23，待修复）
+
+- 教练指定“上传 A 成功后选择 B、不上传”的观察场景；本人报告 A 摘要消失、模型/费用保留、按钮为“上传”、无新增请求，并明确要求换文件后 A 的摘要/模型/费用全部清除。该场景由教练指定，不据此更新独立 bug 项。
+- 根因：handlePick 将 status 置为 idle，使依赖 done 的 ResultPanel 隐藏；共享 summarizeStore.result 仍为 A。CostPanel 仅依据 result 是否存在显示，因而继续展示 A 的模型/费用。此时摘要只是隐藏，结果数据没有清除。
+- 教练扩展 tools/verify_file_pick_state.mjs，加载实际 store 定义与真实 Pinia、Vue ref，先设置明确的测试结果，再调用实际 handlePick。前两例通过，done 换文件例因 result 仍为测试对象而失败（预期 null），复现与本人观察一致。无浏览器、HTTP 或模型调用；尚未修改核心实现。
+- 先前三例通过仅覆盖选中文件、错误、status 和请求数，没有检验旧 result 清空；本轮新增结果清空判据后失败，不撤回旧检查的实际结果。下一步由本人在理解根因后补齐共享结果重置，再重跑状态检查及页面验收；Week 4 自检仍 5/6。
+- 文件清单：教练修改 tools/verify_file_pick_state.mjs、LEARNING-PLAN.md、week4/README.md；保留其他已有改动，未提交、推送或部署。
+
+### Git 学习检查点归档（2026-10-23）
+
+- 本人明确要求记录进度并推送 Git，按当前未完成状态归档，目标 origin/master。提交前 fetch 核对本地与远端基线均为 2d9650e，无分叉。
+- 本次重跑：pnpm --dir frontend build 通过，含 vue-tsc 类型检查与 Vite 生产构建；node tools/verify_error_messages.mjs 8/8 通过；node tools/verify_file_pick_state.mjs 前两例通过，done 换文件例因共享 result 未清空而失败，退出码 1。保留该失败判据，不宣称全绿，不代本人完成核心练习。
+- 下一窗口直接从 handlePick 补齐共享结果清空开始：调用现有 store action 将 result 置为 null；本人尚未完成这一行。随后重跑选文件状态检查、错误消息检查及类型检查，并由本人确认 A 成功后仅选择 B 时摘要/模型/费用全部清除、没有新增请求。Week 4 自检仍 5/6，独立 bug、Pick 跳过和课程月未完成状态保持。
+- 提交文件清单：frontend/src/components/FileUploader.vue、tools/verify_error_messages.mjs、tools/verify_file_pick_state.mjs、LEARNING-PLAN.md、week4/README.md。组件包含本人既有 Record / Axios 响应泛型、handlePick 和 429 / 504 分支；教练仅清理新增 case 的行尾空格，未补写结果清空实现。
+- frontend/env.d.ts 与 frontend/src/stores/summarize.ts 的空白改动、frontend/.vite-env-lesson-20261022/ 与 week3/frontend/ 未跟踪构建目录留在本地；原 stash 备份保留。不纳入凭据、依赖、构建产物或临时目录。此次 Git 同步由教练执行，不计本人独立实操，未部署。
+
 ### 不要报成 bug 的清单
 
 - 未选文件时按钮可点击是现有设计，由 handleSubmit 显示 No file selected；只有 loading 时禁用。教练此前的按钮验收条件已更正。
